@@ -1,13 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import AppLayout from "@/components/app-layout";
 import {
   Loader2,
   BarChart3,
   Users,
   ArrowLeft,
+  PieChart as PieIcon,
 } from "lucide-react";
+import {
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
+} from "recharts";
 
 interface OptionResult {
   id: string;
@@ -15,6 +20,8 @@ interface OptionResult {
   image_url: string | null;
   votes: number;
 }
+
+const PIE_COLORS = ["#14b8a6", "#3b82f6", "#f97316", "#8b5cf6", "#ec4899", "#22c55e", "#eab308", "#06b6d4"];
 
 export default function PollResults() {
   const { pollId } = useParams<{ pollId: string }>();
@@ -24,43 +31,47 @@ export default function PollResults() {
   const [totalVotes, setTotalVotes] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
     if (!pollId) return;
-    (async () => {
-      const { data: pollData } = await supabase
-        .from("polls")
-        .select("title, description")
-        .eq("id", pollId)
-        .single();
+    const { data: pollData } = await supabase
+      .from("polls")
+      .select("title, description")
+      .eq("id", pollId)
+      .single();
 
-      if (!pollData) {
-        setLoading(false);
-        return;
-      }
-      setPoll(pollData);
-
-      const { data: optionData } = await supabase
-        .from("poll_options")
-        .select("id, option_text, image_url")
-        .eq("poll_id", pollId);
-
-      if (optionData) {
-        const resultsWithVotes = await Promise.all(
-          optionData.map(async (opt) => {
-            const { count } = await supabase
-              .from("poll_votes")
-              .select("*", { count: "exact", head: true })
-              .eq("option_id", opt.id);
-            return { id: opt.id, option_text: opt.option_text, image_url: opt.image_url, votes: count ?? 0 };
-          })
-        );
-        setResults(resultsWithVotes);
-        setTotalVotes(resultsWithVotes.reduce((sum, r) => sum + r.votes, 0));
-      }
-
+    if (!pollData) {
       setLoading(false);
-    })();
+      return;
+    }
+    setPoll(pollData);
+
+    const { data: optionData } = await supabase
+      .from("poll_options")
+      .select("id, option_text, image_url")
+      .eq("poll_id", pollId);
+
+    if (optionData) {
+      const resultsWithVotes = await Promise.all(
+        optionData.map(async (opt) => {
+          const { count } = await supabase
+            .from("poll_votes")
+            .select("*", { count: "exact", head: true })
+            .eq("option_id", opt.id);
+          return { id: opt.id, option_text: opt.option_text, image_url: opt.image_url, votes: count ?? 0 };
+        })
+      );
+      setResults(resultsWithVotes);
+      setTotalVotes(resultsWithVotes.reduce((sum, r) => sum + r.votes, 0));
+    }
+
+    setLoading(false);
   }, [pollId]);
+
+  useRealtimeSubscription("poll_votes", fetchData, [fetchData], `poll_id=eq.${pollId}`);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   if (loading) {
     return (
@@ -122,38 +133,93 @@ export default function PollResults() {
                 </p>
               </div>
             ) : (
-              <div className="rounded-xl bg-white p-6 shadow-md ring-1 ring-slate-200/60">
-                <div className="space-y-4">
-                  {results.map((result) => {
-                    const percentage = totalVotes > 0 ? Math.round((result.votes / totalVotes) * 100) : 0;
-                    return (
-                      <div key={result.id}>
-                        <div className="mb-1 flex items-center justify-between text-sm">
-                          <span className="flex items-center gap-2.5 font-medium text-slate-800">
-                            {result.image_url && (
-                              <img
-                                src={result.image_url}
-                                alt=""
-                                className="size-10 shrink-0 rounded-lg border border-[#E5E7EB] bg-slate-50 object-cover"
-                              />
-                            )}
-                            {result.option_text}
-                          </span>
-                          <span className="text-xs text-slate-500">
-                            {result.votes} vote{result.votes !== 1 ? "s" : ""} ({percentage}%)
-                          </span>
-                        </div>
-                        <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all"
-                            style={{ width: `${percentage}%` }}
+              <>
+                <div className="grid gap-6 lg:grid-cols-2">
+                  <div className="rounded-xl bg-white p-6 shadow-md ring-1 ring-slate-200/60">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-700">
+                      <PieIcon size={16} className="text-teal-600" />
+                      Distribution
+                    </h3>
+                    <div className="flex justify-center" style={{ height: 260 }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={results}
+                            dataKey="votes"
+                            nameKey="option_text"
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={55}
+                            outerRadius={100}
+                            paddingAngle={3}
+                            strokeWidth={0}
+                          >
+                            {results.map((_, i) => (
+                              <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            formatter={(value: number) => [`${value} vote${value !== 1 ? "s" : ""}`, "Votes"]}
+                            contentStyle={{
+                              borderRadius: 10,
+                              border: "1px solid #e2e8f0",
+                              fontSize: 12,
+                            }}
                           />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
+                      {results.map((r, i) => (
+                        <div key={r.id} className="flex items-center gap-1.5 text-xs">
+                          <span
+                            className="size-2.5 rounded-sm shrink-0"
+                            style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
+                          />
+                          <span className="text-slate-600">{r.option_text}</span>
                         </div>
-                      </div>
-                    );
-                  })}
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl bg-white p-6 shadow-md ring-1 ring-slate-200/60">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-700">
+                      <BarChart3 size={16} className="text-teal-600" />
+                      Breakdown
+                    </h3>
+                    <div className="space-y-4">
+                      {results.map((result) => {
+                        const percentage = totalVotes > 0 ? Math.round((result.votes / totalVotes) * 100) : 0;
+                        return (
+                          <div key={result.id}>
+                            <div className="mb-1 flex items-center justify-between text-sm">
+                              <span className="flex items-center gap-2.5 font-medium text-slate-800">
+                                {result.image_url && (
+                                  <img
+                                    src={result.image_url}
+                                    alt=""
+                                    className="size-10 shrink-0 rounded-lg border border-[#E5E7EB] bg-slate-50 object-cover"
+                                  />
+                                )}
+                                {result.option_text}
+                              </span>
+                              <span className="text-xs text-slate-500">
+                                {result.votes} vote{result.votes !== 1 ? "s" : ""} ({percentage}%)
+                              </span>
+                            </div>
+                            <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100">
+                              <div
+                                className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all duration-500"
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </main>

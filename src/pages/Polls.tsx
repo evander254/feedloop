@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import AppLayout from "@/components/app-layout";
 import {
   Plus,
@@ -32,54 +33,58 @@ export default function Polls() {
   const [search, setSearch] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/login", { replace: true });
-        return;
-      }
+  const fetchPolls = useCallback(async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/login", { replace: true });
+      return;
+    }
 
-      const { data: pollRows } = await supabase
-        .from("polls")
-        .select("id, title, description, created_at, created_by")
-        .eq("created_by", user.id)
-        .order("created_at", { ascending: false });
+    const { data: pollRows } = await supabase
+      .from("polls")
+      .select("id, title, description, created_at, created_by")
+      .eq("created_by", user.id)
+      .order("created_at", { ascending: false });
 
-      if (!pollRows) {
-        setLoading(false);
-        return;
-      }
-
-      const pollsWithCounts = await Promise.all(
-        pollRows.map(async (p) => {
-          const { count: optionCount } = await supabase
-            .from("poll_options")
-            .select("*", { count: "exact", head: true })
-            .eq("poll_id", p.id);
-
-          const { count: voteCount } = await supabase
-            .from("poll_votes")
-            .select("*", { count: "exact", head: true })
-            .eq("poll_id", p.id);
-
-          return {
-            id: p.id,
-            title: p.title,
-            description: p.description,
-            created_at: p.created_at,
-            option_count: optionCount ?? 0,
-            vote_count: voteCount ?? 0,
-          };
-        })
-      );
-
-      setPolls(pollsWithCounts);
+    if (!pollRows) {
       setLoading(false);
-    })();
+      return;
+    }
+
+    const pollsWithCounts = await Promise.all(
+      pollRows.map(async (p) => {
+        const { count: optionCount } = await supabase
+          .from("poll_options")
+          .select("*", { count: "exact", head: true })
+          .eq("poll_id", p.id);
+
+        const { count: voteCount } = await supabase
+          .from("poll_votes")
+          .select("*", { count: "exact", head: true })
+          .eq("poll_id", p.id);
+
+        return {
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          created_at: p.created_at,
+          option_count: optionCount ?? 0,
+          vote_count: voteCount ?? 0,
+        };
+      })
+    );
+
+    setPolls(pollsWithCounts);
+    setLoading(false);
   }, [navigate]);
+
+  useRealtimeSubscription("polls", fetchPolls, [fetchPolls]);
+
+  useEffect(() => {
+    fetchPolls();
+  }, [fetchPolls]);
 
   const handleCopyLink = async (pollId: string) => {
     await navigator.clipboard.writeText(`${window.location.origin}/poll/${pollId}`);

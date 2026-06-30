@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import { useThemeMode } from "@/lib/ThemeContext";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -126,11 +127,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     });
   }, [fetchNotifications]);
 
-  useEffect(() => {
-    if (!userId) return;
-    const interval = setInterval(() => fetchNotifications(userId), 15000);
-    return () => clearInterval(interval);
-  }, [userId, fetchNotifications]);
+  useRealtimeSubscription("notifications", () => {
+    if (userId) fetchNotifications(userId);
+  }, [userId, fetchNotifications], `user_id=eq.${userId}`);
 
   const handleNotifClick = (n: Notification) => {
     setNotifAnchor(null);

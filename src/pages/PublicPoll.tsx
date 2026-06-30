@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import {
   Loader2,
   Send,
@@ -176,6 +177,8 @@ export default function PublicPoll() {
       setTotalVotes(votes.length);
     }
   };
+
+  useRealtimeSubscription("poll_votes", fetchResults, [fetchResults, pollId ?? ""], `poll_id=eq.${pollId}`);
 
   useEffect(() => {
     if (!pollId) return;
