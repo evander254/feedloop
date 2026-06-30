@@ -1,0 +1,6 @@
+{
+  "name": "feedloop",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
