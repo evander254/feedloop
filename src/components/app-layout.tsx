@@ -412,7 +412,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Box>
         </Box>
 
-        <Box component="main" sx={{ flex: 1, overflow: "auto", px: 4, py: 4 }}>
+        <Box component="main" sx={{ flex: 1, overflow: "auto", px: 2, py: 1.5 }}>
           {children}
         </Box>
       </Box>

@@ -14,7 +14,7 @@ export default function Login() {
       />
       <div className="absolute inset-0 bg-white/55 backdrop-blur-sm" />
 
-      <div className="relative mx-auto flex w-full max-w-7xl items-center gap-16 px-8 py-12 max-lg:flex-col max-lg:justify-center max-lg:py-4">
+      <div className="relative mx-auto flex w-full items-center gap-8 px-6 py-6 max-lg:flex-col max-lg:justify-center max-lg:py-4">
         <div className="hidden max-w-xl flex-1 lg:block">
           <div className="flex items-center gap-3">
             <img src={logoSrc} alt="FeedLoop" className="h-10 w-auto object-contain" />

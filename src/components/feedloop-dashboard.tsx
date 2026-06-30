@@ -304,7 +304,7 @@ export function FeedLoopDashboard() {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-[1400px] space-y-4">
+      <div className="space-y-3">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {kpiCards.map((kpi) => (
                 <div

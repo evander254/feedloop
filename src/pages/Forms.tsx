@@ -218,13 +218,13 @@ export default function Forms() {
 
   return (
     <AppLayout>
-      <Box sx={{ display: "flex", gap: 4 }}>
+      <Box sx={{ display: "flex", gap: 2 }}>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           {/* Toolbar */}
           <Stack
             direction="row"
             spacing={2}
-            sx={{ alignItems: "center", flexWrap: "wrap", mb: 4 }}
+            sx={{ alignItems: "center", flexWrap: "wrap", mb: 2 }}
           >
             <TextField
               placeholder="Search forms..."

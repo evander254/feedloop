@@ -96,8 +96,8 @@ export default function PollResults() {
 
   return (
     <AppLayout>
-        <main className="flex-1 overflow-y-auto px-4 py-4">
-          <div className="mx-auto max-w-3xl space-y-4">
+        <main className="flex-1 overflow-y-auto">
+          <div className="space-y-3">
             <button
               type="button"
               onClick={() => navigate("/polls")}
@@ -125,7 +125,7 @@ export default function PollResults() {
             </div>
 
             {totalVotes === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-md ring-1 ring-slate-200/60">
+              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-8 shadow-md ring-1 ring-slate-200/60">
                 <BarChart3 size={48} className="text-slate-300" />
                 <h2 className="mt-4 text-lg font-bold text-slate-700">No votes yet</h2>
                 <p className="mt-1 text-sm text-slate-400">

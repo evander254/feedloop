@@ -324,10 +324,10 @@ export default function PublicForm() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#f4f7f5] py-8">
-      <div className="mx-auto max-w-2xl px-4">
-        <div className="rounded-2xl bg-white p-8 shadow-xl ring-1 ring-slate-200/60">
-          <div className="mb-6 text-center">
+    <div className="min-h-dvh bg-[#f4f7f5] py-4">
+      <div className="mx-auto px-4">
+        <div className="rounded-2xl bg-white p-5 shadow-xl ring-1 ring-slate-200/60">
+          <div className="mb-4 text-center">
             <span className="mx-auto flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-lg shadow-teal-500/20">
               <Network size={22} />
             </span>

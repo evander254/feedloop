@@ -98,8 +98,8 @@ export default function Profile() {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-xl px-4 py-8">
-        <div className="rounded-xl bg-white p-6 shadow-md ring-1 ring-slate-200/60 sm:p-8">
+      <div className="">
+        <div className="rounded-xl bg-white p-4 shadow-md ring-1 ring-slate-200/60">
           <div className="text-center">
             <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 text-xl font-bold text-white shadow-lg shadow-emerald-500/20">
               {(fullName || email).slice(0, 2).toUpperCase()}

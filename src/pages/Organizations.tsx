@@ -226,7 +226,7 @@ export default function Organizations() {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-3xl px-4 py-8">
+      <div className="">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900">Organizations</h1>
@@ -243,7 +243,7 @@ export default function Organizations() {
         </div>
 
         {showForm && (
-          <div className="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-base font-bold text-slate-900">
                 {editingId ? "Edit Organization" : "New Organization"}
@@ -412,7 +412,7 @@ export default function Organizations() {
         )}
 
         {orgs.length === 0 ? (
-          <div className="rounded-xl border-2 border-dashed border-slate-200 p-12 text-center">
+          <div className="rounded-xl border-2 border-dashed border-slate-200 p-8 text-center">
             <Building2 size={40} className="mx-auto text-slate-300" />
             <h2 className="mt-4 text-lg font-bold text-slate-700">No organizations yet</h2>
             <p className="mt-1 text-sm text-slate-500">
@@ -432,7 +432,7 @@ export default function Organizations() {
             {orgs.map((org) => (
               <div
                 key={org.id}
-                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md"
+                className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">

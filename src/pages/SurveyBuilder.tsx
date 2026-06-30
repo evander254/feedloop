@@ -214,7 +214,7 @@ export default function SurveyBuilder() {
   if (savedSurveyId) {
     return (
       <AppLayout>
-        <div className="flex items-center justify-center px-4 py-12">
+        <div className="flex items-center justify-center py-6">
           <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl ring-1 ring-slate-200/60">
           <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-teal-100 text-teal-600">
             <Share2 size={28} />
@@ -258,7 +258,7 @@ export default function SurveyBuilder() {
   return (
     <AppLayout>
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
+          <div className="flex w-full flex-col gap-4">
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-bold text-slate-900">Survey Builder</h1>
               <button

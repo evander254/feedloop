@@ -116,7 +116,7 @@ export default function Polls() {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-5xl space-y-4">
+      <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
               <div className="relative flex-1 max-w-sm">
                 <svg className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -144,7 +144,7 @@ export default function Polls() {
             </div>
 
             {filtered.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-20 shadow-md ring-1 ring-slate-200/60">
+              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-10 shadow-md ring-1 ring-slate-200/60">
                 <Vote size={48} className="text-slate-300" />
                 <h2 className="mt-4 text-lg font-bold text-slate-700">No polls yet</h2>
                 <p className="mt-1 text-sm text-slate-400">

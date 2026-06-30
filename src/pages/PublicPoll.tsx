@@ -50,8 +50,8 @@ interface VoteCount {
 function LoadingSkeleton() {
   return (
     <div className="min-h-dvh bg-[#FAFAFA]">
-      <div className="mx-auto max-w-[900px] px-4 py-8 sm:px-6 lg:px-8">
-        <div className="animate-pulse space-y-6">
+      <div className="mx-auto px-4 py-4 sm:px-6 lg:px-8">
+        <div className="animate-pulse space-y-4">
           <div className="h-28 rounded-2xl bg-white/80 border border-[#E5E7EB] p-5 shadow-sm">
             <div className="flex items-center gap-4">
               <div className="size-14 rounded-xl bg-slate-200" />
@@ -308,10 +308,10 @@ export default function PublicPoll() {
 
   if (submitted || alreadyVoted) {
     return (
-      <div className="min-h-dvh bg-[#FAFAFA] py-8">
+      <div className="min-h-dvh bg-[#FAFAFA] py-4">
         {showConfetti && <Confetti />}
-        <div className="mx-auto max-w-[900px] px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 rounded-2xl border border-[#E5E7EB] bg-white/90 p-8 text-center shadow-sm backdrop-blur-sm">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-4 rounded-2xl border border-[#E5E7EB] bg-white/90 p-6 text-center shadow-sm backdrop-blur-sm">
             <span className={`mx-auto flex size-16 items-center justify-center rounded-full ${alreadyVoted ? "bg-amber-50 text-amber-500" : "bg-emerald-50 text-emerald-500"} animate-[scaleIn_0.4s_ease-out]`}>
               {alreadyVoted ? <AlertCircle size={32} /> : <CheckCircle size={32} />}
             </span>
@@ -326,8 +326,8 @@ export default function PublicPoll() {
           </div>
 
           {voteCounts.length > 0 && (
-            <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-sm sm:p-8 animate-[fadeUp_0.6s_ease-out_0.3s_both]">
-              <div className="mb-6 flex items-center justify-between">
+            <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-sm animate-[fadeUp_0.6s_ease-out_0.3s_both]">
+              <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                   <BarChart3 size={18} className="text-emerald-500" />
                   Live Results
@@ -362,7 +362,7 @@ export default function PublicPoll() {
 
   return (
     <div className="min-h-dvh bg-[#FAFAFA]">
-      <div className="mx-auto max-w-[900px] px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto px-4 py-4 sm:px-6 lg:px-8">
         {org && (
           <div className="group mb-6 rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md sm:p-6">
             <div className="flex items-center gap-4">
