@@ -112,7 +112,7 @@ export default function Profile() {
 
           <form
             onSubmit={(e) => { e.preventDefault(); handleSave(); }}
-            className="mt-8 space-y-5"
+            className="mt-4 space-y-3"
           >
             <label className="block">
               <span className="mb-1.5 block text-sm font-semibold text-slate-700">Full Name</span>
@@ -214,7 +214,7 @@ export default function Profile() {
             </button>
           </form>
 
-          <div className="mt-8 border-t border-slate-100 pt-6">
+          <div className="mt-4 border-t border-slate-100 pt-3">
             <button
               type="button"
               onClick={handleLogout}

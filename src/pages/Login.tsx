@@ -14,7 +14,7 @@ export default function Login() {
       />
       <div className="absolute inset-0 bg-white/55 backdrop-blur-sm" />
 
-      <div className="relative mx-auto flex w-full items-center gap-8 px-6 py-6 max-lg:flex-col max-lg:justify-center max-lg:py-4">
+      <div className="relative mx-auto flex w-full items-center gap-6 px-3 py-2 max-lg:flex-col max-lg:justify-center max-lg:py-2">
         <div className="hidden max-w-xl flex-1 lg:block">
           <div className="flex items-center gap-3">
             <img src={logoSrc} alt="FeedLoop" className="h-10 w-auto object-contain" />
@@ -31,7 +31,7 @@ export default function Login() {
         </div>
 
         <div className="w-[420px] shrink-0 max-lg:w-full max-lg:max-w-sm">
-          <Card className="p-8 shadow-2xl shadow-black/5">
+          <Card className="p-4 shadow-2xl shadow-black/5">
             <AuthForm />
           </Card>
         </div>

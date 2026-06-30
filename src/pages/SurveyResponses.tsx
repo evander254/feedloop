@@ -111,7 +111,7 @@ export default function SurveyResponses() {
     <AppLayout>
         <main className="flex-1 overflow-y-auto">
           <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-xl bg-white p-5 shadow-md ring-1 ring-slate-200/60">
+            <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-200/60">
               <div>
                 <h1 className="text-xl font-black text-slate-900">{survey.title}</h1>
                 {survey.description && (
@@ -140,7 +140,7 @@ export default function SurveyResponses() {
             </div>
 
             {responses.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-8 shadow-md ring-1 ring-slate-200/60">
+              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-4 shadow-md ring-1 ring-slate-200/60">
                 <BarChart3 size={48} className="text-slate-300" />
                 <h2 className="mt-4 text-lg font-bold text-slate-700">No responses yet</h2>
                 <p className="mt-1 text-sm text-slate-400">

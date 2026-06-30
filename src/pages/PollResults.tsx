@@ -107,7 +107,7 @@ export default function PollResults() {
               Back to Polls
             </button>
 
-            <div className="rounded-xl bg-white p-5 shadow-md ring-1 ring-slate-200/60">
+            <div className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-200/60">
               <h1 className="text-xl font-black text-slate-900">{poll.title}</h1>
               {poll.description && (
                 <p className="mt-1 text-sm text-slate-500">{poll.description}</p>
@@ -125,7 +125,7 @@ export default function PollResults() {
             </div>
 
             {totalVotes === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-8 shadow-md ring-1 ring-slate-200/60">
+              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-4 shadow-md ring-1 ring-slate-200/60">
                 <BarChart3 size={48} className="text-slate-300" />
                 <h2 className="mt-4 text-lg font-bold text-slate-700">No votes yet</h2>
                 <p className="mt-1 text-sm text-slate-400">
@@ -135,8 +135,8 @@ export default function PollResults() {
             ) : (
               <>
                 <div className="grid gap-6 lg:grid-cols-2">
-                  <div className="rounded-xl bg-white p-6 shadow-md ring-1 ring-slate-200/60">
-                    <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-700">
+                  <div className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-200/60">
+                    <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-700">
                       <PieIcon size={16} className="text-teal-600" />
                       Distribution
                     </h3>
@@ -182,8 +182,8 @@ export default function PollResults() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl bg-white p-6 shadow-md ring-1 ring-slate-200/60">
-                    <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-700">
+                  <div className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-200/60">
+                    <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-700">
                       <BarChart3 size={16} className="text-teal-600" />
                       Breakdown
                     </h3>

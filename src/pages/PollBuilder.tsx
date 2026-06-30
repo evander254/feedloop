@@ -391,7 +391,7 @@ export default function PollBuilder() {
             </div>
           )}
 
-          <div className="rounded-xl bg-white p-6 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
+          <div className="rounded-xl bg-white p-3 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
             <label className="block">
               <span className="mb-1.5 block text-sm font-bold text-slate-800">Poll Title</span>
               <input
@@ -432,8 +432,8 @@ export default function PollBuilder() {
             )}
           </div>
 
-          <div className="rounded-xl bg-white p-6 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
-            <h2 className="text-sm font-bold text-slate-800 mb-4">Publishing</h2>
+          <div className="rounded-xl bg-white p-3 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
+            <h2 className="text-sm font-bold text-slate-800 mb-2">Publishing</h2>
             <div className="flex gap-3">
               <button
                 type="button"
@@ -489,7 +489,7 @@ export default function PollBuilder() {
             )}
           </div>
 
-          <div className="rounded-xl bg-white p-6 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
+          <div className="rounded-xl bg-white p-3 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -534,7 +534,7 @@ export default function PollBuilder() {
           </div>
 
           <div className="rounded-xl bg-white shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+            <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2">
               <h2 className="text-sm font-bold text-slate-800">Poll Options</h2>
               <span className="text-xs text-slate-400">
                 {options.filter((o) => o.text.trim()).length} option
@@ -542,7 +542,7 @@ export default function PollBuilder() {
               </span>
             </div>
 
-            <div className="space-y-4 px-6 py-4">
+            <div className="space-y-3 px-3 py-2">
               {options.map((opt, index) => (
                 <div key={index} className="rounded-xl border border-slate-200 bg-slate-50/30 p-4">
                   <div className="flex items-center gap-2">
@@ -614,7 +614,7 @@ export default function PollBuilder() {
               ))}
             </div>
 
-            <div className="border-t border-slate-100 px-6 py-4">
+            <div className="border-t border-slate-100 px-3 py-2">
               <button
                 type="button"
                 onClick={addOption}

@@ -407,7 +407,7 @@ export default function FormBuilder() {
             </div>
           )}
 
-          <div className="rounded-xl bg-white p-6 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
+          <div className="rounded-xl bg-white p-3 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
             <label className="block">
               <span className="mb-1.5 block text-sm font-bold text-slate-800">Form Title</span>
               <input
@@ -448,8 +448,8 @@ export default function FormBuilder() {
             )}
           </div>
 
-          <div className="rounded-xl bg-white p-6 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
-            <h2 className="text-sm font-bold text-slate-800 mb-4">Publishing</h2>
+          <div className="rounded-xl bg-white p-3 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
+            <h2 className="text-sm font-bold text-slate-800 mb-2">Publishing</h2>
             <div className="flex gap-3">
               <button
                 type="button"
@@ -505,7 +505,7 @@ export default function FormBuilder() {
             )}
           </div>
 
-          <div className="rounded-xl bg-white p-6 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
+          <div className="rounded-xl bg-white p-3 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -536,7 +536,7 @@ export default function FormBuilder() {
           </div>
 
           <div className="rounded-xl bg-white shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+            <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2">
               <h2 className="text-sm font-bold text-slate-800">Form Fields</h2>
               <span className="text-xs text-slate-400">
                 {fields.filter((f) => f.field_label.trim()).length} field
@@ -544,7 +544,7 @@ export default function FormBuilder() {
               </span>
             </div>
 
-            <div className="space-y-3 px-6 py-4">
+            <div className="space-y-3 px-3 py-2">
               {fields.map((field, index) => (
                 <div
                   key={field.id}
@@ -665,8 +665,8 @@ export default function FormBuilder() {
               ))}
             </div>
 
-            <div className="border-t border-slate-100 px-6 py-4">
-              <p className="mb-3 text-xs font-semibold text-slate-500">Add Field</p>
+            <div className="border-t border-slate-100 px-3 py-2">
+              <p className="mb-2 text-xs font-semibold text-slate-500">Add Field</p>
               <div className="flex flex-wrap gap-2">
                 {FIELD_TYPES.map((ft) => {
                   const Icon = ft.icon;

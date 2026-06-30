@@ -65,8 +65,8 @@ export default function ResetPassword() {
   }
 
   return (
-    <main className="min-h-screen px-5 py-6 text-slate-950 dark:text-white sm:px-8">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
+    <main className="min-h-screen px-3 py-3 text-slate-950 dark:text-white">
+      <div className="mx-auto flex w-full items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
           <span className="flex size-11 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-600/25">
             <Network size={22} />
@@ -75,8 +75,8 @@ export default function ResetPassword() {
         </Link>
       </div>
 
-      <section className="mx-auto flex w-full max-w-md items-center py-20">
-        <Card className="w-full p-5 sm:p-7">
+      <section className="mx-auto flex w-full max-w-md items-center py-4">
+        <Card className="w-full p-4">
           <div className="space-y-5">
             <div className="text-center">
               <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">

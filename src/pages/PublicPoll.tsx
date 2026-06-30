@@ -362,9 +362,9 @@ export default function PublicPoll() {
 
   return (
     <div className="min-h-dvh bg-[#FAFAFA]">
-      <div className="mx-auto px-4 py-4 sm:px-6 lg:px-8">
+      <div className="mx-auto px-2 py-2">
         {org && (
-          <div className="group mb-6 rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md sm:p-6">
+          <div className="group mb-3 rounded-2xl border border-[#E5E7EB] bg-white p-3 shadow-sm transition-all duration-300 hover:shadow-md">
             <div className="flex items-center gap-4">
               {org.logo_url ? (
                 <img src={org.logo_url} alt={org.name} className="size-14 shrink-0 rounded-xl border border-[#E5E7EB] object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
@@ -388,7 +388,7 @@ export default function PublicPoll() {
           </div>
         )}
 
-        <div className="mb-6 text-center animate-[fadeUp_0.5s_ease-out]">
+        <div className="mb-3 text-center animate-[fadeUp_0.5s_ease-out]">
           <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20">
             <Vote size={24} />
           </span>
@@ -409,7 +409,7 @@ export default function PublicPoll() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-5 flex items-center justify-between text-xs text-slate-400">
+          <div className="mb-2 flex items-center justify-between text-xs text-slate-400">
             <span className="flex items-center gap-1.5">
               <Vote size={13} />
               1 of 1 Question
@@ -417,7 +417,7 @@ export default function PublicPoll() {
             <span>Please select one option</span>
           </div>
 
-          <div className="mb-6 h-1.5 overflow-hidden rounded-full bg-slate-100">
+          <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
             <div className="h-full w-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-500" />
           </div>
 
@@ -427,7 +427,7 @@ export default function PublicPoll() {
               return (
                 <label
                   key={option.id}
-                  className={`group relative flex cursor-pointer items-start gap-4 rounded-2xl border-2 p-4 transition-all duration-200 sm:p-5 ${
+                    className={`group relative flex cursor-pointer items-start gap-4 rounded-2xl border-2 p-3 transition-all duration-200 ${
                     isSelected
                       ? "border-emerald-400 bg-emerald-50/80 shadow-sm shadow-emerald-500/5"
                       : "border-[#E5E7EB] bg-white hover:border-slate-300 hover:shadow-md"

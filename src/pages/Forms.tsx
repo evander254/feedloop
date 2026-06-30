@@ -224,7 +224,7 @@ export default function Forms() {
           <Stack
             direction="row"
             spacing={2}
-            sx={{ alignItems: "center", flexWrap: "wrap", mb: 2 }}
+            sx={{ alignItems: "center", flexWrap: "wrap", mb: 1 }}
           >
             <TextField
               placeholder="Search forms..."
@@ -284,7 +284,7 @@ export default function Forms() {
 
           {/* Form list */}
           {filtered.length === 0 ? (
-            <Card sx={{ py: 10, textAlign: "center" }}>
+            <Card sx={{ py: 6, textAlign: "center" }}>
               <CardContent>
                 <AssignmentIcon sx={{ fontSize: 56, color: "text.disabled", mb: 2 }} />
                 <Typography variant="h6" sx={{ mb: 1 }}>
@@ -309,7 +309,7 @@ export default function Forms() {
                 const color = colors[idx % colors.length];
                 return (
                   <Card key={form.id} sx={{ "&:hover": { boxShadow: 6 } }}>
-                    <CardContent sx={{ p: 3, "&:last-child": { pb: 3 } }}>
+                    <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
                       <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 2 }}>
                         <Box sx={{ minWidth: 0, flex: 1 }}>
                           <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
@@ -406,10 +406,10 @@ export default function Forms() {
         </Box>
 
         {/* Right analytics panel */}
-        <Box sx={{ display: { xs: "none", xl: "flex" }, width: 280, flexShrink: 0, flexDirection: "column", gap: 2 }}>
+        <Box sx={{ display: { xs: "none", xl: "flex" }, width: 260, flexShrink: 0, flexDirection: "column", gap: 1.5 }}>
           <Card>
-            <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
-              <Typography variant="overline" sx={{ mb: 2, display: "block" }}>
+            <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
+              <Typography variant="overline" sx={{ mb: 1, display: "block" }}>
                 Responses by Location
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
@@ -447,8 +447,8 @@ export default function Forms() {
           </Card>
 
           <Card>
-            <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
-              <Typography variant="overline" sx={{ mb: 2, display: "block" }}>
+            <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
+              <Typography variant="overline" sx={{ mb: 1, display: "block" }}>
                 Response Growth (Last 30 Days)
               </Typography>
               <Box sx={{ height: 110, animation: "chart-fade-in 0.6s ease-out 0.1s both" }}>
@@ -487,7 +487,7 @@ export default function Forms() {
 
           <Stack spacing={1.5}>
             <Card sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}>
-              <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
+              <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <AssignmentIcon sx={{ fontSize: 16 }} />
                   <Typography variant="caption" sx={{ opacity: 0.8 }}>Total Forms</Typography>
@@ -496,7 +496,7 @@ export default function Forms() {
               </CardContent>
             </Card>
             <Card sx={{ bgcolor: "secondary.main", color: "#ffffff" }}>
-              <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
+              <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <ChatBubbleIcon sx={{ fontSize: 16 }} />
                   <Typography variant="caption" sx={{ opacity: 0.8 }}>Total Responses</Typography>
@@ -505,7 +505,7 @@ export default function Forms() {
               </CardContent>
             </Card>
             <Card sx={{ bgcolor: "grey.800", color: "#ffffff" }}>
-              <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
+              <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <TrendingUpIcon sx={{ fontSize: 16 }} />
                   <Typography variant="caption" sx={{ opacity: 0.8 }}>Active Beneficiaries</Typography>

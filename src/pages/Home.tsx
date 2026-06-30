@@ -97,7 +97,7 @@ const useCases = [
 export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden text-slate-950">
-      <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-3 sm:px-8">
+      <header className="mx-auto flex w-full items-center justify-between px-3 py-2">
         <Link to="/" className="flex items-center" aria-label="FeedLoop home">
           <img src={logoSrc} alt="FeedLoop" className="h-11 w-auto object-contain" />
         </Link>
@@ -119,7 +119,7 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-8 px-5 pb-16 pt-6 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pb-20">
+      <section className="mx-auto grid w-full gap-6 px-3 pb-8 pt-4 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div>
           <Badge><Sparkles size={14} className="mr-1" /> Enterprise data collection platform</Badge>
           <h1 className="mt-5 max-w-4xl text-[clamp(2.5rem,5vw,4.25rem)] font-black leading-[1.05] tracking-tight">
@@ -205,7 +205,7 @@ export default function Home() {
       </section>
 
       <section className="border-y border-slate-100 bg-slate-50/50">
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+        <div className="mx-auto px-3 py-6">
           <div className="mx-auto max-w-3xl text-center">
             <Badge>Trusted Data Collection</Badge>
             <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">For Every Organization</h2>
@@ -218,7 +218,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="features" className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+      <section id="features" className="mx-auto px-3 py-6">
         <div className="mb-12 max-w-2xl">
           <Badge>Everything You Need</Badge>
           <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">To Collect Meaningful Data</h2>
@@ -237,7 +237,7 @@ export default function Home() {
       </section>
 
       <section id="workflow" className="bg-slate-950">
-        <div className="mx-auto max-w-7xl px-5 py-16 text-white sm:px-8">
+        <div className="mx-auto px-3 py-6 text-white">
           <div className="mb-12 max-w-2xl">
             <Badge className="border-emerald-500/30 bg-emerald-500/10 text-emerald-300">A Simple Workflow</Badge>
             <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
@@ -277,7 +277,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="organizations" className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+      <section id="organizations" className="mx-auto px-3 py-6">
         <div className="mb-10 text-center">
           <Badge>Built for Organizations</Badge>
           <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">That Need Reliable Data</h2>
@@ -296,8 +296,8 @@ export default function Home() {
       </section>
 
       <section className="border-y border-slate-100 bg-slate-50/50">
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
-          <div className="mb-10 text-center">
+        <div className="mx-auto px-3 py-6">
+          <div className="mb-6 text-center">
             <Badge>Why Organizations</Badge>
             <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">Choose FeedLoop</h2>
           </div>
@@ -315,8 +315,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
-        <div className="mb-10">
+      <section className="mx-auto px-3 py-6">
+        <div className="mb-6">
           <Badge>Designed for</Badge>
           <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">Every Stage of Data Collection</h2>
           <p className="mt-3 text-slate-600">
@@ -334,7 +334,7 @@ export default function Home() {
       </section>
 
       <section id="security" className="bg-slate-950">
-        <div className="mx-auto max-w-7xl px-5 py-16 text-white sm:px-8">
+        <div className="mx-auto px-3 py-6 text-white">
           <div className="mx-auto max-w-3xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-1.5 text-sm font-bold text-emerald-300">
               <ShieldCheck size={16} /> Security You Can Trust
@@ -353,7 +353,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-16 text-center sm:px-8">
+      <section className="mx-auto px-3 py-6 text-center">
         <Badge>Get Started</Badge>
         <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
           Ready to Start Collecting Better Data?
@@ -368,7 +368,7 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-slate-200 bg-slate-50">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-8 text-sm text-slate-500 sm:px-8">
+        <div className="mx-auto flex items-center justify-between px-3 py-3 text-sm text-slate-500">
           <div className="flex items-center gap-3">
             <img src={logoSrc} alt="FeedLoop" className="h-7 w-auto object-contain" />
             <span className="font-semibold text-slate-700">FeedLoop</span>

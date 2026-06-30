@@ -162,7 +162,7 @@ export default function PublicSurvey() {
   if (submitted || alreadySubmitted) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-[#f4f7f5] px-4">
-        <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl ring-1 ring-slate-200/60">
+        <div className="w-full max-w-md rounded-2xl bg-white p-4 text-center shadow-xl ring-1 ring-slate-200/60">
           <span className={`mx-auto flex size-14 items-center justify-center rounded-full ${alreadySubmitted ? "bg-amber-100 text-amber-600" : "bg-teal-100 text-teal-600"}`}>
             {alreadySubmitted ? <AlertCircle size={28} /> : <CheckCircle size={28} />}
           </span>
@@ -301,9 +301,9 @@ export default function PublicSurvey() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#f4f7f5] py-8">
-      <div className="mx-auto px-4">
-        <div className="rounded-2xl bg-white p-5 shadow-xl ring-1 ring-slate-200/60">
+    <div className="min-h-dvh bg-[#f4f7f5] py-2">
+      <div className="mx-auto px-2">
+        <div className="rounded-2xl bg-white p-3 shadow-xl ring-1 ring-slate-200/60">
           <div className="mb-4 text-center">
             <span className="mx-auto flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-lg shadow-teal-500/20">
               <Network size={22} />

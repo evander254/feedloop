@@ -138,7 +138,7 @@ export default function Surveys() {
             </div>
 
             {filtered.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-10 shadow-md ring-1 ring-slate-200/60">
+              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-6 shadow-md ring-1 ring-slate-200/60">
                 <FileText size={48} className="text-slate-300" />
                 <h2 className="mt-4 text-lg font-bold text-slate-700">No surveys yet</h2>
                 <p className="mt-1 text-sm text-slate-400">
@@ -160,7 +160,7 @@ export default function Surveys() {
                 {filtered.map((survey) => (
                   <div
                     key={survey.id}
-                    className="rounded-xl bg-white p-5 shadow-md ring-1 ring-slate-200/60 transition hover:shadow-lg"
+                    className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-200/60 transition hover:shadow-lg"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
