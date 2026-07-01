@@ -51,6 +51,8 @@ export default function PublicSurvey() {
         return;
       }
 
+      supabase.rpc("increment_views", { _table: "surveys", _id: surveyId });
+
       const { data: fieldData } = await supabase
         .from("survey_fields")
         .select("*")

@@ -24,6 +24,7 @@ interface PollSummary {
   created_at: string;
   option_count: number;
   vote_count: number;
+  views: number;
 }
 
 export default function Polls() {
@@ -44,7 +45,7 @@ export default function Polls() {
 
     const { data: pollRows } = await supabase
       .from("polls")
-      .select("id, title, description, created_at, created_by")
+      .select("id, title, description, created_at, created_by, views")
       .eq("created_by", user.id)
       .order("created_at", { ascending: false });
 
@@ -72,6 +73,7 @@ export default function Polls() {
           created_at: p.created_at,
           option_count: optionCount ?? 0,
           vote_count: voteCount ?? 0,
+          views: p.views ?? 0,
         };
       })
     );
@@ -193,6 +195,14 @@ export default function Polls() {
                             <CalendarDays size={13} />
                             {new Date(poll.created_at).toLocaleDateString()}
                           </span>
+                          <span className="flex items-center gap-1 text-slate-500">
+                            {poll.views} view{poll.views !== 1 ? "s" : ""}
+                          </span>
+                          {poll.views > 0 && (
+                            <span className="flex items-center gap-1 font-semibold text-emerald-600">
+                              {Math.round((poll.vote_count / poll.views) * 100)}% rate
+                            </span>
+                          )}
                         </div>
                       </div>
 

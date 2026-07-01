@@ -194,6 +194,8 @@ export default function PublicPoll() {
         return;
       }
 
+      supabase.rpc("increment_views", { _table: "polls", _id: pollId });
+
       const { data: optionData } = await supabase
         .from("poll_options")
         .select("id, option_text, image_url")

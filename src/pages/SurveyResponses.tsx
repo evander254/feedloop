@@ -30,7 +30,7 @@ interface ResponseRow {
 export default function SurveyResponses() {
   const { surveyId } = useParams<{ surveyId: string }>();
   const navigate = useNavigate();
-  const [survey, setSurvey] = useState<{ title: string; description: string | null } | null>(null);
+  const [survey, setSurvey] = useState<{ title: string; description: string | null; views: number } | null>(null);
   const [fields, setFields] = useState<SurveyField[]>([]);
   const [responses, setResponses] = useState<ResponseRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ export default function SurveyResponses() {
     (async () => {
       const { data: surveyData } = await supabase
         .from("surveys")
-        .select("title, description")
+        .select("title, description, views")
         .eq("id", surveyId)
         .single();
 
@@ -117,7 +117,7 @@ export default function SurveyResponses() {
                 {survey.description && (
                   <p className="mt-1 text-sm text-slate-500">{survey.description}</p>
                 )}
-                <div className="mt-4 flex items-center gap-5 text-xs text-slate-500">
+                <div className="mt-3 flex items-center gap-4 text-xs text-slate-500">
                   <span className="flex items-center gap-1.5">
                     <BarChart3 size={14} />
                     {fields.length} field{fields.length !== 1 ? "s" : ""}
@@ -126,6 +126,14 @@ export default function SurveyResponses() {
                     <Users size={14} />
                     {responses.length} response{responses.length !== 1 ? "s" : ""}
                   </span>
+                  <span className="flex items-center gap-1.5">
+                    {survey?.views} view{survey?.views !== 1 ? "s" : ""}
+                  </span>
+                  {survey && survey.views > 0 && (
+                    <span className="flex items-center gap-1.5 font-semibold text-emerald-600">
+                      {Math.round((responses.length / survey.views) * 100)}% rate
+                    </span>
+                  )}
                 </div>
               </div>
               <button

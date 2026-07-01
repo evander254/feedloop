@@ -26,7 +26,7 @@ const PIE_COLORS = ["#14b8a6", "#3b82f6", "#f97316", "#8b5cf6", "#ec4899", "#22c
 export default function PollResults() {
   const { pollId } = useParams<{ pollId: string }>();
   const navigate = useNavigate();
-  const [poll, setPoll] = useState<{ title: string; description: string | null } | null>(null);
+  const [poll, setPoll] = useState<{ title: string; description: string | null; views: number } | null>(null);
   const [results, setResults] = useState<OptionResult[]>([]);
   const [totalVotes, setTotalVotes] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ export default function PollResults() {
     if (!pollId) return;
     const { data: pollData } = await supabase
       .from("polls")
-      .select("title, description")
+      .select("title, description, views")
       .eq("id", pollId)
       .single();
 
@@ -112,7 +112,7 @@ export default function PollResults() {
               {poll.description && (
                 <p className="mt-1 text-sm text-slate-500">{poll.description}</p>
               )}
-              <div className="mt-4 flex items-center gap-5 text-xs text-slate-500">
+              <div className="mt-3 flex items-center gap-4 text-xs text-slate-500">
                 <span className="flex items-center gap-1.5">
                   <BarChart3 size={14} />
                   {results.length} option{results.length !== 1 ? "s" : ""}
@@ -121,6 +121,14 @@ export default function PollResults() {
                   <Users size={14} />
                   {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
                 </span>
+                <span className="flex items-center gap-1.5">
+                  {poll.views} view{poll.views !== 1 ? "s" : ""}
+                </span>
+                {poll.views > 0 && (
+                  <span className="flex items-center gap-1.5 font-semibold text-emerald-600">
+                    {Math.round((totalVotes / poll.views) * 100)}% rate
+                  </span>
+                )}
               </div>
             </div>
 

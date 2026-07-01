@@ -46,6 +46,7 @@ interface FormSummary {
   created_at: string;
   field_count: number;
   response_count: number;
+  views: number;
   sparkData: number[];
 }
 
@@ -91,9 +92,9 @@ export default function Forms() {
 
       const formResult = await supabase
         .from("forms")
-        .select("id, title, description, status, created_at, created_by")
+        .select("id, title, description, status, created_at, created_by, views")
         .eq("created_by", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
 
       const formRows = formResult.data;
 
@@ -163,6 +164,7 @@ export default function Forms() {
             id: f.id, title: f.title, description: f.description,
             status: f.status, created_at: f.created_at,
             field_count: fieldCount ?? 0, response_count: responseCount ?? 0,
+            views: f.views ?? 0,
             sparkData: Object.values(bucket),
           };
         })
@@ -360,6 +362,18 @@ export default function Forms() {
                                 {new Date(form.created_at).toLocaleDateString()}
                               </Typography>
                             </Box>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                              <Typography variant="caption" sx={{ color: "text.disabled" }}>
+                                {form.views} view{form.views !== 1 ? "s" : ""}
+                              </Typography>
+                            </Box>
+                            {form.views > 0 && (
+                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
+                                  {Math.round((form.response_count / form.views) * 100)}% rate
+                                </Typography>
+                              </Box>
+                            )}
                           </Stack>
                         </Box>
                         <Sparkline data={form.sparkData} color={color} />

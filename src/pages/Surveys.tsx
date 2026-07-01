@@ -23,6 +23,7 @@ interface SurveySummary {
   created_at: string;
   field_count: number;
   response_count: number;
+  views: number;
 }
 
 export default function Surveys() {
@@ -44,7 +45,7 @@ export default function Surveys() {
 
       const { data: surveyRows } = await supabase
         .from("surveys")
-        .select("id, title, description, status, created_at, created_by")
+        .select("id, title, description, status, created_at, created_by, views")
         .eq("created_by", user.id)
         .order("created_at", { ascending: false });
 
@@ -73,6 +74,7 @@ export default function Surveys() {
             created_at: s.created_at,
             field_count: fieldCount ?? 0,
             response_count: responseCount ?? 0,
+            views: s.views ?? 0,
           };
         })
       );
@@ -196,6 +198,14 @@ export default function Surveys() {
                             <CalendarDays size={13} />
                             {new Date(survey.created_at).toLocaleDateString()}
                           </span>
+                          <span className="flex items-center gap-1 text-slate-500">
+                            {survey.views} view{survey.views !== 1 ? "s" : ""}
+                          </span>
+                          {survey.views > 0 && (
+                            <span className="flex items-center gap-1 font-semibold text-emerald-600">
+                              {Math.round((survey.response_count / survey.views) * 100)}% rate
+                            </span>
+                          )}
                         </div>
                       </div>
 

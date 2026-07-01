@@ -30,7 +30,7 @@ interface ResponseRow {
 export default function FormResponses() {
   const { formId } = useParams<{ formId: string }>();
   const navigate = useNavigate();
-  const [form, setForm] = useState<{ title: string; description: string | null } | null>(null);
+  const [form, setForm] = useState<{ title: string; description: string | null; views: number } | null>(null);
   const [fields, setFields] = useState<FormField[]>([]);
   const [responses, setResponses] = useState<ResponseRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ export default function FormResponses() {
     (async () => {
       const { data: formData } = await supabase
         .from("forms")
-        .select("title, description")
+        .select("title, description, views")
         .eq("id", formId)
         .single();
 
@@ -117,7 +117,7 @@ export default function FormResponses() {
                 {form.description && (
                   <p className="mt-1 text-sm text-slate-500">{form.description}</p>
                 )}
-                <div className="mt-4 flex items-center gap-5 text-xs text-slate-500">
+                <div className="mt-3 flex items-center gap-4 text-xs text-slate-500">
                   <span className="flex items-center gap-1.5">
                     <BarChart3 size={14} />
                     {fields.length} field{fields.length !== 1 ? "s" : ""}
@@ -126,6 +126,14 @@ export default function FormResponses() {
                     <Users size={14} />
                     {responses.length} response{responses.length !== 1 ? "s" : ""}
                   </span>
+                  <span className="flex items-center gap-1.5">
+                    {form?.views} view{form?.views !== 1 ? "s" : ""}
+                  </span>
+                  {form && form.views > 0 && (
+                    <span className="flex items-center gap-1.5 font-semibold text-emerald-600">
+                      {Math.round((responses.length / form.views) * 100)}% rate
+                    </span>
+                  )}
                 </div>
               </div>
               <button

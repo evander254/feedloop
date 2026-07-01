@@ -62,6 +62,8 @@ export default function PublicForm() {
         return;
       }
 
+      supabase.rpc("increment_views", { _table: "forms", _id: formId });
+
       const { data: fieldData } = await supabase
         .from("form_fields")
         .select("*")
