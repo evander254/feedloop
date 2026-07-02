@@ -2,6 +2,10 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import AppLayout from "@/components/app-layout";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Plus,
   Save,
@@ -226,36 +230,31 @@ export default function Organizations() {
 
   return (
     <AppLayout>
-      <div className="">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-black text-slate-900">Organizations</h1>
-            <p className="mt-0.5 text-sm text-slate-500">Manage your organizations and teams</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => { resetForm(); setShowForm(true); }}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-teal-600/20 transition hover:from-teal-500 hover:to-emerald-500"
-          >
-            <Plus size={16} />
-            New Organization
-          </button>
-        </div>
+      <div>
+        <PageHeader
+          title="Organizations"
+          description="Manage your organizations and teams"
+          actions={
+            <Button icon={<Plus size={16} />} onClick={() => { resetForm(); setShowForm(true); }}>
+              New Organization
+            </Button>
+          }
+        />
 
         {showForm && (
-          <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-base font-bold text-slate-900">
+          <Card className="mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-base font-bold text-[var(--text-primary)]">
                 {editingId ? "Edit Organization" : "New Organization"}
               </h2>
-              <button type="button" onClick={resetForm} className="text-slate-400 hover:text-slate-600">
+              <button type="button" onClick={resetForm} className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
                 <X size={18} />
               </button>
             </div>
 
             <form
               onSubmit={(e) => { e.preventDefault(); handleSave(); }}
-              className="space-y-4"
+              className="space-y-5"
             >
               <div className="flex items-center gap-5">
                 <label className="relative cursor-pointer group">
@@ -267,21 +266,21 @@ export default function Organizations() {
                     className="hidden"
                   />
                   {logoPreview ? (
-                    <div className="relative size-20 overflow-hidden rounded-2xl border-2 border-slate-200">
+                    <div className="relative size-20 overflow-hidden rounded-2xl border-2 border-[var(--border-light)]">
                       <img src={logoPreview} alt="Logo preview" className="size-full object-cover" />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
                         <Upload size={18} className="text-white" />
                       </div>
                     </div>
                   ) : (
-                    <div className="flex size-20 items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 transition group-hover:border-teal-400 group-hover:bg-teal-50">
-                      <Upload size={22} className="text-slate-400 group-hover:text-teal-600" />
+                    <div className="flex size-20 items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border-light)] bg-[var(--surface-muted)] transition group-hover:border-emerald-400 group-hover:bg-emerald-500/5">
+                      <Upload size={22} className="text-[var(--text-tertiary)] group-hover:text-emerald-500" />
                     </div>
                   )}
                 </label>
                 <div>
-                  <p className="text-sm font-semibold text-slate-700">Organization Logo</p>
-                  <p className="text-xs text-slate-500">PNG, JPG, WebP or SVG. Square recommended.</p>
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">Organization Logo</p>
+                  <p className="text-xs text-[var(--text-tertiary)]">PNG, JPG, WebP or SVG. Square recommended.</p>
                   {logoPreview && (
                     <button
                       type="button"
@@ -295,57 +294,57 @@ export default function Organizations() {
               </div>
 
               <label className="block">
-                <span className="mb-1.5 block text-sm font-semibold text-slate-700">Organization Name *</span>
-                <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-sm">
-                  <Building2 size={18} className="shrink-0 text-slate-400" />
+                <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Organization Name *</span>
+                <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
+                  <Building2 size={18} className="shrink-0 text-[var(--text-tertiary)]" />
                   <input
                     type="text"
                     placeholder="e.g. Kenya Red Cross"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400"
+                    className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                   />
                 </span>
               </label>
 
               <label className="block">
-                <span className="mb-1.5 block text-sm font-semibold text-slate-700">Description</span>
-                <span className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-sm">
-                  <FileText size={18} className="mt-0.5 shrink-0 text-slate-400" />
+                <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Description</span>
+                <span className="flex items-start gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
+                  <FileText size={18} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" />
                   <textarea
                     placeholder="Brief description of your organization..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={2}
-                    className="w-full resize-none bg-transparent outline-none text-sm text-slate-900 placeholder:text-slate-400"
+                    className="w-full resize-none bg-transparent outline-none text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                   />
                 </span>
               </label>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-1.5 block text-sm font-semibold text-slate-700">Email</span>
-                  <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-sm">
-                    <Mail size={18} className="shrink-0 text-slate-400" />
+                  <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Email</span>
+                  <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
+                    <Mail size={18} className="shrink-0 text-[var(--text-tertiary)]" />
                     <input
                       type="email"
                       placeholder="org@example.org"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400"
+                      className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                     />
                   </span>
                 </label>
                 <label className="block">
-                  <span className="mb-1.5 block text-sm font-semibold text-slate-700">Phone</span>
-                  <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-sm">
-                    <Phone size={18} className="shrink-0 text-slate-400" />
+                  <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Phone</span>
+                  <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
+                    <Phone size={18} className="shrink-0 text-[var(--text-tertiary)]" />
                     <input
                       type="tel"
                       placeholder="+254 7XX XXX XXX"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400"
+                      className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                     />
                   </span>
                 </label>
@@ -353,94 +352,82 @@ export default function Organizations() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-1.5 block text-sm font-semibold text-slate-700">Country</span>
-                  <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-sm">
-                    <MapPin size={18} className="shrink-0 text-slate-400" />
+                  <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Country</span>
+                  <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
+                    <MapPin size={18} className="shrink-0 text-[var(--text-tertiary)]" />
                     <input
                       type="text"
                       placeholder="Kenya"
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
-                      className="w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400"
+                      className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                     />
                   </span>
                 </label>
                 <label className="block">
-                  <span className="mb-1.5 block text-sm font-semibold text-slate-700">Website</span>
-                  <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-sm">
-                    <Globe size={18} className="shrink-0 text-slate-400" />
+                  <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Website</span>
+                  <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
+                    <Globe size={18} className="shrink-0 text-[var(--text-tertiary)]" />
                     <input
                       type="url"
                       placeholder="https://example.org"
                       value={website}
                       onChange={(e) => setWebsite(e.target.value)}
-                      className="w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400"
+                      className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                     />
                   </span>
                 </label>
               </div>
 
               {error && (
-                <p className="rounded-xl bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-700">{error}</p>
+                <p className="rounded-xl bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-700 dark:text-red-400">{error}</p>
               )}
 
               <div className="flex gap-3">
-                <button
+                <Button
                   type="submit"
-                  disabled={saving || uploading}
-                  className="flex-1 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-teal-600/20 transition hover:from-teal-500 hover:to-emerald-500 disabled:opacity-50"
+                  loading={saving || uploading}
+                  icon={!saving && !uploading && <Save size={16} />}
+                  className="flex-1"
                 >
-                  {saving || uploading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                   {editingId ? "Update" : "Create"}
-                </button>
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="min-h-11 rounded-xl border border-slate-200 px-6 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
-                >
+                </Button>
+                <Button type="button" variant="secondary" onClick={resetForm}>
                   Cancel
-                </button>
+                </Button>
               </div>
             </form>
-          </div>
+          </Card>
         )}
 
         {success && (
-          <div className="mb-4 flex items-center gap-2 rounded-xl bg-teal-500/10 px-4 py-3 text-sm font-semibold text-teal-700">
+          <div className="mb-6 flex items-center gap-2 rounded-xl bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300 animate-in fade-in slide-in-from-top-2 duration-300">
             <CheckCircle2 size={16} /> {success}
           </div>
         )}
 
         {orgs.length === 0 ? (
-          <div className="rounded-xl border-2 border-dashed border-slate-200 p-4 text-center">
-            <Building2 size={40} className="mx-auto text-slate-300" />
-            <h2 className="mt-4 text-lg font-bold text-slate-700">No organizations yet</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Create your first organization to start organizing your forms and polls.
-            </p>
-            <button
-              type="button"
-              onClick={() => { resetForm(); setShowForm(true); }}
-              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition hover:from-teal-500 hover:to-emerald-500"
-            >
-              <Plus size={16} />
-              Create Organization
-            </button>
-          </div>
+          <EmptyState
+            icon={Building2}
+            title="No organizations yet"
+            description="Create your first organization to start organizing your forms and polls."
+            action={
+              <Button icon={<Plus size={16} />} onClick={() => { resetForm(); setShowForm(true); }}>
+                Create Organization
+              </Button>
+            }
+          />
         ) : (
           <div className="space-y-3">
             {orgs.map((org) => (
-              <div
-                key={org.id}
-                className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-md"
-              >
+              <Card key={org.id} hover>
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
                     {org.logo_url ? (
                       <img
                         src={org.logo_url}
                         alt={org.name}
-                        className="size-10 shrink-0 rounded-xl border border-slate-200 object-cover"
+                        className="size-10 shrink-0 rounded-xl border border-[var(--border-light)] object-cover"
                       />
                     ) : (
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 text-sm font-bold text-white shadow-sm">
@@ -448,11 +435,11 @@ export default function Organizations() {
                       </span>
                     )}
                     <div>
-                      <h3 className="text-base font-bold text-slate-900">{org.name}</h3>
+                      <h3 className="text-base font-bold text-[var(--text-primary)]">{org.name}</h3>
                       {org.description && (
-                        <p className="mt-0.5 text-sm text-slate-500 line-clamp-2">{org.description}</p>
+                        <p className="mt-0.5 text-sm text-[var(--text-secondary)] line-clamp-2">{org.description}</p>
                       )}
-                      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+                      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-tertiary)]">
                         {org.email && <span className="flex items-center gap-1"><Mail size={12} /> {org.email}</span>}
                         {org.phone && <span className="flex items-center gap-1"><Phone size={12} /> {org.phone}</span>}
                         {org.country && <span className="flex items-center gap-1"><MapPin size={12} /> {org.country}</span>}
@@ -464,7 +451,7 @@ export default function Organizations() {
                     <button
                       type="button"
                       onClick={() => openEdit(org)}
-                      className="flex size-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                      className="flex size-8 items-center justify-center rounded-lg text-[var(--text-tertiary)] transition hover:bg-[var(--border-light)] hover:text-[var(--text-primary)]"
                     >
                       <Pencil size={15} />
                     </button>
@@ -480,7 +467,7 @@ export default function Organizations() {
                         <button
                           type="button"
                           onClick={() => setDeleteConfirm(null)}
-                          className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                          className="rounded-lg border border-[var(--border-light)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-secondary)] transition hover:bg-[var(--border-light)]"
                         >
                           Cancel
                         </button>
@@ -489,14 +476,14 @@ export default function Organizations() {
                       <button
                         type="button"
                         onClick={() => setDeleteConfirm(org.id)}
-                        className="flex size-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-red-50 hover:text-red-500"
+                        className="flex size-8 items-center justify-center rounded-lg text-[var(--text-tertiary)] transition hover:bg-red-500/5 hover:text-red-500"
                       >
                         <Trash2 size={15} />
                       </button>
                     )}
                   </div>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         )}

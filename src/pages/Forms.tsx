@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import AppLayout from "@/components/app-layout";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -17,6 +18,10 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Divider from "@mui/material/Divider";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
@@ -30,6 +35,9 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CheckIcon from "@mui/icons-material/Check";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import PeopleIcon from "@mui/icons-material/People";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CloseIcon from "@mui/icons-material/Close";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   PieChart, Pie, Cell, ResponsiveContainer,
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
@@ -43,6 +51,7 @@ interface FormSummary {
   title: string;
   description: string | null;
   status: string;
+  publish_at: string | null;
   created_at: string;
   field_count: number;
   response_count: number;
@@ -82,98 +91,104 @@ export default function Forms() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [shareFormId, setShareFormId] = useState<string | null>(null);
+  const [shareLinkCopied, setShareLinkCopied] = useState(false);
   const [dailyBuckets, setDailyBuckets] = useState<{ date: string; responses: number }[]>([]);
   const [locationData, setLocationData] = useState<{ name: string; value: number }[]>([]);
 
-  useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { navigate("/login", { replace: true }); return; }
+  const fetchForms = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { navigate("/login", { replace: true }); return; }
 
-      const formResult = await supabase
-        .from("forms")
-        .select("id, title, description, status, created_at, created_by, views")
-        .eq("created_by", user.id)
-        .order("created_at", { ascending: false })
+    await supabase.rpc("publish_scheduled_forms");
 
-      const formRows = formResult.data;
+    const formResult = await supabase
+      .from("forms")
+      .select("id, title, description, status, publish_at, created_at, created_by, views")
+      .eq("created_by", user.id)
+      .order("created_at", { ascending: false })
 
-      if (!formRows) { setLoading(false); return; }
+    const formRows = formResult.data;
 
-      const formIds = formRows.map((f) => f.id);
+    if (!formRows) { setLoading(false); return; }
 
-      const { data: allDates } = formIds.length
-        ? await supabase.from("form_responses").select("submitted_at").in("form_id", formIds)
-        : { data: [] };
+    const formIds = formRows.map((f) => f.id);
 
-      const now = new Date();
-      const bucket: Record<string, number> = {};
-      for (let i = 29; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-        bucket[d.toISOString().slice(0, 10)] = 0;
-      }
-      (allDates || []).forEach((r: { submitted_at: string }) => {
-        const day = r.submitted_at.slice(0, 10);
-        if (day in bucket) bucket[day]++;
-      });
-      setDailyBuckets(
-        Object.entries(bucket).map(([date, count]) => ({ date: date.slice(5), responses: count }))
-      );
+    const { data: allDates } = formIds.length
+      ? await supabase.from("form_responses").select("submitted_at").in("form_id", formIds)
+      : { data: [] };
 
-      const { data: locations } = formIds.length
-        ? await supabase.from("form_responses").select("location").in("form_id", formIds).not("location", "is", null)
-        : { data: [] };
+    const now = new Date();
+    const bucket: Record<string, number> = {};
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      bucket[d.toISOString().slice(0, 10)] = 0;
+    }
+    (allDates || []).forEach((r: { submitted_at: string }) => {
+      const day = r.submitted_at.slice(0, 10);
+      if (day in bucket) bucket[day]++;
+    });
+    setDailyBuckets(
+      Object.entries(bucket).map(([date, count]) => ({ date: date.slice(5), responses: count }))
+    );
 
-      const locMap: Record<string, number> = {};
-      (locations || []).forEach((r: { location: string }) => {
-        locMap[r.location] = (locMap[r.location] || 0) + 1;
-      });
-      const sorted = Object.entries(locMap).sort((a, b) => b[1] - a[1]);
-      const total = sorted.reduce((s, [, c]) => s + c, 0);
-      const top = sorted.slice(0, 3);
-      const others = sorted.slice(3).reduce((s, [, c]) => s + c, 0);
-      setLocationData([
-        ...top.map(([name, count]) => ({
-          name,
-          value: Math.round((count / total) * 100),
-        })),
-        ...(others > 0 ? [{ name: "Others", value: Math.round((others / total) * 100) }] : []),
-      ]);
+    const { data: locations } = formIds.length
+      ? await supabase.from("form_responses").select("location").in("form_id", formIds).not("location", "is", null)
+      : { data: [] };
 
-      const formsWithCounts = await Promise.all(
-        formRows.map(async (f) => {
-          const [{ count: fieldCount }, { count: responseCount }, { data: dates }] = await Promise.all([
-            supabase.from("form_fields").select("*", { count: "exact", head: true }).eq("form_id", f.id),
-            supabase.from("form_responses").select("*", { count: "exact", head: true }).eq("form_id", f.id),
-            supabase.from("form_responses").select("submitted_at").eq("form_id", f.id).order("submitted_at"),
-          ]);
+    const locMap: Record<string, number> = {};
+    (locations || []).forEach((r: { location: string }) => {
+      locMap[r.location] = (locMap[r.location] || 0) + 1;
+    });
+    const sorted = Object.entries(locMap).sort((a, b) => b[1] - a[1]);
+    const total = sorted.reduce((s, [, c]) => s + c, 0);
+    const top = sorted.slice(0, 3);
+    const others = sorted.slice(3).reduce((s, [, c]) => s + c, 0);
+    setLocationData([
+      ...top.map(([name, count]) => ({
+        name,
+        value: Math.round((count / total) * 100),
+      })),
+      ...(others > 0 ? [{ name: "Others", value: Math.round((others / total) * 100) }] : []),
+    ]);
 
-          const bucket: Record<string, number> = {};
-          const refDate = new Date();
-          for (let i = 6; i >= 0; i--) {
-            const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
-            bucket[`${MONTHS[d.getMonth()]} ${d.getFullYear()}`] = 0;
-          }
-          (dates || []).forEach((r: { submitted_at: string }) => {
-            const d = new Date(r.submitted_at);
-            const key = `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-            if (key in bucket) bucket[key]++;
-          });
+    const formsWithCounts = await Promise.all(
+      formRows.map(async (f) => {
+        const [{ count: fieldCount }, { count: responseCount }, { data: dates }] = await Promise.all([
+          supabase.from("form_fields").select("*", { count: "exact", head: true }).eq("form_id", f.id),
+          supabase.from("form_responses").select("*", { count: "exact", head: true }).eq("form_id", f.id),
+          supabase.from("form_responses").select("submitted_at").eq("form_id", f.id).order("submitted_at"),
+        ]);
 
-          return {
-            id: f.id, title: f.title, description: f.description,
-            status: f.status, created_at: f.created_at,
-            field_count: fieldCount ?? 0, response_count: responseCount ?? 0,
-            views: f.views ?? 0,
-            sparkData: Object.values(bucket),
-          };
-        })
-      );
+        const bucket: Record<string, number> = {};
+        const refDate = new Date();
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
+          bucket[`${MONTHS[d.getMonth()]} ${d.getFullYear()}`] = 0;
+        }
+        (dates || []).forEach((r: { submitted_at: string }) => {
+          const d = new Date(r.submitted_at);
+          const key = `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+          if (key in bucket) bucket[key]++;
+        });
 
-      setForms(formsWithCounts);
-      setLoading(false);
-    })();
+        return {
+          id: f.id, title: f.title, description: f.description,
+          status: f.status, publish_at: f.publish_at, created_at: f.created_at,
+          field_count: fieldCount ?? 0, response_count: responseCount ?? 0,
+          views: f.views ?? 0,
+          sparkData: Object.values(bucket),
+        };
+      })
+    );
+
+    setForms(formsWithCounts);
+    setLoading(false);
   }, [navigate]);
+
+  useEffect(() => { fetchForms(); }, [fetchForms]);
+
+  useRealtimeSubscription("forms", fetchForms, [fetchForms]);
 
   const filtered = useMemo(() => {
     let result = [...forms];
@@ -183,7 +198,9 @@ export default function Forms() {
         f.description?.toLowerCase().includes(search.toLowerCase())
       );
     }
-    if (statusFilter !== "all") {
+    if (statusFilter === "scheduled") {
+      result = result.filter((f) => f.status === "draft" && f.publish_at);
+    } else if (statusFilter !== "all") {
       result = result.filter((f) => f.status === statusFilter);
     }
     if (dateFilter === "week") {
@@ -252,6 +269,7 @@ export default function Forms() {
             >
               <MenuItem value="all">All Statuses</MenuItem>
               <MenuItem value="published">Published</MenuItem>
+              <MenuItem value="scheduled">Scheduled</MenuItem>
               <MenuItem value="draft">Draft</MenuItem>
               <MenuItem value="archived">Archived</MenuItem>
             </Select>
@@ -328,10 +346,10 @@ export default function Forms() {
                               {form.title}
                             </Typography>
                             <Chip
-                              label={form.status}
+                              label={form.publish_at && form.status === "draft" ? "scheduled" : form.status}
                               size="small"
-                              color={form.status === "published" ? "primary" : "default"}
-                              variant={form.status === "published" ? "filled" : "outlined"}
+                              color={form.status === "published" ? "primary" : form.publish_at && form.status === "draft" ? "warning" : "default"}
+                              variant={form.status === "published" ? "filled" : form.publish_at && form.status === "draft" ? "filled" : "outlined"}
                               sx={{
                                 height: 20, fontSize: "0.625rem", fontWeight: 600,
                                 textTransform: "uppercase", letterSpacing: "0.05em",
@@ -391,11 +409,11 @@ export default function Forms() {
                           </Button>
                           <Button
                             size="small"
-                            startIcon={copiedId === form.id ? <CheckIcon fontSize="small" sx={{ color: "primary.main" }} /> : <ShareIcon fontSize="small" />}
-                            onClick={() => handleCopyLink(form.id)}
+                            startIcon={<ShareIcon fontSize="small" />}
+                            onClick={() => setShareFormId(form.id)}
                             sx={{ fontSize: "0.75rem", fontWeight: 600, color: "text.secondary" }}
                           >
-                            {copiedId === form.id ? "Copied" : "Share"}
+                            Share
                           </Button>
                           <IconButton size="small" onClick={() => handleDelete(form.id)} sx={{ color: "text.disabled" }}>
                             <DeleteIcon fontSize="small" />
@@ -467,7 +485,7 @@ export default function Forms() {
               </Typography>
               <Box sx={{ height: 110, animation: "chart-fade-in 0.6s ease-out 0.1s both" }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={dailyBuckets} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+                   <AreaChart data={dailyBuckets} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#14b8a6" stopOpacity={0.3} />
@@ -530,6 +548,98 @@ export default function Forms() {
           </Stack>
         </Box>
       </Box>
+
+      {/* Share Dialog */}
+      <Dialog
+        open={Boolean(shareFormId)}
+        onClose={() => setShareFormId(null)}
+        maxWidth="sm"
+        fullWidth
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
+        <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontWeight: 700 }}>
+          Share Form
+          <IconButton size="small" onClick={() => setShareFormId(null)}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {shareFormId && (() => {
+            const url = `${window.location.origin}/form/${shareFormId}`;
+            const text = "Check out this form";
+            return (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+                {/* Link with copy */}
+                <Box>
+                  <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary", mb: 0.5, display: "block" }}>
+                    Form link
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <TextField
+                      value={url}
+                      slotProps={{ input: { readOnly: true, sx: { fontSize: "0.8125rem", borderRadius: 2 } } }}
+                      size="small"
+                      fullWidth
+                    />
+                    <Button
+                      variant="contained"
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(url);
+                        setShareLinkCopied(true);
+                        setTimeout(() => setShareLinkCopied(false), 2000);
+                      }}
+                      sx={{ borderRadius: 2, minWidth: 100, fontWeight: 600, fontSize: "0.75rem" }}
+                    >
+                      {shareLinkCopied ? "Copied!" : "Copy"}
+                    </Button>
+                  </Box>
+                </Box>
+
+                <Divider />
+
+                {/* Social share */}
+                <Box>
+                  <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary", mb: 1.5, display: "block" }}>
+                    Share via
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                    {[
+                      { name: "Twitter", color: "#1da1f2", url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}` },
+                      { name: "Facebook", color: "#1877f2", url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}` },
+                      { name: "LinkedIn", color: "#0a66c2", url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
+                      { name: "WhatsApp", color: "#25d366", url: `https://wa.me/?text=${encodeURIComponent(text + " " + url)}` },
+                      { name: "Email", color: "#64748b", url: `mailto:?subject=${encodeURIComponent(text)}&body=${encodeURIComponent(url)}` },
+                    ].map((s) => (
+                      <Button
+                        key={s.name}
+                        variant="outlined"
+                        size="small"
+                        onClick={() => window.open(s.url, "_blank", "noopener")}
+                        startIcon={<OpenInNewIcon fontSize="small" />}
+                        sx={{
+                          borderRadius: 2,
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          color: s.color,
+                          borderColor: s.color,
+                          "&:hover": { borderColor: s.color, bgcolor: `${s.color}0d` },
+                        }}
+                      >
+                        {s.name}
+                      </Button>
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+            );
+          })()}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setShareFormId(null)} sx={{ borderRadius: 2, fontWeight: 600, fontSize: "0.75rem" }}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </AppLayout>
   );
 }

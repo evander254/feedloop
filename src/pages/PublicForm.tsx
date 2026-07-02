@@ -9,6 +9,8 @@ import {
   Star,
   AlertCircle,
 } from "lucide-react";
+import { validateFields } from "@/lib/validation";
+import { sanitizeAnswers } from "@/lib/sanitize";
 
 async function detectCountry(): Promise<string | null> {
   try {
@@ -93,11 +95,11 @@ export default function PublicForm() {
     e.preventDefault();
     setError("");
 
-    for (const field of fields) {
-      if (field.is_required && !answers[field.id]?.trim()) {
-        setError(`"${field.field_label}" is required`);
-        return;
-      }
+    const fieldErrors = validateFields(fields, answers);
+    if (Object.keys(fieldErrors).length > 0) {
+      const first = fields.find((f) => fieldErrors[f.id]);
+      setError(first ? `"${first.field_label}" is required` : "Please fix the highlighted fields");
+      return;
     }
 
     setSubmitting(true);
@@ -124,7 +126,8 @@ export default function PublicForm() {
       return;
     }
 
-    const answerInserts = Object.entries(answers)
+    const cleanAnswers = sanitizeAnswers(answers, fields);
+    const answerInserts = Object.entries(cleanAnswers)
       .filter(([, value]) => value.trim())
       .map(([fieldId, value]) => ({
         response_id: response.id,

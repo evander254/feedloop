@@ -20,6 +20,7 @@ import {
   Loader2,
   Share2,
 } from "lucide-react";
+import { sanitize } from "@/lib/sanitize";
 
 type FieldType =
   | "text"
@@ -154,8 +155,8 @@ export default function SurveyBuilder() {
     const { data: survey, error: surveyError } = await supabase
       .from("surveys")
       .insert({
-        title: title.trim(),
-        description: description.trim() || null,
+        title: sanitize(title.trim()),
+        description: sanitize(description.trim()) || null,
         is_public: true,
         status: "published",
         created_by: user.id,
@@ -174,13 +175,12 @@ export default function SurveyBuilder() {
       .filter((f) => f.field_label.trim())
       .map((f, i) => ({
         survey_id: survey.id,
-        field_label: f.field_label.trim(),
+        field_label: sanitize(f.field_label.trim()),
         field_type: f.field_type,
-        placeholder: f.placeholder || null,
-        options:
-          ["select", "checkbox", "radio"].includes(f.field_type) && f.options.some((o) => o.trim())
-            ? f.options.filter((o) => o.trim())
-            : null,
+        placeholder: f.placeholder ? sanitize(f.placeholder) : null,
+        options: ["select", "checkbox", "radio"].includes(f.field_type) && f.options.some((o) => o.trim())
+          ? f.options.filter((o) => o.trim()).map((o) => sanitize(o))
+          : null,
         is_required: f.is_required,
         sort_order: i,
       }));

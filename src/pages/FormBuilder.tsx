@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import AppLayout from "@/components/app-layout";
@@ -8,7 +8,9 @@ import {
   Eye, Smartphone, Monitor, Settings, Globe, Lock, Bell, MessageSquare,
   Link, CreditCard, Layout, Webhook, Search, ChevronDown, ChevronUp,
   Phone, CalendarDays, Upload, PenLine, PanelRightOpen, PanelRightClose,
+  Save,
 } from "lucide-react";
+import { sanitize, sanitizeObject } from "@/lib/sanitize";
 
 /* ── Types ──────────────────────────────────────────── */
 
@@ -185,6 +187,9 @@ export default function FormBuilder() {
   const [previewMobile, setPreviewMobile] = useState(false);
   const [expandedField, setExpandedField] = useState<string | null>(null);
   const [savedIndicator, setSavedIndicator] = useState<"saving" | "saved" | "">("");
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  const lastSavedSnapshot = useRef("");
+  const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
     if (!editId) return;
@@ -194,6 +199,7 @@ export default function FormBuilder() {
       setTitle(form.title); setDescription(form.description || "");
       setOrganizationId(form.organization_id || "");
       setStatus(form.status || "draft");
+      setUpdatedAt(form.updated_at || null);
       setIsTimed(form.is_timed || false);
       setClosesAt(toLocalDatetime(form.closes_at));
       if (form.publish_at) { setSchedule(true); setPublishAt(toLocalDatetime(form.publish_at)); }
@@ -206,9 +212,32 @@ export default function FormBuilder() {
           is_required: f.is_required, sort_order: f.sort_order,
         })));
       }
+      lastSavedSnapshot.current = JSON.stringify({
+        title: form.title, description: form.description || "",
+        fields: (fieldRows && fieldRows.length > 0)
+          ? fieldRows.map((f) => ({
+              id: `field_${f.id}`, field_label: f.field_label, field_type: f.field_type,
+              placeholder: f.placeholder || "", options: (f.options as string[])?.length ? (f.options as string[]) : [""],
+              is_required: f.is_required, sort_order: f.sort_order,
+            }))
+          : [createField()],
+        status: form.status, schedule: !!form.publish_at,
+        publishAt: form.publish_at || "", isTimed: form.is_timed || false,
+        closesAt: form.closes_at || "",
+      });
       setLoading(false);
     })();
   }, [editId]);
+
+  /* track unsaved changes */
+  useEffect(() => {
+    const snap = JSON.stringify({ title, description, fields, status, schedule, publishAt, isTimed, closesAt });
+    if (snap !== lastSavedSnapshot.current) {
+      setDirty(true);
+    } else {
+      setDirty(false);
+    }
+  }, [title, description, fields, status, schedule, publishAt, isTimed, closesAt]);
 
   /* field operations */
   const addField = (type: FieldType) => { setFields((p) => [...p, createField(type)]); };
@@ -233,20 +262,20 @@ export default function FormBuilder() {
   };
 
   /* save / delete */
-  const handleSave = async (saveStatus: "draft" | "published") => {
+  const handleSave = useCallback(async (saveStatus: "draft" | "published", showSuccess: boolean = true) => {
     if (!title.trim()) { setError("Form title is required"); return; }
     setSaving(true); setError(""); setSavedIndicator("saving");
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setSaving(false); return; }
     const payload: Record<string, unknown> = {
-      title: title.trim(), description: description.trim() || null,
+      title: sanitize(title.trim()), description: sanitize(description.trim()) || null,
       organization_id: organizationId || null, status: saveStatus,
       is_timed: isTimed, closes_at: isTimed && closesAt ? new Date(closesAt).toISOString() : null,
       publish_at: schedule && publishAt ? new Date(publishAt).toISOString() : null,
     };
     let formId: string;
     if (isEditing && editId) {
-      const { error: upErr } = await supabase.from("forms").update(payload).eq("id", editId);
+      const { error: upErr } = await supabase.from("forms").update({ ...payload, updated_at: new Date().toISOString() }).eq("id", editId);
       if (upErr) { setError(upErr.message); setSaving(false); return; }
       await supabase.from("form_fields").delete().eq("form_id", editId);
       formId = editId;
@@ -256,18 +285,33 @@ export default function FormBuilder() {
       formId = form.id;
     }
     const fieldInserts = fields.filter((f) => f.field_label.trim()).map((f, i) => ({
-      form_id: formId, field_label: f.field_label.trim(), field_type: f.field_type,
-      placeholder: f.placeholder || null,
-      options: CHOICE_TYPES.has(f.field_type) && f.options.some((o) => o.trim()) ? f.options.filter((o) => o.trim()) : null,
-      is_required: f.is_required, sort_order: i,
+      form_id: formId,
+      field_label: sanitize(f.field_label.trim()),
+      field_type: f.field_type,
+      placeholder: f.placeholder ? sanitize(f.placeholder) : null,
+      options: CHOICE_TYPES.has(f.field_type) && f.options.some((o) => o.trim())
+        ? f.options.filter((o) => o.trim()).map((o) => sanitize(o))
+        : null,
+      is_required: f.is_required,
+      sort_order: i,
     }));
     if (fieldInserts.length > 0) {
       const { error: fErr } = await supabase.from("form_fields").insert(fieldInserts);
       if (fErr) console.error("Fields insert error:", fErr);
     }
-    setSavedFormId(formId); setSaving(false); setSavedIndicator("saved");
+    setUpdatedAt(new Date().toISOString());
+    setDirty(false);
+    lastSavedSnapshot.current = JSON.stringify({ title, description, fields, status, schedule, publishAt, isTimed, closesAt });
+    if (showSuccess) {
+      setSavedFormId(formId);
+    } else {
+      if (!isEditing) {
+        navigate(`/builder?id=${formId}${orgIdFromParams ? `&orgId=${orgIdFromParams}` : ""}`, { replace: true });
+      }
+    }
+    setSaving(false); setSavedIndicator("saved");
     setTimeout(() => setSavedIndicator(""), 3000);
-  };
+  }, [title, description, fields, organizationId, status, isTimed, closesAt, schedule, publishAt, isEditing, editId, navigate, orgIdFromParams]);
 
   const handleDelete = async () => {
     if (!editId) return; setSaving(true);
@@ -314,8 +358,22 @@ export default function FormBuilder() {
             <button type="button" onClick={() => navigate(isEditing ? `/forms` : "/dashboard")} className="rounded-lg px-2 py-1 text-sm font-medium text-slate-600 hover:bg-slate-100 transition">← Back</button>
             <span className="h-5 w-px bg-slate-200" />
             <h1 className="text-sm font-bold text-slate-900">{isEditing ? "Edit Form" : "New Form"}</h1>
+            {schedule && publishAt ? (
+              <span className="rounded-md bg-purple-50 px-1.5 py-0.5 text-[10px] font-bold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">Scheduled</span>
+            ) : status === "draft" ? (
+              <span className="rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Draft</span>
+            ) : status === "published" ? (
+              <span className="rounded-md bg-teal-50 px-1.5 py-0.5 text-[10px] font-bold text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">Published</span>
+            ) : null}
             {savedIndicator === "saving" && <span className="text-[11px] text-slate-400">Saving…</span>}
             {savedIndicator === "saved" && <span className="text-[11px] text-teal-600 font-medium">All changes saved</span>}
+            {updatedAt && !savedIndicator && (
+              <span className="flex items-center gap-1 text-[11px] text-slate-400">
+                <Clock size={11} />
+                {schedule && publishAt ? `Publishing ${new Date(publishAt).toLocaleDateString()}` : `Saved ${new Date(updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
+              </span>
+            )}
+            {dirty && <span className="size-1.5 rounded-full bg-amber-400" title="Unsaved changes" />}
           </div>
           <div className="flex items-center gap-2">
             {isEditing && (
@@ -323,7 +381,8 @@ export default function FormBuilder() {
             )}
             <button type="button" className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"><Eye size={13} /> Preview</button>
             <button type="button" onClick={handleCopyLink} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"><Share2 size={13} /> Share</button>
-            <button type="button" onClick={() => handleSave("published")} disabled={saving || !title.trim()} className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-teal-500 disabled:opacity-50"><Send size={13} /> Publish</button>
+            <button type="button" onClick={() => handleSave("draft", false)} disabled={saving || !title.trim()} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"><Save size={13} /> Save Draft</button>
+            <button type="button" onClick={() => handleSave("published", true)} disabled={saving || !title.trim()} className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-teal-500 disabled:opacity-50"><Send size={13} /> Publish</button>
           </div>
         </header>
 
@@ -336,11 +395,11 @@ export default function FormBuilder() {
               <div>
                 <h4 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">Publishing</h4>
                 <div className="space-y-2">
-                  <button type="button" onClick={() => { setStatus("draft"); setSchedule(false); }} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left text-xs font-semibold transition ${!schedule && status === "draft" ? "border-teal-300 bg-teal-50 text-teal-700" : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}>
+                  <button type="button" onClick={() => { setStatus("draft"); handleSave("draft", false); }} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left text-xs font-semibold transition ${!schedule && status === "draft" ? "border-teal-300 bg-teal-50 text-teal-700" : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}>
                     <span className="flex size-8 items-center justify-center rounded-lg bg-white shadow-sm"><FileText size={15} /></span>
                     <div><div className="font-bold">Save as Draft</div><div className="text-[10px] font-normal text-slate-400">Keep editing later</div></div>
                   </button>
-                  <button type="button" onClick={() => { setStatus("published"); setSchedule(false); }} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left text-xs font-semibold transition ${!schedule && status === "published" ? "border-teal-300 bg-teal-50 text-teal-700" : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}>
+                  <button type="button" onClick={() => { setStatus("published"); handleSave("published", true); }} className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left text-xs font-semibold transition ${!schedule && status === "published" ? "border-teal-300 bg-teal-50 text-teal-700" : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}>
                     <span className="flex size-8 items-center justify-center rounded-lg bg-white shadow-sm"><Send size={15} /></span>
                     <div><div className="font-bold">Publish Now</div><div className="text-[10px] font-normal text-slate-400">Make form live</div></div>
                   </button>
@@ -355,7 +414,7 @@ export default function FormBuilder() {
                       <Calendar size={14} className="text-slate-400" />
                       <input type="datetime-local" value={publishAt} onChange={(e) => setPublishAt(e.target.value)} className="w-full bg-transparent outline-none text-slate-900" />
                     </label>
-                    <button type="button" onClick={() => handleSave("draft")} disabled={saving || !title.trim() || !publishAt} className="w-full rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:from-teal-500 hover:to-emerald-500 disabled:opacity-50">
+                    <button type="button" onClick={() => handleSave("draft", false)} disabled={saving || !title.trim() || !publishAt} className="w-full rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:from-teal-500 hover:to-emerald-500 disabled:opacity-50">
                       {saving ? <Loader2 size={14} className="animate-spin mx-auto" /> : "Schedule Publish"}
                     </button>
                   </div>
@@ -560,12 +619,12 @@ export default function FormBuilder() {
 
                   {/* Bottom save actions */}
                   <div className="flex items-center justify-center gap-3 pb-6 pt-2">
-                    <button type="button" onClick={() => handleSave("draft")} disabled={saving || !title.trim()}
+                    <button type="button" onClick={() => handleSave("draft", false)} disabled={saving || !title.trim()}
                       className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-50">
-                      {saving ? <Loader2 size={15} className="animate-spin" /> : <FileText size={15} />}
+                      {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
                       Save Draft
                     </button>
-                    <button type="button" onClick={() => handleSave("published")} disabled={saving || !title.trim()}
+                    <button type="button" onClick={() => handleSave("published", true)} disabled={saving || !title.trim()}
                       className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-sm transition hover:from-teal-500 hover:to-emerald-500 disabled:opacity-50">
                       {saving ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
                       Publish
@@ -601,7 +660,7 @@ export default function FormBuilder() {
           </main>
 
           {/* Right Sidebar — Preview + Templates */}
-          <aside className="hidden w-[300px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white lg:block">
+          <aside className="hidden w-[300px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white xl:block">
             <div className="p-4">
               {/* Preview toggle */}
               <div className="mb-3 flex items-center justify-between">

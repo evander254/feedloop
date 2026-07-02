@@ -19,6 +19,7 @@ import {
   X,
   Upload,
 } from "lucide-react";
+import { sanitize } from "@/lib/sanitize";
 
 function toLocalDatetime(iso: string | null): string {
   if (!iso) return "";
@@ -172,8 +173,8 @@ export default function PollBuilder() {
     if (!user) { setSaving(false); return; }
 
     const payload: Record<string, unknown> = {
-      title: title.trim(),
-      description: description.trim() || null,
+      title: sanitize(title.trim()),
+      description: sanitize(description.trim()) || null,
       organization_id: organizationId || null,
       is_public: status === "published",
       is_timed: isTimed,
@@ -205,7 +206,7 @@ export default function PollBuilder() {
             }
             const { error: upError } = await supabase
               .from("poll_options")
-              .update({ option_text: opt.text, image_url: imageUrl })
+              .update({ option_text: sanitize(opt.text), image_url: imageUrl })
               .eq("id", opt.id);
             if (upError) throw new Error(`Failed to update option: ${upError.message}`);
           } else {
@@ -216,7 +217,7 @@ export default function PollBuilder() {
             }
             const { error: insError } = await supabase
               .from("poll_options")
-              .insert({ poll_id: pollId, option_text: opt.text, image_url: imageUrl });
+              .insert({ poll_id: pollId, option_text: sanitize(opt.text), image_url: imageUrl });
             if (insError) throw new Error(`Failed to insert option: ${insError.message}`);
           }
         }
@@ -238,16 +239,16 @@ export default function PollBuilder() {
         if (insertError || !poll) throw new Error(insertError?.message || "Failed to create poll");
         pollId = poll.id;
 
-        const optionRows = await Promise.all(
-          validOptions.map(async (opt, i) => {
-            let imageUrl = null;
-            if (opt.file) {
-              const uploaded = await uploadOptionImage(pollId, i, opt.file);
-              if (uploaded) imageUrl = uploaded;
-            }
-            return { poll_id: pollId, option_text: opt.text, image_url: imageUrl };
-          })
-        );
+          const optionRows = await Promise.all(
+            validOptions.map(async (opt, i) => {
+              let imageUrl = null;
+              if (opt.file) {
+                const uploaded = await uploadOptionImage(pollId, i, opt.file);
+                if (uploaded) imageUrl = uploaded;
+              }
+              return { poll_id: pollId, option_text: sanitize(opt.text), image_url: imageUrl };
+            })
+          );
 
         const { error: optionsError } = await supabase
           .from("poll_options")

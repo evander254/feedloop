@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { ArrowLeft, ArrowRight, KeyRound, Loader2, Mail, Network } from "lucide-react";
+import { authFormSchema } from "@/lib/validation";
+import { sanitize, sanitizeEmail } from "@/lib/sanitize";
 
 export function AuthForm() {
   const navigate = useNavigate();
@@ -25,8 +27,11 @@ export function AuthForm() {
     setError("");
     setLoading(true);
 
+    const cleanEmail = sanitizeEmail(email);
+
     if (mode === "forgot") {
-      const { error: authError } = await supabase.auth.resetPasswordForEmail(email, {
+      if (!cleanEmail) { setError("Please enter your email address"); setLoading(false); return; }
+      const { error: authError } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
         redirectTo: `${location.origin}/reset-password`,
       });
       if (authError) {
@@ -39,23 +44,32 @@ export function AuthForm() {
       return;
     }
 
+    const result = authFormSchema.safeParse({ email: cleanEmail, password });
+    if (!result.success) {
+      setError(result.error.issues[0]?.message || "Invalid input");
+      setLoading(false);
+      return;
+    }
+
+    const { email: sanitizedEmail, password: sanitizedPassword } = result.data;
+
     if (mode === "login") {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ email: sanitizedEmail, password: sanitizedPassword });
       if (authError) {
         setError(authError.message);
         setLoading(false);
         return;
       }
-      if (data.user) await ensureProfile(data.user, email);
+      if (data.user) await ensureProfile(data.user, sanitizedEmail);
       navigate("/dashboard");
     } else {
-      const { data, error: authError } = await supabase.auth.signUp({ email, password });
+      const { data, error: authError } = await supabase.auth.signUp({ email: sanitizedEmail, password: sanitizedPassword });
       if (authError) {
         setError(authError.message);
         setLoading(false);
         return;
       }
-      if (data.user) await ensureProfile(data.user, email);
+      if (data.user) await ensureProfile(data.user, sanitizedEmail);
       setMode("login");
       setError("Account created! Check your email to confirm, then log in.");
       setLoading(false);

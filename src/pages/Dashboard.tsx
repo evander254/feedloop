@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import AppLayout from "@/components/app-layout";
 import {
   Loader2,
@@ -11,6 +12,12 @@ import {
   ArrowRight,
   Plus,
   Sparkles,
+  Clock,
+  Pencil,
+  MousePointerClick,
+  BarChart3,
+  Share2,
+  Globe,
 } from "lucide-react";
 
 type CardMeta = {
@@ -313,6 +320,50 @@ export default function Dashboard() {
   const [checking, setChecking] = useState(true);
   const [userName, setUserName] = useState("");
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [drafts, setDrafts] = useState<{ id: string; title: string; updated_at: string; field_count: number }[]>([]);
+
+  const fetchDashboardData = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { navigate("/login", { replace: true }); return; }
+
+    const countPromises = cards.map(async (card) => {
+      if (card.table === "organizations") {
+        const { count } = await supabase
+          .from("organizations")
+          .select("*", { count: "exact", head: true });
+        return { key: card.key, count: count ?? 0 };
+      }
+      const { count } = await supabase
+        .from(card.table)
+        .select("*", { count: "exact", head: true })
+        .eq("created_by", user.id);
+      return { key: card.key, count: count ?? 0 };
+    });
+
+    const results = await Promise.all(countPromises);
+    const countMap: Record<string, number> = {};
+    results.forEach((r) => { countMap[r.key] = r.count; });
+    setCounts(countMap);
+
+    await supabase.rpc("publish_scheduled_forms");
+
+    const { data: draftForms } = await supabase
+      .from("forms")
+      .select("id, title, updated_at, created_at")
+      .eq("created_by", user.id)
+      .eq("status", "draft")
+      .order("updated_at", { ascending: false })
+      .limit(5);
+    if (draftForms) {
+      const draftCounts = await Promise.all(
+        draftForms.map(async (f) => {
+          const { count } = await supabase.from("form_fields").select("*", { count: "exact", head: true }).eq("form_id", f.id);
+          return { id: f.id, title: f.title, updated_at: f.updated_at || f.created_at, field_count: count ?? 0 };
+        })
+      );
+      setDrafts(draftCounts);
+    }
+  }, [navigate]);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -336,33 +387,36 @@ export default function Dashboard() {
         .maybeSingle();
       if (profile?.full_name) setUserName(profile.full_name);
 
-      const countPromises = cards.map(async (card) => {
-        if (card.table === "organizations") {
-          const { count } = await supabase
-            .from("organizations")
-            .select("*", { count: "exact", head: true });
-          return { key: card.key, count: count ?? 0 };
-        }
-        const { count } = await supabase
-          .from(card.table)
-          .select("*", { count: "exact", head: true })
-          .eq("created_by", user.id);
-        return { key: card.key, count: count ?? 0 };
-      });
-
-      const results = await Promise.all(countPromises);
-      const countMap: Record<string, number> = {};
-      results.forEach((r) => { countMap[r.key] = r.count; });
-      setCounts(countMap);
+      await fetchDashboardData();
       setChecking(false);
     });
-  }, [navigate]);
+  }, [navigate, fetchDashboardData]);
+
+  useRealtimeSubscription("forms", fetchDashboardData, [fetchDashboardData]);
+  useRealtimeSubscription("surveys", fetchDashboardData, [fetchDashboardData]);
+  useRealtimeSubscription("polls", fetchDashboardData, [fetchDashboardData]);
+  useRealtimeSubscription("organizations", fetchDashboardData, [fetchDashboardData]);
+
+  useEffect(() => {
+    const el = document.querySelector(".quick-slider");
+    if (!el) return;
+    const onLeft = () => el.scrollBy({ left: -200, behavior: "smooth" });
+    const onRight = () => el.scrollBy({ left: 200, behavior: "smooth" });
+    const leftBtn = document.querySelector(".quick-scroll-left");
+    const rightBtn = document.querySelector(".quick-scroll-right");
+    leftBtn?.addEventListener("click", onLeft);
+    rightBtn?.addEventListener("click", onRight);
+    return () => {
+      leftBtn?.removeEventListener("click", onLeft);
+      rightBtn?.removeEventListener("click", onRight);
+    };
+  }, [checking]);
 
   return (
     <AppLayout noSidebar>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white">
+          <h1 className="text-2xl font-black text-slate-800 dark:text-slate-200">
             Welcome back, {userName}
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
@@ -375,17 +429,110 @@ export default function Dashboard() {
             {[1, 2, 3, 4].map((i) => <SkeletonCard key={i} />)}
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-            {cards.map((card, index) => (
-              <DashboardCard
-                key={card.key}
-                card={card}
-                count={counts[card.key] ?? 0}
-                index={index}
-                onNavigate={navigate}
-              />
-            ))}
-          </div>
+          <>
+            {/* Quick Actions Slider */}
+            <div className="relative">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">Quick Actions</h2>
+                <div className="flex gap-1">
+                  <button type="button" className="quick-scroll-left flex size-7 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-100 transition dark:border-slate-700 dark:hover:bg-slate-800">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  </button>
+                  <button type="button" className="quick-scroll-right flex size-7 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-100 transition dark:border-slate-700 dark:hover:bg-slate-800">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div className="quick-slider flex gap-3 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                {[
+                  { icon: ClipboardList, label: "New Form", desc: "Drag-and-drop form builder", color: "#10b981", onClick: () => navigate("/builder/new") },
+                  { icon: FileText, label: "New Survey", desc: "Create a targeted survey", color: "#3b82f6", onClick: () => navigate("/surveys/new") },
+                  { icon: Vote, label: "New Poll", desc: "Launch a quick poll", color: "#f97316", onClick: () => navigate("/polls/new") },
+                  { icon: Building2, label: "Organization", desc: "Manage your workspace", color: "#a855f7", onClick: () => navigate("/organizations") },
+                  { icon: BarChart3, label: "Analytics", desc: "View insights & reports", color: "#14b8a6", onClick: () => {} },
+                  { icon: Share2, label: "Share Feedback", desc: "Tell us what you think", color: "#64748b", onClick: () => {} },
+                  { icon: Globe, label: "Quick Export", desc: "Export your data", color: "#0ea5e9", onClick: () => {} },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={item.onClick}
+                      className="snap-start flex shrink-0 flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-900 w-[170px]"
+                    >
+                      <span className="flex size-12 items-center justify-center rounded-xl text-white shadow-sm transition-transform duration-200 group-hover:scale-110" style={{ background: item.color }}>
+                        <Icon size={22} />
+                      </span>
+                      <div className="text-center">
+                        <div className="text-sm font-bold text-slate-900 dark:text-white">{item.label}</div>
+                        <div className="mt-0.5 text-[11px] text-slate-400 dark:text-slate-500 leading-tight">{item.desc}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+              {cards.map((card, index) => (
+                <DashboardCard
+                  key={card.key}
+                  card={card}
+                  count={counts[card.key] ?? 0}
+                  index={index}
+                  onNavigate={navigate}
+                />
+              ))}
+            </div>
+
+            {drafts.length > 0 && (
+              <div className="mt-8">
+                <div className="mb-3 flex items-center justify-between">
+                  <h2 className="text-base font-bold text-[var(--text-primary)]">Resume Drafts</h2>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/forms")}
+                    className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition"
+                  >
+                    View all forms →
+                  </button>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {drafts.map((draft) => (
+                    <div
+                      key={draft.id}
+                      className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-teal-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                    >
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                        <Pencil size={18} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                          {draft.title || "Untitled Form"}
+                        </p>
+                        <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-400">
+                          <span>{draft.field_count} field{draft.field_count !== 1 ? "s" : ""}</span>
+                          <span>·</span>
+                          <span className="flex items-center gap-1">
+                            <Clock size={10} />
+                            {new Date(draft.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/builder?id=${draft.id}`)}
+                        className="shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </AppLayout>

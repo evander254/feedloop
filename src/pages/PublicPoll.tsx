@@ -17,6 +17,7 @@ import {
   Check,
   BarChart3,
 } from "lucide-react";
+import { sanitize } from "@/lib/sanitize";
 
 interface PollOption {
   id: string;

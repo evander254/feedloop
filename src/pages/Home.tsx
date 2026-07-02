@@ -96,7 +96,7 @@ const useCases = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-hidden text-slate-950">
+    <main className="min-h-screen overflow-x-hidden text-slate-950">
       <header className="mx-auto flex w-full items-center justify-between px-3 py-2">
         <Link to="/" className="flex items-center" aria-label="FeedLoop home">
           <img src={logoSrc} alt="FeedLoop" className="h-11 w-auto object-contain" />

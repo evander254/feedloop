@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import AppLayout from "@/components/app-layout";
 import {
   Plus,
@@ -33,56 +34,50 @@ export default function Surveys() {
   const [search, setSearch] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/login", { replace: true });
-        return;
-      }
+  const fetchSurveys = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { navigate("/login", { replace: true }); return; }
 
-      const { data: surveyRows } = await supabase
-        .from("surveys")
-        .select("id, title, description, status, created_at, created_by, views")
-        .eq("created_by", user.id)
-        .order("created_at", { ascending: false });
+    const { data: surveyRows } = await supabase
+      .from("surveys")
+      .select("id, title, description, status, created_at, created_by, views")
+      .eq("created_by", user.id)
+      .order("created_at", { ascending: false });
 
-      if (!surveyRows) {
-        setLoading(false);
-        return;
-      }
+    if (!surveyRows) { setLoading(false); return; }
 
-      const surveysWithCounts = await Promise.all(
-        surveyRows.map(async (s) => {
-          const { count: fieldCount } = await supabase
-            .from("survey_fields")
-            .select("*", { count: "exact", head: true })
-            .eq("survey_id", s.id);
+    const surveysWithCounts = await Promise.all(
+      surveyRows.map(async (s) => {
+        const { count: fieldCount } = await supabase
+          .from("survey_fields")
+          .select("*", { count: "exact", head: true })
+          .eq("survey_id", s.id);
 
-          const { count: responseCount } = await supabase
-            .from("survey_responses")
-            .select("*", { count: "exact", head: true })
-            .eq("survey_id", s.id);
+        const { count: responseCount } = await supabase
+          .from("survey_responses")
+          .select("*", { count: "exact", head: true })
+          .eq("survey_id", s.id);
 
-          return {
-            id: s.id,
-            title: s.title,
-            description: s.description,
-            status: s.status,
-            created_at: s.created_at,
-            field_count: fieldCount ?? 0,
-            response_count: responseCount ?? 0,
-            views: s.views ?? 0,
-          };
-        })
-      );
+        return {
+          id: s.id,
+          title: s.title,
+          description: s.description,
+          status: s.status,
+          created_at: s.created_at,
+          field_count: fieldCount ?? 0,
+          response_count: responseCount ?? 0,
+          views: s.views ?? 0,
+        };
+      })
+    );
 
-      setSurveys(surveysWithCounts);
-      setLoading(false);
-    })();
+    setSurveys(surveysWithCounts);
+    setLoading(false);
   }, [navigate]);
+
+  useEffect(() => { fetchSurveys(); }, [fetchSurveys]);
+
+  useRealtimeSubscription("surveys", fetchSurveys, [fetchSurveys]);
 
   const handleCopyLink = async (surveyId: string) => {
     await navigator.clipboard.writeText(`${window.location.origin}/survey/${surveyId}`);

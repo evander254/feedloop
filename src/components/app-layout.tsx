@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useRealtimeSubscription } from "@/lib/realtime";
@@ -15,10 +15,10 @@ import logoSrc from "@/assets/loop.png";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import Tooltip from "@mui/material/Tooltip";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
+import Grow from "@mui/material/Grow";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import BusinessIcon from "@mui/icons-material/Business";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -37,6 +37,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import SettingsIcon from "@mui/icons-material/Settings";
+import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 interface Notification {
   id: string;
   title: string;
@@ -46,6 +50,37 @@ interface Notification {
   entity_type: string | null;
   entity_id: string | null;
 }
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString();
+}
+
+function notifIcon(entity_type: string | null) {
+  switch (entity_type) {
+    case "form": return <AssignmentIcon sx={{ fontSize: 18 }} />;
+    case "survey": return <DescriptionIcon sx={{ fontSize: 18 }} />;
+    case "poll": return <PollIcon sx={{ fontSize: 18 }} />;
+    default: return <NotificationsIcon sx={{ fontSize: 18 }} />;
+  }
+}
+
+function notifColor(entity_type: string | null): string {
+  switch (entity_type) {
+    case "form": return "#10b981";
+    case "survey": return "#3b82f6";
+    case "poll": return "#a855f7";
+    default: return "#64748b";
+  }
+}
+
 const navItems = [
   { label: "Dashboard", icon: DashboardIcon, path: "/dashboard" },
   { label: "Organizations", icon: BusinessIcon, path: "/organizations" },
@@ -76,6 +111,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
   const [userId, setUserId] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notifTab, setNotifTab] = useState<"all" | "unread" | "archived">("all");
   const fetchNotifications = useCallback(async (uid: string) => {
     const { data } = await supabase
       .from("notifications")
@@ -324,71 +360,159 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
               </IconButton>
             </Tooltip>
             <Tooltip title="Notifications">
-              <IconButton size="small" onClick={(e) => setNotifAnchor(e.currentTarget)}>
+              <IconButton size="small" onClick={(e) => { setNotifAnchor(e.currentTarget); setNotifTab("all"); }}>
                 <Badge badgeContent={unreadCount > 9 ? "9+" : unreadCount} color="primary">
                   <NotificationsIcon fontSize="small" />
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Menu
-              anchorEl={notifAnchor}
-              open={Boolean(notifAnchor)}
-              onClose={() => setNotifAnchor(null)}
-              slotProps={{
-                paper: {
-                  sx: {
-                    width: 320,
-                    maxHeight: 360,
-                    mt: 1,
-                    borderRadius: 3,
-                  },
-                },
+
+            {/* ── Notification dropdown ─────────────────────── */}
+            <Box
+              sx={{
+                position: "fixed",
+                top: notifAnchor ? notifAnchor.getBoundingClientRect().bottom + 8 : -9999,
+                right: notifAnchor ? Math.min(Math.max(window.innerWidth - notifAnchor.getBoundingClientRect().right + 8, 8), 16) : -9999,
+                zIndex: 1300,
+                visibility: notifAnchor ? "visible" : "hidden",
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 2, py: 1.5 }}>
-                <Typography variant="subtitle2">Notifications</Typography>
-                {unreadCount > 0 && (
-                  <Typography
-                    variant="caption"
-                    onClick={markAllRead}
-                    sx={{ color: "primary.main", fontWeight: 600, cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
-                  >
-                    Mark all read
-                  </Typography>
-                )}
-              </Box>
-              <Divider />
-              {notifications.length === 0 ? (
-                <Typography variant="body2" sx={{ textAlign: "center", py: 4, color: "text.disabled" }}>
-                  No notifications yet
-                </Typography>
-              ) : (
-                notifications.map((n) => (
-                  <MenuItem
-                    key={n.id}
-                    onClick={() => handleNotifClick(n)}
-                    sx={{
-                      whiteSpace: "normal",
-                      py: 1.5,
-                      px: 2,
-                      bgcolor: !n.is_read ? "action.selected" : "transparent",
-                    }}
-                  >
-                    <Box sx={{ minWidth: 0 }}>
-                      <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                        {n.title}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 0.25 }}>
-                        {n.message}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: "text.disabled", mt: 0.25, display: "block" }}>
-                        {new Date(n.created_at).toLocaleDateString()}
-                      </Typography>
+              <Grow in={Boolean(notifAnchor)} timeout={200} style={{ transformOrigin: "top right" }}>
+                <Box
+                  sx={{
+                    width: 400,
+                    maxWidth: "calc(100vw - 32px)",
+                    maxHeight: 520,
+                    display: "flex",
+                    flexDirection: "column",
+                    borderRadius: 3,
+                    bgcolor: mode === "dark" ? "#1e293b" : "#ffffff",
+                    border: "1px solid",
+                    borderColor: mode === "dark" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+                    boxShadow: mode === "dark"
+                      ? "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2)"
+                      : "0 10px 40px rgba(0,0,0,0.10), 0 2px 10px rgba(0,0,0,0.06)",
+                    overflow: "hidden",
+                    backdropFilter: "blur(20px)",
+                  }}
+                >
+                  {/* Header */}
+                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 2.5, py: 2, borderBottom: 1, borderColor: "divider" }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: "0.9375rem", color: "text.primary" }}>Notifications</Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                      {unreadCount > 0 && (
+                        <Typography
+                          onClick={markAllRead}
+                          sx={{ fontSize: "0.75rem", fontWeight: 600, color: "primary.main", cursor: "pointer", "&:hover": { textDecoration: "underline" }, mr: 0.5 }}
+                        >
+                          Mark all read
+                        </Typography>
+                      )}
+                      <IconButton size="small" sx={{ color: "text.disabled", "&:hover": { color: "text.primary" } }}>
+                        <SettingsIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
                     </Box>
-                  </MenuItem>
-                ))
-              )}
-            </Menu>
+                  </Box>
+
+                  {/* Tabs */}
+                  <Box sx={{ display: "flex", gap: 0.5, px: 2.5, py: 1.5, borderBottom: 1, borderColor: "divider" }}>
+                    {(["all", "unread", "archived"] as const).map((tab) => (
+                      <Box
+                        key={tab}
+                        onClick={() => setNotifTab(tab)}
+                        sx={{
+                          px: 2,
+                          py: 0.75,
+                          borderRadius: 1.5,
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          textTransform: "capitalize",
+                          letterSpacing: "0.01em",
+                          bgcolor: notifTab === tab ? "primary.main" : "transparent",
+                          color: notifTab === tab ? "#fff" : "text.secondary",
+                          transition: "all 0.2s ease",
+                          "&:hover": notifTab !== tab ? { bgcolor: "action.hover" } : {},
+                        }}
+                      >
+                        {tab}
+                        {tab === "unread" && unreadCount > 0 && (
+                          <Box component="span" sx={{ ml: 1, px: 0.75, py: 0.25, borderRadius: 1, fontSize: "0.625rem", fontWeight: 700, bgcolor: notifTab === tab ? "rgba(255,255,255,0.2)" : "primary.main", color: notifTab === tab ? "#fff" : "#fff" }}>
+                            {unreadCount}
+                          </Box>
+                        )}
+                      </Box>
+                    ))}
+                  </Box>
+
+                  {/* List */}
+                  <Box sx={{ flex: 1, overflow: "auto", "&::-webkit-scrollbar": { width: 4 }, "&::-webkit-scrollbar-thumb": { bgcolor: "divider", borderRadius: 2 } }}>
+                    {notifications.length === 0 ? (
+                      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 6, px: 3 }}>
+                        <NotificationsOffIcon sx={{ fontSize: 40, color: "text.disabled", mb: 1.5 }} />
+                        <Typography sx={{ fontWeight: 600, fontSize: "0.875rem", color: "text.secondary" }}>All caught up!</Typography>
+                        <Typography sx={{ fontSize: "0.75rem", color: "text.disabled", mt: 0.25 }}>No new notifications</Typography>
+                      </Box>
+                    ) : (
+                      (notifTab === "all" ? notifications : notifications.filter((n) => notifTab === "unread" ? !n.is_read : n.is_read)).map((n) => {
+                        const isUnread = !n.is_read;
+                        return (
+                          <Box
+                            key={n.id}
+                            onClick={() => handleNotifClick(n)}
+                            sx={{
+                              display: "flex",
+                              gap: 2,
+                              px: 2.5,
+                              py: 1.75,
+                              cursor: "pointer",
+                              bgcolor: isUnread ? "action.selected" : "transparent",
+                              transition: "background-color 0.15s ease",
+                              "&:hover": { bgcolor: "action.hover" },
+                              borderBottom: "1px solid",
+                              borderColor: "divider",
+                            }}
+                          >
+                            {/* Avatar / Icon */}
+                            <Box sx={{ position: "relative", mt: 0.25, flexShrink: 0 }}>
+                              <Avatar sx={{ width: 36, height: 36, bgcolor: notifColor(n.entity_type), fontSize: 16 }}>
+                                {notifIcon(n.entity_type)}
+                              </Avatar>
+                              {isUnread && (
+                                <Box sx={{ position: "absolute", top: -2, right: -2, width: 10, height: 10, borderRadius: "50%", bgcolor: "#3b82f6", border: "2px solid", borderColor: "background.paper" }} />
+                              )}
+                            </Box>
+
+                            {/* Content */}
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                              <Typography sx={{ fontSize: "0.8125rem", lineHeight: 1.4, color: "text.primary", fontWeight: isUnread ? 600 : 400 }}>
+                                <Box component="span" sx={{ fontWeight: 700 }}>{n.title}</Box>
+                                {n.message ? <Box component="span" sx={{ color: "text.secondary" }}> — {n.message}</Box> : null}
+                              </Typography>
+                              <Typography sx={{ fontSize: "0.6875rem", color: "text.disabled", mt: 0.5, display: "block" }}>
+                                {timeAgo(n.created_at)}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        );
+                      })
+                    )}
+                  </Box>
+
+                  {/* Footer */}
+                  <Box sx={{ borderTop: 1, borderColor: "divider", px: 2.5, py: 1.5 }}>
+                    <Button
+                      fullWidth
+                      size="small"
+                      onClick={() => { setNotifAnchor(null); }}
+                      sx={{ borderRadius: 2, fontWeight: 600, fontSize: "0.75rem", textTransform: "none" }}
+                    >
+                      View all notifications
+                    </Button>
+                  </Box>
+                </Box>
+              </Grow>
+            </Box>
             <Tooltip title="Profile">
               <IconButton size="small" onClick={(e) => setProfileAnchor(e.currentTarget)}>
                 <Avatar sx={{ width: 28, height: 28, fontSize: 11, fontWeight: 700, bgcolor: "primary.main" }}>
@@ -429,7 +553,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
     return (
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100dvh" }}>
         <Header />
-        <Box component="main" sx={{ flex: 1, overflow: "auto", px: 2, py: 1.5 }}>
+        <Box component="main" sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", px: 2, py: 1.5 }}>
           {children}
         </Box>
       </Box>
@@ -468,7 +592,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
       </Drawer>
       <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
         <Header />
-        <Box component="main" sx={{ flex: 1, overflow: "auto", px: 2, py: 1.5 }}>
+        <Box component="main" sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", px: 2, py: 1.5 }}>
           {children}
         </Box>
       </Box>

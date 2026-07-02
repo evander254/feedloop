@@ -30,7 +30,7 @@ export default function Login() {
           </p>
         </div>
 
-        <div className="w-[420px] shrink-0 max-lg:w-full max-lg:max-w-sm">
+        <div className="w-full max-w-[420px] max-lg:max-w-sm">
           <Card className="p-4 shadow-2xl shadow-black/5">
             <AuthForm />
           </Card>
