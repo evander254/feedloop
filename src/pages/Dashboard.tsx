@@ -12,54 +12,67 @@ import {
   Plus,
 } from "lucide-react";
 
-const cards = [
+type CardMeta = {
+  key: string;
+  label: string;
+  description: string;
+  icon: React.ComponentType<{ size?: number }>;
+  color: string;
+  path: string;
+  newPath: string;
+  newLabel: string;
+  table: string;
+  chartPct: number;
+};
+
+const cards: CardMeta[] = [
   {
     key: "forms",
     label: "Forms",
-    description: "Build data collection forms with drag-and-drop fields, share them, and track responses.",
+    description: "Build data collection forms with drag-and-drop fields, share them, and track responses instantly.",
     icon: ClipboardList,
-    color: "from-teal-500 to-emerald-600",
-    bgColor: "bg-teal-50",
-    iconBg: "bg-gradient-to-br from-teal-400 to-emerald-500",
+    color: "#10b981",
     path: "/forms",
     newPath: "/builder",
+    newLabel: "New Form",
     table: "forms",
+    chartPct: 75,
   },
   {
     key: "surveys",
     label: "Surveys",
-    description: "Create public or private surveys, gather feedback, and analyse results in real time.",
+    description: "Create public or private surveys, gather target feedback, and analyse results in real time.",
     icon: FileText,
-    color: "from-blue-500 to-indigo-600",
-    bgColor: "bg-blue-50",
-    iconBg: "bg-gradient-to-br from-blue-400 to-indigo-500",
+    color: "#3b82f6",
     path: "/surveys",
     newPath: "/surveys/new",
+    newLabel: "New Survey",
     table: "surveys",
+    chartPct: 40,
   },
   {
     key: "polls",
     label: "Polls",
-    description: "Launch quick opinion polls with live results, multiple options, and image support.",
+    description: "Launch quick opinion polls with live interactive results, multiple options, and image support.",
     icon: Vote,
-    color: "from-orange-500 to-red-500",
-    bgColor: "bg-orange-50",
-    iconBg: "bg-gradient-to-br from-orange-400 to-red-500",
+    color: "#f97316",
     path: "/polls",
     newPath: "/polls/new",
+    newLabel: "New Poll",
     table: "polls",
+    chartPct: 90,
   },
   {
     key: "organizations",
     label: "Organizations",
-    description: "Manage your teams, members, and organisational settings from one place.",
+    description: "Manage your workspaces, invite team members, and configure global settings from one place.",
     icon: Building2,
-    color: "from-purple-500 to-pink-600",
-    bgColor: "bg-purple-50",
-    iconBg: "bg-gradient-to-br from-purple-400 to-pink-500",
+    color: "#a855f7",
     path: "/organizations",
     newPath: "/organizations",
+    newLabel: "New Org",
     table: "organizations",
+    chartPct: 60,
   },
 ];
 
@@ -129,80 +142,85 @@ export default function Dashboard() {
             Welcome back, {userName}
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            What would you like to work on?
+            What would you like to work on today?
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {cards.map((card, index) => {
             const Icon = card.icon;
             const count = counts[card.key] ?? 0;
-            const accentColor = card.key === "forms" ? "#14b8a6"
-              : card.key === "surveys" ? "#3b82f6"
-              : card.key === "polls" ? "#f97316" : "#a855f7";
-            const accentColor2 = card.key === "forms" ? "#059669"
-              : card.key === "surveys" ? "#6366f1"
-              : card.key === "polls" ? "#ef4444" : "#ec4899";
             return (
               <div
                 key={card.key}
-                className="card-enter group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl"
+                className="card-enter group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/60"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="p-5">
-                  <div className="flex items-start justify-between">
+                {/* Accent bar */}
+                <div className="h-[6px] shrink-0 transition-all duration-300 group-hover:h-[7px]" style={{ background: card.color }} />
+
+                <div className="flex flex-1 flex-col p-6">
+                  {/* Header with icon + count */}
+                  <div className="flex items-center justify-between">
                     <span
-                      className={`flex size-12 items-center justify-center rounded-xl text-white shadow-lg transition-transform duration-300 group-hover:scale-110 ${card.iconBg}`}
+                      className="flex size-11 items-center justify-center rounded-xl text-lg font-bold transition-transform duration-300 group-hover:scale-110"
+                      style={{
+                        background: `${card.color}1a`,
+                        color: card.color,
+                      }}
                     >
-                      <Icon size={24} />
+                      <Icon size={22} />
                     </span>
                     <span className="text-2xl font-black text-slate-900 transition-all duration-300 group-hover:scale-110">
                       {count}
                     </span>
                   </div>
 
-                  <h2 className="mt-4 text-lg font-bold text-slate-900 transition-colors duration-300 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r"
-                    style={{
-                      backgroundImage: `linear-gradient(to right, ${accentColor}, ${accentColor2})`,
-                    }}
+                  {/* Title */}
+                  <h3 className="mt-4 text-lg font-bold text-slate-900 transition-colors duration-300"
+                    style={{ color: card.color }}
                   >
                     {card.label}
-                  </h2>
+                  </h3>
+
+                  {/* Description */}
                   <p className="mt-1 text-sm leading-relaxed text-slate-500">
                     {card.description}
                   </p>
 
-                  <div className="mt-5 flex items-center gap-2">
+                  {/* Visual preview (mock chart bar) */}
+                  <div className="mt-4 flex h-[72px] items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50/60">
+                    <div className="relative h-2.5 w-4/5 overflow-hidden rounded-full bg-slate-200">
+                      <div
+                        className="absolute left-0 top-0 h-full rounded-full transition-all duration-500 group-hover:shadow-lg"
+                        style={{
+                          width: `${card.chartPct}%`,
+                          background: card.color,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="mt-auto flex items-center gap-2 pt-5">
                     <button
                       type="button"
                       onClick={() => navigate(card.path)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 group-hover:shadow-md"
+                      className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:border-slate-400 group-hover:shadow-md"
                     >
-                      Open <ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+                      Open <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-0.5" />
                     </button>
-                    {card.newPath && (
-                      <button
-                        type="button"
-                        onClick={() => navigate(card.newPath)}
-                        className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all duration-200 hover:scale-105 hover:shadow-md"
-                        style={{
-                          background: `linear-gradient(135deg, ${accentColor}, ${accentColor2})`,
-                        }}
-                      >
-                        <Plus size={13} />
-                        New
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => navigate(card.newPath)}
+                      className="inline-flex flex-[1.2] items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-md"
+                      style={{ background: card.color }}
+                    >
+                      <Plus size={14} />
+                      {card.newLabel}
+                    </button>
                   </div>
                 </div>
-
-                <div
-                  className="absolute right-0 top-0 h-1 transition-all duration-500 ease-out group-hover:h-1.5"
-                  style={{
-                    width: "100%",
-                    background: `linear-gradient(90deg, ${accentColor}, ${accentColor2})`,
-                  }}
-                />
               </div>
             );
           })}
