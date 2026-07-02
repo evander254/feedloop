@@ -37,7 +37,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-
 interface Notification {
   id: string;
   title: string;
@@ -47,7 +46,6 @@ interface Notification {
   entity_type: string | null;
   entity_id: string | null;
 }
-
 const navItems = [
   { label: "Dashboard", icon: DashboardIcon, path: "/dashboard" },
   { label: "Organizations", icon: BusinessIcon, path: "/organizations" },
@@ -60,10 +58,8 @@ const navItems = [
   { label: "Exports", icon: FileDownloadIcon, path: "#" },
   { label: "Subscriptions", icon: AccountBalanceWalletIcon, path: "#" },
 ];
-
 const COLLAPSED_WIDTH = 72;
 const EXPANDED_WIDTH = 240;
-
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -80,7 +76,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-
   const fetchNotifications = useCallback(async (uid: string) => {
     const { data } = await supabase
       .from("notifications")
@@ -93,7 +88,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       setUnreadCount(data.filter((n) => !n.is_read).length);
     }
   }, []);
-
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -130,11 +124,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       }
     });
   }, [fetchNotifications]);
-
   useRealtimeSubscription("notifications", () => {
     if (userId) fetchNotifications(userId);
   }, [userId, fetchNotifications], `user_id=eq.${userId}`);
-
   const handleNotifClick = (n: Notification) => {
     setNotifAnchor(null);
     if (!n.is_read) markAsRead(n.id);
@@ -146,7 +138,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       navigate(`/polls/${n.entity_id}/results`);
     }
   };
-
   const markAsRead = async (notifId: string) => {
     await supabase.from("notifications").update({ is_read: true }).eq("id", notifId);
     setNotifications((prev) =>
@@ -154,20 +145,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
   };
-
   const markAllRead = async () => {
     if (!userId) return;
     await supabase.from("notifications").update({ is_read: true }).eq("user_id", userId).eq("is_read", false);
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     setUnreadCount(0);
   };
-
   const handleLogout = async () => {
     setProfileAnchor(null);
     await supabase.auth.signOut();
     navigate("/login");
   };
-
   function NavContent({ dense }: { dense: boolean }) {
     const w = dense ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
     return (
@@ -209,7 +197,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             />
           )}
         </Box>
-
         {/* Nav Items */}
         <List sx={{ flex: 1, px: dense ? 0.5 : 1, py: 0 }}>
           {navItems.map((item) => {
@@ -249,7 +236,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             );
           })}
         </List>
-
         {/* Upgrade */}
         {!dense && (
           <Box sx={{ mx: 1.5, mb: 1, p: 2, borderRadius: 3, bgcolor: "action.hover" }}>
@@ -261,7 +247,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Typography>
           </Box>
         )}
-
         {/* Collapse Toggle */}
         <Box sx={{ display: "flex", justifyContent: "center", py: 1 }}>
           <IconButton size="small" onClick={() => setCollapsed((c) => !c)}>
@@ -276,65 +261,31 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </Box>
     );
   }
-
-  return (
-    <Box sx={{ display: "flex", minHeight: "100dvh" }}>
-      <Drawer
-        variant="permanent"
+  function Header() {
+    return (
+      <Box
+        component="header"
         sx={{
-          display: { xs: "none", lg: "block" },
-          width: drawerWidth,
-          flexShrink: 0,
-          transition: "width 0.3s ease",
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-            transition: "width 0.3s ease",
-            overflowX: "hidden",
-          },
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: 3,
+          py: 1.5,
+          borderBottom: 1,
+          borderColor: "divider",
+          bgcolor: mode === "dark" ? "rgba(13,17,31,0.85)" : "rgba(255,255,255,0.85)",
+          backdropFilter: "blur(12px)",
         }}
       >
-        <NavContent dense={collapsed} />
-      </Drawer>
-
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: "block", lg: "none" },
-          "& .MuiDrawer-paper": { width: EXPANDED_WIDTH, boxSizing: "border-box" },
-        }}
-      >
-        <NavContent dense={false} />
-      </Drawer>
-
-      <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
-        <Box
-          component="header"
-          sx={{
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            px: 3,
-            py: 1.5,
-            borderBottom: 1,
-            borderColor: "divider",
-            bgcolor: mode === "dark" ? "rgba(13,17,31,0.85)" : "rgba(255,255,255,0.85)",
-            backdropFilter: "blur(12px)",
-          }}
+        <IconButton
+          onClick={() => setMobileOpen(true)}
+          sx={{ display: { lg: "none" } }}
         >
-          <IconButton
-            onClick={() => setMobileOpen(true)}
-            sx={{ display: { lg: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-
+          <MenuIcon />
+        </IconButton>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, ml: "auto" }}>
             <Box
               component="label"
@@ -367,13 +318,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 }}
               />
             </Box>
-
             <Tooltip title={mode === "dark" ? "Light mode" : "Dark mode"}>
               <IconButton onClick={toggleMode} size="small">
                 {mode === "dark" ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
               </IconButton>
             </Tooltip>
-
             <Tooltip title="Notifications">
               <IconButton size="small" onClick={(e) => setNotifAnchor(e.currentTarget)}>
                 <Badge badgeContent={unreadCount > 9 ? "9+" : unreadCount} color="primary">
@@ -381,7 +330,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </Badge>
               </IconButton>
             </Tooltip>
-
             <Menu
               anchorEl={notifAnchor}
               open={Boolean(notifAnchor)}
@@ -441,7 +389,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 ))
               )}
             </Menu>
-
             <Tooltip title="Profile">
               <IconButton size="small" onClick={(e) => setProfileAnchor(e.currentTarget)}>
                 <Avatar sx={{ width: 28, height: 28, fontSize: 11, fontWeight: 700, bgcolor: "primary.main" }}>
@@ -449,7 +396,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </Avatar>
               </IconButton>
             </Tooltip>
-
             <Menu
               anchorEl={profileAnchor}
               open={Boolean(profileAnchor)}
@@ -477,7 +423,51 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Menu>
           </Box>
         </Box>
-
+      );
+  }
+  if (noSidebar) {
+    return (
+      <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100dvh" }}>
+        <Header />
+        <Box component="main" sx={{ flex: 1, overflow: "auto", px: 2, py: 1.5 }}>
+          {children}
+        </Box>
+      </Box>
+    );
+  }
+  return (
+    <Box sx={{ display: "flex", minHeight: "100dvh" }}>
+      <Drawer
+        variant="permanent"
+        sx={{
+          display: { xs: "none", lg: "block" },
+          width: drawerWidth,
+          flexShrink: 0,
+          transition: "width 0.3s ease",
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            boxSizing: "border-box",
+            transition: "width 0.3s ease",
+            overflowX: "hidden",
+          },
+        }}
+      >
+        <NavContent dense={collapsed} />
+      </Drawer>
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: "block", lg: "none" },
+          "& .MuiDrawer-paper": { width: EXPANDED_WIDTH, boxSizing: "border-box" },
+        }}
+      >
+        <NavContent dense={false} />
+      </Drawer>
+      <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
+        <Header />
         <Box component="main" sx={{ flex: 1, overflow: "auto", px: 2, py: 1.5 }}>
           {children}
         </Box>
