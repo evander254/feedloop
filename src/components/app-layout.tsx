@@ -36,6 +36,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 interface Notification {
   id: string;
@@ -60,13 +61,16 @@ const navItems = [
   { label: "Subscriptions", icon: AccountBalanceWalletIcon, path: "#" },
 ];
 
-const DRAWER_WIDTH = 240;
+const COLLAPSED_WIDTH = 72;
+const EXPANDED_WIDTH = 240;
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { mode, toggleMode } = useThemeMode();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
+  const drawerWidth = collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
   const [notifAnchor, setNotifAnchor] = useState<HTMLElement | null>(null);
   const [profileAnchor, setProfileAnchor] = useState<HTMLElement | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -164,58 +168,114 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     navigate("/login");
   };
 
-  const navContent = (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Box sx={{ px: 2.5, pt: 3, pb: 3 }}>
+  function NavContent({ dense }: { dense: boolean }) {
+    const w = dense ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
+    return (
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%", width: w }}>
+        {/* Logo */}
         <Box
-          component="img"
-          src={logoSrc}
-          alt="FeedLoop"
-          sx={{ height: 32, width: "auto", display: "block" }}
-        />
-      </Box>
+          sx={{
+            px: dense ? 0 : 2.5,
+            pt: 3,
+            pb: 3,
+            display: "flex",
+            justifyContent: dense ? "center" : "flex-start",
+          }}
+        >
+          {dense ? (
+            <Box
+              sx={{
+                width: 32,
+                height: 32,
+                borderRadius: "8px",
+                background: "linear-gradient(135deg, #14b8a6, #059669)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+                fontWeight: 800,
+                fontSize: 15,
+                lineHeight: 1,
+              }}
+            >
+              F
+            </Box>
+          ) : (
+            <Box
+              component="img"
+              src={logoSrc}
+              alt="FeedLoop"
+              sx={{ height: 32, width: "auto", display: "block" }}
+            />
+          )}
+        </Box>
 
-      <List sx={{ flex: 1, px: 1, py: 0 }}>
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.path;
-          return (
+        {/* Nav Items */}
+        <List sx={{ flex: 1, px: dense ? 0.5 : 1, py: 0 }}>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            const btn = (
               <ListItem key={item.label} disablePadding sx={{ mb: 0.5 }}>
-              <ListItemButton
-                selected={isActive}
-                onClick={() => {
-                  if (item.path !== "#") {
-                    navigate(item.path);
-                    setMobileOpen(false);
-                  }
-                }}
-                sx={{
-                  borderRadius: 2,
-                  py: 1.25,
-                  "& .MuiListItemIcon-root": { minWidth: 36 },
-                  "& .MuiListItemText-primary": { fontSize: "0.875rem", fontWeight: 500 },
-                }}
-              >
-                <ListItemIcon>
-                  <Icon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary={item.label} />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
+                <ListItemButton
+                  selected={isActive}
+                  onClick={() => {
+                    if (item.path !== "#") {
+                      navigate(item.path);
+                      setMobileOpen(false);
+                    }
+                  }}
+                  sx={{
+                    borderRadius: 2,
+                    py: 1.25,
+                    justifyContent: dense ? "center" : "flex-start",
+                    "& .MuiListItemIcon-root": { minWidth: dense ? 0 : 36 },
+                    "& .MuiListItemText-primary": { fontSize: "0.875rem", fontWeight: 500 },
+                  }}
+                >
+                  <ListItemIcon sx={dense ? { justifyContent: "center" } : undefined}>
+                    <Icon fontSize="small" />
+                  </ListItemIcon>
+                  {!dense && <ListItemText primary={item.label} />}
+                </ListItemButton>
+              </ListItem>
+            );
+            return dense ? (
+              <Tooltip key={item.label} title={item.label} placement="right" arrow>
+                {btn}
+              </Tooltip>
+            ) : (
+              btn
+            );
+          })}
+        </List>
 
-      <Box sx={{ mx: 1.5, mb: 2, p: 2, borderRadius: 3, bgcolor: "action.hover" }}>
-        <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
-          Upgrade
-        </Typography>
-        <Typography variant="caption" sx={{ display: "block", mt: 0.25, color: "text.secondary", lineHeight: 1.4 }}>
-          Stripe &amp; M-Pesa billing for growing teams.
-        </Typography>
+        {/* Upgrade */}
+        {!dense && (
+          <Box sx={{ mx: 1.5, mb: 1, p: 2, borderRadius: 3, bgcolor: "action.hover" }}>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
+              Upgrade
+            </Typography>
+            <Typography variant="caption" sx={{ display: "block", mt: 0.25, color: "text.secondary", lineHeight: 1.4 }}>
+              Stripe &amp; M-Pesa billing for growing teams.
+            </Typography>
+          </Box>
+        )}
+
+        {/* Collapse Toggle */}
+        <Box sx={{ display: "flex", justifyContent: "center", py: 1 }}>
+          <IconButton size="small" onClick={() => setCollapsed((c) => !c)}>
+            <ChevronLeftIcon
+              sx={{
+                transition: "transform 0.3s ease",
+                transform: dense ? "rotate(180deg)" : "rotate(0deg)",
+              }}
+            />
+          </IconButton>
+        </Box>
       </Box>
-    </Box>
-  );
+    );
+  }
 
   return (
     <Box sx={{ display: "flex", minHeight: "100dvh" }}>
@@ -223,12 +283,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         variant="permanent"
         sx={{
           display: { xs: "none", lg: "block" },
-          width: DRAWER_WIDTH,
+          width: drawerWidth,
           flexShrink: 0,
-          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box" },
+          transition: "width 0.3s ease",
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            boxSizing: "border-box",
+            transition: "width 0.3s ease",
+            overflowX: "hidden",
+          },
         }}
       >
-        {navContent}
+        <NavContent dense={collapsed} />
       </Drawer>
 
       <Drawer
@@ -238,10 +304,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         ModalProps={{ keepMounted: true }}
         sx={{
           display: { xs: "block", lg: "none" },
-          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box" },
+          "& .MuiDrawer-paper": { width: EXPANDED_WIDTH, boxSizing: "border-box" },
         }}
       >
-        {navContent}
+        <NavContent dense={false} />
       </Drawer>
 
       <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
