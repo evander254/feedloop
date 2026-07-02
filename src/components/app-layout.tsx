@@ -60,7 +60,7 @@ const navItems = [
 ];
 const COLLAPSED_WIDTH = 72;
 const EXPANDED_WIDTH = 240;
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AppLayout({ children, noSidebar }: { children: React.ReactNode; noSidebar?: boolean }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { mode, toggleMode } = useThemeMode();
