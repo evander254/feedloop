@@ -19,7 +19,6 @@ import {
   Check,
   Loader2,
   Share2,
-  Building2,
   Send,
   Clock,
   Calendar,
@@ -83,6 +82,7 @@ export default function FormBuilder() {
   const [searchParams] = useSearchParams();
   const editId = searchParams.get("id");
   const isEditing = !!editId;
+  const orgIdFromParams = searchParams.get("orgId") || "";
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -92,8 +92,7 @@ export default function FormBuilder() {
   const [savedFormId, setSavedFormId] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
   const [error, setError] = useState("");
-  const [orgs, setOrgs] = useState<{ id: string; name: string }[]>([]);
-  const [organizationId, setOrganizationId] = useState("");
+  const [organizationId, setOrganizationId] = useState(orgIdFromParams);
 
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [schedule, setSchedule] = useState(false);
@@ -101,12 +100,6 @@ export default function FormBuilder() {
   const [isTimed, setIsTimed] = useState(false);
   const [closesAt, setClosesAt] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
-
-  useEffect(() => {
-    supabase.from("organizations").select("id, name").order("name").then(({ data }) => {
-      if (data) setOrgs(data);
-    });
-  }, []);
 
   useEffect(() => {
     if (!editId) return;
@@ -428,24 +421,6 @@ export default function FormBuilder() {
                 className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-teal-300"
               />
             </label>
-            {orgs.length > 0 && (
-              <label className="mt-4 block">
-                <span className="mb-1.5 block text-sm font-bold text-slate-800">Organization</span>
-                <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-sm">
-                  <Building2 size={18} className="shrink-0 text-slate-400" />
-                  <select
-                    value={organizationId}
-                    onChange={(e) => setOrganizationId(e.target.value)}
-                    className="w-full bg-transparent outline-none text-sm text-slate-900"
-                  >
-                    <option value="">No organization</option>
-                    {orgs.map((org) => (
-                      <option key={org.id} value={org.id}>{org.name}</option>
-                    ))}
-                  </select>
-                </span>
-              </label>
-            )}
           </div>
 
           <div className="rounded-xl bg-white p-3 shadow-md shadow-black/[0.02] ring-1 ring-slate-200/60">

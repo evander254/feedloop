@@ -35,7 +35,7 @@ const cards: CardMeta[] = [
     color: "#10b981",
     colorDark: "#34d399",
     path: "/forms",
-    newPath: "/builder",
+    newPath: "/builder/new",
     newLabel: "New Form",
     table: "forms",
   },

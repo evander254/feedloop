@@ -4,6 +4,7 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import ResetPassword from "@/pages/ResetPassword";
 import FormBuilder from "@/pages/FormBuilder";
+import FormOrgSelect from "@/pages/FormOrgSelect";
 import PublicForm from "@/pages/PublicForm";
 import FormResponses from "@/pages/FormResponses";
 import Forms from "@/pages/Forms";
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/builder" element={<FormBuilder />} />
+        <Route path="/builder/new" element={<FormOrgSelect />} />
         <Route path="/form/:formId" element={<PublicForm />} />
         <Route path="/forms" element={<Forms />} />
         <Route path="/forms/:formId/responses" element={<FormResponses />} />

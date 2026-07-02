@@ -274,7 +274,7 @@ export default function Forms() {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => navigate("/builder")}
+              onClick={() => navigate("/builder/new")}
             >
               New Form
             </Button>
@@ -298,7 +298,7 @@ export default function Forms() {
                     : "Create your first form to start collecting data."}
                 </Typography>
                 {!search && statusFilter === "all" && dateFilter === "all" && (
-                  <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate("/builder")}>
+                  <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate("/builder/new")}>
                     Create Form
                   </Button>
                 )}
