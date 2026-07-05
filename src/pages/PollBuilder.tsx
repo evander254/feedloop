@@ -115,6 +115,21 @@ export default function PollBuilder() {
     })();
   }, [editId]);
 
+  useEffect(() => {
+    if (isEditing) return;
+    const template = searchParams.get("template");
+    if (template === "poll") {
+      setTitle("Favorite Programming Language");
+      setDescription("Cast your vote for your primary go-to language!");
+      setOptions([
+        { id: null, text: "JavaScript / TypeScript", file: null, preview: "", existingImageUrl: "" },
+        { id: null, text: "Python", file: null, preview: "", existingImageUrl: "" },
+        { id: null, text: "Rust", file: null, preview: "", existingImageUrl: "" },
+        { id: null, text: "Go", file: null, preview: "", existingImageUrl: "" },
+      ]);
+    }
+  }, [isEditing, searchParams]);
+
   const addOption = () => {
     setOptions((prev) => [...prev, createOption()]);
   };

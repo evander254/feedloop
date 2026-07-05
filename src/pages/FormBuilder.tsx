@@ -192,6 +192,147 @@ export default function FormBuilder() {
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
+    if (isEditing) return;
+    const template = searchParams.get("template");
+    if (!template) return;
+
+    const nowVal = Date.now();
+    if (template === "quiz") {
+      setTitle("General Knowledge Quiz");
+      setDescription("Test your knowledge with these fun trivia questions.");
+      setFields([
+        {
+          id: `field_${nowVal}_1`,
+          field_label: "What is your name?",
+          field_type: "text",
+          placeholder: "Type your name...",
+          options: [""],
+          is_required: true,
+          sort_order: 1,
+        },
+        {
+          id: `field_${nowVal}_2`,
+          field_label: "Which of the following is NOT a programming language?",
+          field_type: "radio",
+          placeholder: "",
+          options: ["Python", "HTML", "Go", "Rust"],
+          is_required: true,
+          sort_order: 2,
+        },
+        {
+          id: `field_${nowVal}_3`,
+          field_label: "Which features does FeedLoop provide? (Select all that apply)",
+          field_type: "checkbox",
+          placeholder: "",
+          options: ["Form Builder", "Live Analytics", "Offline Support", "Custom Branding"],
+          is_required: false,
+          sort_order: 3,
+        },
+        {
+          id: `field_${nowVal}_4`,
+          field_label: "Select the capital of France:",
+          field_type: "select",
+          placeholder: "",
+          options: ["London", "Paris", "Berlin", "Rome"],
+          is_required: true,
+          sort_order: 4,
+        }
+      ]);
+    } else if (template === "invitation") {
+      setTitle("Summer Party RSVP");
+      setDescription("You're invited! Please let us know if you can make it.");
+      setFields([
+        {
+          id: `field_${nowVal}_1`,
+          field_label: "Will you attend the event?",
+          field_type: "radio",
+          placeholder: "",
+          options: ["Yes, I will attend!", "No, sorry I can't make it."],
+          is_required: true,
+          sort_order: 1,
+        },
+        {
+          id: `field_${nowVal}_2`,
+          field_label: "Number of guests (including yourself)",
+          field_type: "number",
+          placeholder: "1",
+          options: [""],
+          is_required: true,
+          sort_order: 2,
+        },
+        {
+          id: `field_${nowVal}_3`,
+          field_label: "Preferred meal option",
+          field_type: "radio",
+          placeholder: "",
+          options: ["Standard (Meat)", "Vegetarian", "Vegan", "Gluten-Free"],
+          is_required: false,
+          sort_order: 3,
+        },
+        {
+          id: `field_${nowVal}_4`,
+          field_label: "Any dietary restrictions or requests?",
+          field_type: "textarea",
+          placeholder: "Specify here...",
+          options: [""],
+          is_required: false,
+          sort_order: 4,
+        }
+      ]);
+    } else if (template === "registration") {
+      setTitle("Tech Conference Registration");
+      setDescription("Sign up for FeedLoop DevCon 2026.");
+      setFields([
+        {
+          id: `field_${nowVal}_1`,
+          field_label: "Full Name",
+          field_type: "text",
+          placeholder: "Enter your full name",
+          options: [""],
+          is_required: true,
+          sort_order: 1,
+        },
+        {
+          id: `field_${nowVal}_2`,
+          field_label: "Email Address",
+          field_type: "email",
+          placeholder: "yourname@example.com",
+          options: [""],
+          is_required: true,
+          sort_order: 2,
+        },
+        {
+          id: `field_${nowVal}_3`,
+          field_label: "Phone Number",
+          field_type: "phone",
+          placeholder: "+1 (555) 000-0000",
+          options: [""],
+          is_required: true,
+          sort_order: 3,
+        },
+        {
+          id: `field_${nowVal}_4`,
+          field_label: "Select Ticket Type",
+          field_type: "select",
+          placeholder: "",
+          options: ["General Pass ($99)", "VIP Access ($299)", "Student Discount ($19)"],
+          is_required: true,
+          sort_order: 4,
+        },
+        {
+          id: `field_${nowVal}_5`,
+          field_label: "Which tracks are you interested in?",
+          field_type: "checkbox",
+          placeholder: "",
+          options: ["AI & Data Science", "Web Development", "DevOps & Cloud", "UX Design"],
+          is_required: false,
+          sort_order: 5,
+        }
+      ]);
+    }
+  }, [isEditing, searchParams]);
+
+  useEffect(() => {
     if (!editId) return;
     (async () => {
       const { data: form } = await supabase.from("forms").select("*").eq("id", editId).single();

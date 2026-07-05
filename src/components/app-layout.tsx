@@ -285,18 +285,101 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
     );
   }
 
+  /* ── Global Theme Background ────────────────────── */
+  function ThemeBackground() {
+    return (
+      <>
+        <style>{`
+          @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(6deg); }
+          }
+          @keyframes floatReverse {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(15px) rotate(-6deg); }
+          }
+          .animate-float-slow {
+            animation: floatSlow 8s ease-in-out infinite;
+          }
+          .animate-float-reverse {
+            animation: floatReverse 9s ease-in-out infinite;
+          }
+        `}</style>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none">
+          {/* Cyan Cone */}
+          <div className="absolute top-[25%] left-[8%] w-24 h-24 sm:w-32 sm:h-32 opacity-20 blur-[3px] animate-float-slow">
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              <polygon points="50,10 15,80 85,80" fill="url(#layoutCyanGrad)" />
+              <ellipse cx="50" cy="80" rx="35" ry="10" fill="#0e7490" opacity="0.6" />
+              <defs>
+                <linearGradient id="layoutCyanGrad" x1="0%" y1="0%" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#22d3ee" />
+                  <stop offset="100%" stopColor="#0891b2" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          {/* Blue Ring */}
+          <div className="absolute top-[18%] right-[10%] w-28 h-28 sm:w-36 sm:h-36 opacity-25 blur-[1px] animate-float-reverse">
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              <circle cx="50" cy="50" r="30" stroke="url(#layoutBlueGrad)" strokeWidth="12" fill="none" />
+              <defs>
+                <linearGradient id="layoutBlueGrad" x1="0%" y1="0%" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#60a5fa" />
+                  <stop offset="100%" stopColor="#1d4ed8" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          {/* Blue Sphere */}
+          <div className="absolute bottom-[35%] left-[5%] w-20 h-20 sm:w-28 sm:h-28 opacity-15 blur-[5px] animate-float-reverse">
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              <circle cx="50" cy="50" r="40" fill="url(#layoutSphereGrad)" />
+              <defs>
+                <linearGradient id="layoutSphereGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#38bdf8" />
+                  <stop offset="100%" stopColor="#0369a1" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          {/* Purple Triangle */}
+          <div className="absolute bottom-[10%] right-[6%] w-32 h-32 sm:w-44 sm:h-44 opacity-20 blur-[2px] animate-float-slow">
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              <polygon points="50,15 20,85 80,85" fill="url(#layoutPurpleGrad)" />
+              <ellipse cx="50" cy="85" rx="30" ry="8" fill="#581c87" opacity="0.6" />
+              <defs>
+                <linearGradient id="layoutPurpleGrad" x1="0%" y1="0%" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#c084fc" />
+                  <stop offset="100%" stopColor="#6b21a8" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   /* ── Header ────────────────────────────────────── */
   function Header() {
     return (
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-100 bg-white/80 px-4 py-2.5 backdrop-blur-xl lg:px-5">
-        {/* Mobile menu button */}
-        <button
-          type="button"
-          onClick={() => setMobileOpen(true)}
-          className="flex size-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 lg:hidden"
-        >
-          <Menu size={18} />
-        </button>
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/20 bg-white/40 px-4 py-2.5 backdrop-blur-xl lg:px-5">
+        {noSidebar ? (
+          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate("/dashboard")}>
+            <img src={logoSrc} alt="FeedLoop Logo" className="h-7 w-auto object-contain" />
+            <span className="text-sm font-black tracking-tight text-slate-800">FeedLoop</span>
+          </div>
+        ) : (
+          /* Mobile menu button */
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            className="flex size-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 lg:hidden"
+          >
+            <Menu size={18} />
+          </button>
+        )}
 
         <div className="flex items-center gap-2 ml-auto">
           {/* Search */}
@@ -498,9 +581,10 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
   /* ── noSidebar mode ────────────────────────────── */
   if (noSidebar) {
     return (
-      <div className="flex min-h-dvh flex-col bg-slate-50/50">
+      <div className="flex min-h-dvh flex-col bg-gradient-to-br from-[#e0f2fe] via-[#ecfdf5] to-[#faf5ff] relative overflow-hidden">
+        <ThemeBackground />
         <Header />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5 relative z-10">
           {children}
         </main>
       </div>
@@ -509,10 +593,11 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
 
   /* ── Full sidebar layout ──────────────────────── */
   return (
-    <div className="flex min-h-dvh bg-slate-50/50">
+    <div className="flex min-h-dvh bg-gradient-to-br from-[#e0f2fe] via-[#ecfdf5] to-[#faf5ff] relative overflow-hidden">
+      <ThemeBackground />
       {/* Desktop Sidebar */}
       <aside
-        className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col lg:border-r lg:border-slate-200 lg:bg-white lg:transition-all lg:duration-300"
+        className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col lg:border-r lg:border-white/20 lg:bg-white/40 lg:backdrop-blur-md lg:transition-all lg:duration-300"
         style={{ width: drawerWidth }}
       >
         <NavContent dense={collapsed} />
@@ -535,7 +620,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
               animate={{ x: 0 }}
               exit={{ x: -EXPANDED_WIDTH }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed inset-y-0 left-0 z-50 w-[240px] border-r border-slate-200 bg-white lg:hidden"
+              className="fixed inset-y-0 left-0 z-50 w-[240px] border-r border-white/20 bg-white/40 backdrop-blur-md lg:hidden"
             >
               <button
                 type="button"
@@ -551,9 +636,9 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="flex min-w-0 flex-1 flex-col lg:pl-[var(--sidebar-w)]" style={{ "--sidebar-w": `${drawerWidth}px` } as React.CSSProperties}>
+      <div className="flex min-w-0 flex-1 flex-col lg:pl-[var(--sidebar-w)] relative z-10" style={{ "--sidebar-w": `${drawerWidth}px` } as React.CSSProperties}>
         <Header />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5 relative z-10">
           {children}
         </main>
       </div>
