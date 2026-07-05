@@ -75,50 +75,54 @@ export default function PollResults() {
 
   if (loading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-[#f4f7f5]">
-        <Loader2 size={32} className="animate-spin text-teal-600" />
-      </div>
+      <AppLayout>
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <Loader2 size={28} className="animate-spin text-emerald-600" />
+        </div>
+      </AppLayout>
     );
   }
 
   if (!poll) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-[#f4f7f5] px-4">
-        <div className="text-center">
-          <h1 className="text-xl font-bold text-slate-900">Poll not found</h1>
-          <Link to="/polls" className="mt-4 inline-flex rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-bold text-white">
-            Back to Polls
-          </Link>
+      <AppLayout>
+        <div className="flex min-h-[60vh] items-center justify-center px-4">
+          <div className="text-center">
+            <h1 className="text-xl font-bold text-slate-900">Poll not found</h1>
+            <Link to="/polls" className="mt-4 inline-flex rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-slate-800 hover:shadow-md">
+              Back to Polls
+            </Link>
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
     <AppLayout>
         <main className="flex-1 overflow-y-auto">
-          <div className="space-y-3">
+          <div className="space-y-4">
             <button
               type="button"
               onClick={() => navigate("/polls")}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-700"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors"
             >
               <ArrowLeft size={14} />
               Back to Polls
             </button>
 
-            <div className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-200/60">
-              <h1 className="text-xl font-black text-slate-900">{poll.title}</h1>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h1 className="text-xl font-extrabold tracking-tight text-slate-900">{poll.title}</h1>
               {poll.description && (
                 <p className="mt-1 text-sm text-slate-500">{poll.description}</p>
               )}
-              <div className="mt-3 flex items-center gap-4 text-xs text-slate-500">
+              <div className="mt-3 flex items-center gap-4 text-xs text-slate-400">
                 <span className="flex items-center gap-1.5">
-                  <BarChart3 size={14} />
+                  <BarChart3 size={13} />
                   {results.length} option{results.length !== 1 ? "s" : ""}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Users size={14} />
+                  <Users size={13} />
                   {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -133,7 +137,7 @@ export default function PollResults() {
             </div>
 
             {totalVotes === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-xl bg-white py-4 shadow-md ring-1 ring-slate-200/60">
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white py-12">
                 <BarChart3 size={48} className="text-slate-300" />
                 <h2 className="mt-4 text-lg font-bold text-slate-700">No votes yet</h2>
                 <p className="mt-1 text-sm text-slate-400">
@@ -142,10 +146,10 @@ export default function PollResults() {
               </div>
             ) : (
               <>
-                <div className="grid gap-6 lg:grid-cols-2">
-                  <div className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-200/60">
-                    <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-700">
-                      <PieIcon size={16} className="text-teal-600" />
+                <div className="grid gap-5 lg:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-900">
+                      <PieIcon size={16} className="text-emerald-600" />
                       Distribution
                     </h3>
                     <div className="flex justify-center" style={{ height: 260 }}>
@@ -169,15 +173,16 @@ export default function PollResults() {
                           <Tooltip
                             formatter={(value: number) => [`${value} vote${value !== 1 ? "s" : ""}`, "Votes"]}
                             contentStyle={{
-                              borderRadius: 10,
+                              borderRadius: 12,
                               border: "1px solid #e2e8f0",
                               fontSize: 12,
+                              boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
                             }}
                           />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
-                    <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
+                    <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
                       {results.map((r, i) => (
                         <div key={r.id} className="flex items-center gap-1.5 text-xs">
                           <span
@@ -190,9 +195,9 @@ export default function PollResults() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl bg-white p-3 shadow-md ring-1 ring-slate-200/60">
-                    <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-700">
-                      <BarChart3 size={16} className="text-teal-600" />
+                  <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-900">
+                      <BarChart3 size={16} className="text-emerald-600" />
                       Breakdown
                     </h3>
                     <div className="space-y-4">
@@ -200,13 +205,13 @@ export default function PollResults() {
                         const percentage = totalVotes > 0 ? Math.round((result.votes / totalVotes) * 100) : 0;
                         return (
                           <div key={result.id}>
-                            <div className="mb-1 flex items-center justify-between text-sm">
+                            <div className="mb-1.5 flex items-center justify-between text-sm">
                               <span className="flex items-center gap-2.5 font-medium text-slate-800">
                                 {result.image_url && (
                                   <img
                                     src={result.image_url}
                                     alt=""
-                                    className="size-10 shrink-0 rounded-lg border border-[#E5E7EB] bg-slate-50 object-cover"
+                                    className="size-10 shrink-0 rounded-lg border border-slate-200 bg-slate-50 object-cover"
                                   />
                                 )}
                                 {result.option_text}
@@ -215,9 +220,9 @@ export default function PollResults() {
                                 {result.votes} vote{result.votes !== 1 ? "s" : ""} ({percentage}%)
                               </span>
                             </div>
-                            <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100">
+                            <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
                               <div
-                                className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all duration-500"
+                                className="h-full rounded-full bg-emerald-500 transition-all duration-500"
                                 style={{ width: `${percentage}%` }}
                               />
                             </div>

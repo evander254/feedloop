@@ -242,12 +242,12 @@ export default function Organizations() {
         />
 
         {showForm && (
-          <Card className="mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
+          <Card className="mb-6 animate-fade-up">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-base font-bold text-[var(--text-primary)]">
+              <h2 className="text-base font-bold text-slate-900">
                 {editingId ? "Edit Organization" : "New Organization"}
               </h2>
-              <button type="button" onClick={resetForm} className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
+              <button type="button" onClick={resetForm} className="text-slate-400 transition-colors hover:text-slate-600">
                 <X size={18} />
               </button>
             </div>
@@ -266,21 +266,21 @@ export default function Organizations() {
                     className="hidden"
                   />
                   {logoPreview ? (
-                    <div className="relative size-20 overflow-hidden rounded-2xl border-2 border-[var(--border-light)]">
+                    <div className="relative size-20 overflow-hidden rounded-2xl border-2 border-slate-200">
                       <img src={logoPreview} alt="Logo preview" className="size-full object-cover" />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
                         <Upload size={18} className="text-white" />
                       </div>
                     </div>
                   ) : (
-                    <div className="flex size-20 items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border-light)] bg-[var(--surface-muted)] transition group-hover:border-emerald-400 group-hover:bg-emerald-500/5">
-                      <Upload size={22} className="text-[var(--text-tertiary)] group-hover:text-emerald-500" />
+                    <div className="flex size-20 items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 transition group-hover:border-emerald-400 group-hover:bg-emerald-50">
+                      <Upload size={22} className="text-slate-400 group-hover:text-emerald-500" />
                     </div>
                   )}
                 </label>
                 <div>
-                  <p className="text-sm font-semibold text-[var(--text-primary)]">Organization Logo</p>
-                  <p className="text-xs text-[var(--text-tertiary)]">PNG, JPG, WebP or SVG. Square recommended.</p>
+                  <p className="text-sm font-semibold text-slate-900">Organization Logo</p>
+                  <p className="text-xs text-slate-400">PNG, JPG, WebP or SVG. Square recommended.</p>
                   {logoPreview && (
                     <button
                       type="button"
@@ -294,57 +294,57 @@ export default function Organizations() {
               </div>
 
               <label className="block">
-                <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Organization Name *</span>
-                <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                  <Building2 size={18} className="shrink-0 text-[var(--text-tertiary)]" />
+                <span className="mb-1.5 block text-sm font-semibold text-slate-700">Organization Name *</span>
+                <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                  <Building2 size={16} className="shrink-0 text-slate-400" />
                   <input
                     type="text"
                     placeholder="e.g. Kenya Red Cross"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                    className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                   />
                 </span>
               </label>
 
               <label className="block">
-                <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Description</span>
-                <span className="flex items-start gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                  <FileText size={18} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" />
+                <span className="mb-1.5 block text-sm font-semibold text-slate-700">Description</span>
+                <span className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                  <FileText size={16} className="mt-0.5 shrink-0 text-slate-400" />
                   <textarea
                     placeholder="Brief description of your organization..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={2}
-                    className="w-full resize-none bg-transparent outline-none text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                    className="w-full resize-none bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                   />
                 </span>
               </label>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Email</span>
-                  <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                    <Mail size={18} className="shrink-0 text-[var(--text-tertiary)]" />
+                  <span className="mb-1.5 block text-sm font-semibold text-slate-700">Email</span>
+                  <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                    <Mail size={16} className="shrink-0 text-slate-400" />
                     <input
                       type="email"
                       placeholder="org@example.org"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                      className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                     />
                   </span>
                 </label>
                 <label className="block">
-                  <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Phone</span>
-                  <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                    <Phone size={18} className="shrink-0 text-[var(--text-tertiary)]" />
+                  <span className="mb-1.5 block text-sm font-semibold text-slate-700">Phone</span>
+                  <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                    <Phone size={16} className="shrink-0 text-slate-400" />
                     <input
                       type="tel"
                       placeholder="+254 7XX XXX XXX"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                      className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                     />
                   </span>
                 </label>
@@ -352,35 +352,35 @@ export default function Organizations() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Country</span>
-                  <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                    <MapPin size={18} className="shrink-0 text-[var(--text-tertiary)]" />
+                  <span className="mb-1.5 block text-sm font-semibold text-slate-700">Country</span>
+                  <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                    <MapPin size={16} className="shrink-0 text-slate-400" />
                     <input
                       type="text"
                       placeholder="Kenya"
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
-                      className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                      className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                     />
                   </span>
                 </label>
                 <label className="block">
-                  <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Website</span>
-                  <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                    <Globe size={18} className="shrink-0 text-[var(--text-tertiary)]" />
+                  <span className="mb-1.5 block text-sm font-semibold text-slate-700">Website</span>
+                  <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                    <Globe size={16} className="shrink-0 text-slate-400" />
                     <input
                       type="url"
                       placeholder="https://example.org"
                       value={website}
                       onChange={(e) => setWebsite(e.target.value)}
-                      className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                      className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                     />
                   </span>
                 </label>
               </div>
 
               {error && (
-                <p className="rounded-xl bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-700 dark:text-red-400">{error}</p>
+                <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">{error}</p>
               )}
 
               <div className="flex gap-3">
@@ -401,14 +401,14 @@ export default function Organizations() {
         )}
 
         {success && (
-          <div className="mb-6 flex items-center gap-2 rounded-xl bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="mb-6 flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 animate-fade-up">
             <CheckCircle2 size={16} /> {success}
           </div>
         )}
 
         {orgs.length === 0 ? (
           <EmptyState
-            icon={Building2}
+            icon={<Building2 size={32} />}
             title="No organizations yet"
             description="Create your first organization to start organizing your forms and polls."
             action={
@@ -427,19 +427,19 @@ export default function Organizations() {
                       <img
                         src={org.logo_url}
                         alt={org.name}
-                        className="size-10 shrink-0 rounded-xl border border-[var(--border-light)] object-cover"
+                        className="size-10 shrink-0 rounded-xl border border-slate-200 object-cover"
                       />
                     ) : (
-                      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 text-sm font-bold text-white shadow-sm">
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-sm font-bold text-white shadow-sm">
                         {org.name.slice(0, 2).toUpperCase()}
                       </span>
                     )}
                     <div>
-                      <h3 className="text-base font-bold text-[var(--text-primary)]">{org.name}</h3>
+                      <h3 className="text-base font-bold text-slate-900">{org.name}</h3>
                       {org.description && (
-                        <p className="mt-0.5 text-sm text-[var(--text-secondary)] line-clamp-2">{org.description}</p>
+                        <p className="mt-0.5 text-sm text-slate-500 line-clamp-2">{org.description}</p>
                       )}
-                      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-tertiary)]">
+                      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
                         {org.email && <span className="flex items-center gap-1"><Mail size={12} /> {org.email}</span>}
                         {org.phone && <span className="flex items-center gap-1"><Phone size={12} /> {org.phone}</span>}
                         {org.country && <span className="flex items-center gap-1"><MapPin size={12} /> {org.country}</span>}
@@ -451,7 +451,7 @@ export default function Organizations() {
                     <button
                       type="button"
                       onClick={() => openEdit(org)}
-                      className="flex size-8 items-center justify-center rounded-lg text-[var(--text-tertiary)] transition hover:bg-[var(--border-light)] hover:text-[var(--text-primary)]"
+                      className="flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
                     >
                       <Pencil size={15} />
                     </button>
@@ -467,7 +467,7 @@ export default function Organizations() {
                         <button
                           type="button"
                           onClick={() => setDeleteConfirm(null)}
-                          className="rounded-lg border border-[var(--border-light)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-secondary)] transition hover:bg-[var(--border-light)]"
+                          className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
                         >
                           Cancel
                         </button>
@@ -476,7 +476,7 @@ export default function Organizations() {
                       <button
                         type="button"
                         onClick={() => setDeleteConfirm(org.id)}
-                        className="flex size-8 items-center justify-center rounded-lg text-[var(--text-tertiary)] transition hover:bg-red-500/5 hover:text-red-500"
+                        className="flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
                       >
                         <Trash2 size={15} />
                       </button>

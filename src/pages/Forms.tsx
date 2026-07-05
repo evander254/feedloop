@@ -3,48 +3,31 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useRealtimeSubscription } from "@/lib/realtime";
 import AppLayout from "@/components/app-layout";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Chip from "@mui/material/Chip";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputAdornment from "@mui/material/InputAdornment";
-import CircularProgress from "@mui/material/CircularProgress";
-import Stack from "@mui/material/Stack";
-import Tooltip from "@mui/material/Tooltip";
-import Divider from "@mui/material/Divider";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import AddIcon from "@mui/icons-material/Add";
-import SearchIcon from "@mui/icons-material/Search";
-import EyeIcon from "@mui/icons-material/Visibility";
-import ShareIcon from "@mui/icons-material/Share";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SettingsIcon from "@mui/icons-material/Settings";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import CheckIcon from "@mui/icons-material/Check";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import PeopleIcon from "@mui/icons-material/People";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import CloseIcon from "@mui/icons-material/Close";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Plus,
+  Loader2,
+  ClipboardList,
+  Eye,
+  Share2,
+  Trash2,
+  BarChart3,
+  MessageSquare,
+  CalendarDays,
+  Check,
+  TrendingUp,
+  Search,
+  X,
+  Copy,
+  ExternalLink,
+} from "lucide-react";
 import {
   PieChart, Pie, Cell, ResponsiveContainer,
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
 } from "recharts";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const LOCATION_COLORS = ["#14b8a6", "#f97316", "#3b82f6", "#a855f7", "#94a3b8"];
+const LOCATION_COLORS = ["#10b981", "#f97316", "#3b82f6", "#a855f7", "#94a3b8"];
 
 interface FormSummary {
   id: string;
@@ -59,7 +42,7 @@ interface FormSummary {
   sparkData: number[];
 }
 
-function Sparkline({ data, color = "#14b8a6" }: { data: number[]; color?: string }) {
+function Sparkline({ data, color = "#10b981" }: { data: number[]; color?: string }) {
   if (data.length < 2) return null;
   const w = 120, h = 36;
   const max = Math.max(...data, 1);
@@ -70,10 +53,10 @@ function Sparkline({ data, color = "#14b8a6" }: { data: number[]; color?: string
   const d = data.map((v, i) => `${i === 0 ? "M" : "L"}${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(" ");
   const area = data.map((v, i) => `${i === 0 ? "M" : "L"}${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(" ") + `L${px(data.length - 1).toFixed(1)},${h}L0,${h}Z`;
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ flexShrink: 0 }}>
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="shrink-0">
       <defs>
         <linearGradient id={`spk-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.25} />
+          <stop offset="0%" stopColor={color} stopOpacity={0.2} />
           <stop offset="100%" stopColor={color} stopOpacity={0} />
         </linearGradient>
       </defs>
@@ -106,10 +89,9 @@ export default function Forms() {
       .from("forms")
       .select("id, title, description, status, publish_at, created_at, created_by, views")
       .eq("created_by", user.id)
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: false });
 
     const formRows = formResult.data;
-
     if (!formRows) { setLoading(false); return; }
 
     const formIds = formRows.map((f) => f.id);
@@ -160,16 +142,16 @@ export default function Forms() {
           supabase.from("form_responses").select("submitted_at").eq("form_id", f.id).order("submitted_at"),
         ]);
 
-        const bucket: Record<string, number> = {};
+        const sparkBucket: Record<string, number> = {};
         const refDate = new Date();
         for (let i = 6; i >= 0; i--) {
           const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
-          bucket[`${MONTHS[d.getMonth()]} ${d.getFullYear()}`] = 0;
+          sparkBucket[`${MONTHS[d.getMonth()]} ${d.getFullYear()}`] = 0;
         }
         (dates || []).forEach((r: { submitted_at: string }) => {
           const d = new Date(r.submitted_at);
           const key = `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-          if (key in bucket) bucket[key]++;
+          if (key in sparkBucket) sparkBucket[key]++;
         });
 
         return {
@@ -177,7 +159,7 @@ export default function Forms() {
           status: f.status, publish_at: f.publish_at, created_at: f.created_at,
           field_count: fieldCount ?? 0, response_count: responseCount ?? 0,
           views: f.views ?? 0,
-          sparkData: Object.values(bucket),
+          sparkData: Object.values(sparkBucket),
         };
       })
     );
@@ -187,7 +169,6 @@ export default function Forms() {
   }, [navigate]);
 
   useEffect(() => { fetchForms(); }, [fetchForms]);
-
   useRealtimeSubscription("forms", fetchForms, [fetchForms]);
 
   const filtered = useMemo(() => {
@@ -213,12 +194,6 @@ export default function Forms() {
     return result;
   }, [forms, search, statusFilter, dateFilter]);
 
-  const handleCopyLink = async (formId: string) => {
-    await navigator.clipboard.writeText(`${window.location.origin}/form/${formId}`);
-    setCopiedId(formId);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
   const handleDelete = async (formId: string) => {
     if (!confirm("Are you sure you want to delete this form? All responses and fields will be permanently removed.")) return;
     const { error } = await supabase.from("forms").delete().eq("id", formId);
@@ -229,417 +204,365 @@ export default function Forms() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", minHeight: "100dvh", alignItems: "center", justifyContent: "center" }}>
-        <CircularProgress />
-      </Box>
+      <AppLayout>
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <Loader2 size={28} className="animate-spin text-emerald-600" />
+        </div>
+      </AppLayout>
     );
   }
 
   return (
     <AppLayout>
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
+      <div className="flex gap-5">
+        {/* Main Content */}
+        <div className="min-w-0 flex-1">
           {/* Toolbar */}
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ alignItems: "center", flexWrap: "wrap", mb: 1 }}
-          >
-            <TextField
-              placeholder="Search forms..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              sx={{ minWidth: 200, maxWidth: 280 }}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ fontSize: 16, color: "text.disabled" }} />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 sm:max-w-xs">
+              <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search forms..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10"
+              />
+            </div>
 
-            <Select
+            <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              size="small"
-              sx={{ minWidth: 140, borderRadius: 2, fontSize: "0.8125rem" }}
+              className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10"
             >
-              <MenuItem value="all">All Statuses</MenuItem>
-              <MenuItem value="published">Published</MenuItem>
-              <MenuItem value="scheduled">Scheduled</MenuItem>
-              <MenuItem value="draft">Draft</MenuItem>
-              <MenuItem value="archived">Archived</MenuItem>
-            </Select>
+              <option value="all">All Statuses</option>
+              <option value="published">Published</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="draft">Draft</option>
+              <option value="archived">Archived</option>
+            </select>
 
-            <Select
+            <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              size="small"
-              sx={{ minWidth: 130, borderRadius: 2, fontSize: "0.8125rem" }}
+              className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10"
             >
-              <MenuItem value="all">All Time</MenuItem>
-              <MenuItem value="week">This Week</MenuItem>
-              <MenuItem value="month">Last Month</MenuItem>
-            </Select>
+              <option value="all">All Time</option>
+              <option value="week">This Week</option>
+              <option value="month">Last Month</option>
+            </select>
 
-            <Typography variant="caption" sx={{ color: "text.disabled", ml: "auto" }}>
+            <span className="ml-auto text-xs text-slate-400">
               {filtered.length} form{filtered.length !== 1 ? "s" : ""}
-            </Typography>
+            </span>
 
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
+            <button
+              type="button"
               onClick={() => navigate("/builder/new")}
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-slate-800 hover:shadow-md active:scale-[0.97]"
             >
+              <Plus size={15} />
               New Form
-            </Button>
-
-            <IconButton size="small">
-              <SettingsIcon fontSize="small" />
-            </IconButton>
-          </Stack>
+            </button>
+          </div>
 
           {/* Form list */}
           {filtered.length === 0 ? (
-            <Card sx={{ py: 6, textAlign: "center" }}>
-              <CardContent>
-                <AssignmentIcon sx={{ fontSize: 56, color: "text.disabled", mb: 2 }} />
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                  No forms yet
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
-                  {search || statusFilter !== "all" || dateFilter !== "all"
-                    ? "No forms match your filters."
-                    : "Create your first form to start collecting data."}
-                </Typography>
-                {!search && statusFilter === "all" && dateFilter === "all" && (
-                  <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate("/builder/new")}>
-                    Create Form
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+            <div className="rounded-2xl border border-slate-200 bg-white py-16 text-center">
+              <ClipboardList size={48} className="mx-auto text-slate-300" />
+              <h2 className="mt-4 text-lg font-bold text-slate-700">No forms yet</h2>
+              <p className="mt-1 text-sm text-slate-400">
+                {search || statusFilter !== "all" || dateFilter !== "all"
+                  ? "No forms match your filters."
+                  : "Create your first form to start collecting data."}
+              </p>
+              {!search && statusFilter === "all" && dateFilter === "all" && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/builder/new")}
+                  className="mt-5 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-px hover:bg-slate-800 hover:shadow-md active:scale-[0.97]"
+                >
+                  <Plus size={16} />
+                  Create Form
+                </button>
+              )}
+            </div>
           ) : (
-            <Stack spacing={2}>
+            <div className="space-y-3">
               {filtered.map((form, idx) => {
-                const colors = ["#14b8a6", "#f97316", "#3b82f6", "#8b5cf6"];
+                const colors = ["#10b981", "#f97316", "#3b82f6", "#8b5cf6"];
                 const color = colors[idx % colors.length];
+                const statusLabel = form.publish_at && form.status === "draft" ? "scheduled" : form.status;
                 return (
-                  <Card key={form.id} sx={{ "&:hover": { boxShadow: 6 } }}>
-                    <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                      <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 2 }}>
-                        <Box sx={{ minWidth: 0, flex: 1 }}>
-                          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-                            <Box
-                              sx={{
-                                width: 32, height: 32, borderRadius: 1.5, display: "flex",
-                                alignItems: "center", justifyContent: "center",
-                                bgcolor: "action.hover", color: "text.secondary", flexShrink: 0,
-                              }}
-                            >
-                              <AssignmentIcon sx={{ fontSize: 16 }} />
-                            </Box>
-                            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                              {form.title}
-                            </Typography>
-                            <Chip
-                              label={form.publish_at && form.status === "draft" ? "scheduled" : form.status}
-                              size="small"
-                              color={form.status === "published" ? "primary" : form.publish_at && form.status === "draft" ? "warning" : "default"}
-                              variant={form.status === "published" ? "filled" : form.publish_at && form.status === "draft" ? "filled" : "outlined"}
-                              sx={{
-                                height: 20, fontSize: "0.625rem", fontWeight: 600,
-                                textTransform: "uppercase", letterSpacing: "0.05em",
-                              }}
-                            />
-                          </Stack>
-                          {form.description && (
-                            <Typography variant="body2" sx={{ mt: 1.5, ml: 5, color: "text.secondary" }}>
-                              {form.description}
-                            </Typography>
-                          )}
-                          <Stack direction="row" spacing={2} sx={{ mt: 2, ml: 5 }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                              <BarChartIcon sx={{ fontSize: 13, color: "text.disabled" }} />
-                              <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                                {form.field_count} field{form.field_count !== 1 ? "s" : ""}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                              <ChatBubbleIcon sx={{ fontSize: 13, color: "text.disabled" }} />
-                              <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                                {form.response_count} response{form.response_count !== 1 ? "s" : ""}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                              <CalendarTodayIcon sx={{ fontSize: 13, color: "text.disabled" }} />
-                              <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                                {new Date(form.created_at).toLocaleDateString()}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                              <Typography variant="caption" sx={{ color: "text.disabled" }}>
-                                {form.views} view{form.views !== 1 ? "s" : ""}
-                              </Typography>
-                            </Box>
-                            {form.views > 0 && (
-                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
-                                  {Math.round((form.response_count / form.views) * 100)}% rate
-                                </Typography>
-                              </Box>
-                            )}
-                          </Stack>
-                        </Box>
-                        <Sparkline data={form.sparkData} color={color} />
-                      </Box>
-                      <Divider sx={{ my: 2 }} />
-                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <Stack direction="row" spacing={0.5}>
-                          <Button
-                            size="small"
-                            startIcon={<EyeIcon fontSize="small" />}
-                            onClick={() => navigate(`/forms/${form.id}/responses`)}
-                            sx={{ fontSize: "0.75rem", fontWeight: 600 }}
-                          >
-                            View
-                          </Button>
-                          <Button
-                            size="small"
-                            startIcon={<ShareIcon fontSize="small" />}
-                            onClick={() => setShareFormId(form.id)}
-                            sx={{ fontSize: "0.75rem", fontWeight: 600, color: "text.secondary" }}
-                          >
-                            Share
-                          </Button>
-                          <IconButton size="small" onClick={() => handleDelete(form.id)} sx={{ color: "text.disabled" }}>
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Stack>
-                        {form.response_count > 0 && (
-                          <Button
-                            size="small"
-                            onClick={() => navigate(`/forms/${form.id}/responses`)}
-                            sx={{ fontSize: "0.75rem", fontWeight: 600 }}
-                          >
-                            View all {form.response_count} response{form.response_count !== 1 ? "s" : ""}
-                          </Button>
+                  <motion.div
+                    key={form.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-md"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2.5">
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+                            <ClipboardList size={16} className="text-slate-500" />
+                          </div>
+                          <h3 className="truncate text-sm font-bold text-slate-900">{form.title}</h3>
+                          <span className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider ${
+                            statusLabel === "published"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : statusLabel === "scheduled"
+                                ? "bg-amber-50 text-amber-700"
+                                : "bg-slate-100 text-slate-500"
+                          }`}>
+                            {statusLabel}
+                          </span>
+                        </div>
+                        {form.description && (
+                          <p className="mt-1.5 ml-[42px] text-sm text-slate-500 line-clamp-1">{form.description}</p>
                         )}
-                      </Box>
-                    </CardContent>
-                  </Card>
+                        <div className="mt-2.5 ml-[42px] flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                          <span className="flex items-center gap-1"><BarChart3 size={12} /> {form.field_count} field{form.field_count !== 1 ? "s" : ""}</span>
+                          <span className="flex items-center gap-1"><MessageSquare size={12} /> {form.response_count} response{form.response_count !== 1 ? "s" : ""}</span>
+                          <span className="flex items-center gap-1"><CalendarDays size={12} /> {new Date(form.created_at).toLocaleDateString()}</span>
+                          <span>{form.views} view{form.views !== 1 ? "s" : ""}</span>
+                          {form.views > 0 && (
+                            <span className="font-semibold text-emerald-600">{Math.round((form.response_count / form.views) * 100)}% rate</span>
+                          )}
+                        </div>
+                      </div>
+                      <Sparkline data={form.sparkData} color={color} />
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/forms/${form.id}/responses`)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:shadow-sm"
+                        >
+                          <Eye size={13} />
+                          View
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShareFormId(form.id)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:shadow-sm"
+                        >
+                          <Share2 size={13} />
+                          Share
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(form.id)}
+                          className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white p-1.5 text-slate-400 transition-all hover:bg-red-50 hover:text-red-500"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                      {form.response_count > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/forms/${form.id}/responses`)}
+                          className="text-xs font-semibold text-emerald-600 hover:underline"
+                        >
+                          View all {form.response_count} response{form.response_count !== 1 ? "s" : ""}
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
                 );
               })}
-            </Stack>
+            </div>
           )}
-        </Box>
+        </div>
 
-        {/* Right analytics panel */}
-        <Box sx={{ display: { xs: "none", xl: "flex" }, width: 260, flexShrink: 0, flexDirection: "column", gap: 1.5 }}>
-          <Card>
-            <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
-              <Typography variant="overline" sx={{ mb: 1, display: "block" }}>
-                Responses by Location
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Box sx={{ width: 96, height: 96, flexShrink: 0, animation: "chart-fade-in 0.5s ease-out both" }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={locationData}
-                        cx="50%" cy="50%"
-                        innerRadius={22} outerRadius={36}
-                        dataKey="value"
-                        stroke="none"
-                        animationBegin={0}
-                        animationDuration={1000}
-                        animationEasing="ease-out"
-                      >
-                        {locationData.map((_, i) => (
-                          <Cell key={i} fill={LOCATION_COLORS[i % LOCATION_COLORS.length]} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  {locationData.map((loc, i) => (
-                    <Box key={loc.name} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
-                      <Box sx={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: LOCATION_COLORS[i], flexShrink: 0 }} />
-                      <Typography variant="caption" sx={{ color: "text.secondary" }}>{loc.name}</Typography>
-                      <Typography variant="caption" sx={{ ml: "auto", fontWeight: 700 }}>{loc.value}%</Typography>
-                    </Box>
-                  ))}
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
-              <Typography variant="overline" sx={{ mb: 1, display: "block" }}>
-                Response Growth (Last 30 Days)
-              </Typography>
-              <Box sx={{ height: 110, animation: "chart-fade-in 0.6s ease-out 0.1s both" }}>
+        {/* Right Analytics Panel */}
+        <div className="hidden w-[260px] shrink-0 flex-col gap-3 xl:flex">
+          {/* Location Pie */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-wider text-slate-400">Responses by Location</p>
+            <div className="flex items-center gap-3">
+              <div className="h-24 w-24 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
-                   <AreaChart data={dailyBuckets} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#14b8a6" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="#14b8a6" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: "#64748b" }} interval={4} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: "#64748b" }} />
-                    <RechartsTooltip
-                      contentStyle={{
-                        borderRadius: 8, border: "1px solid #334155",
-                        backgroundColor: "#0f172a", fontSize: 11, color: "#e2e8f0",
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="responses"
-                      stroke="#14b8a6"
-                      strokeWidth={2}
-                      fill="url(#growthGrad)"
-                      animationBegin={150}
-                      animationDuration={800}
-                      animationEasing="ease-out"
-                    />
-                  </AreaChart>
+                  <PieChart>
+                    <Pie data={locationData} cx="50%" cy="50%" innerRadius={22} outerRadius={36} dataKey="value" stroke="none">
+                      {locationData.map((_, i) => (
+                        <Cell key={i} fill={LOCATION_COLORS[i % LOCATION_COLORS.length]} />
+                      ))}
+                    </Pie>
+                  </PieChart>
                 </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
+              </div>
+              <div className="flex-1 space-y-1.5">
+                {locationData.map((loc, i) => (
+                  <div key={loc.name} className="flex items-center gap-1.5 text-xs">
+                    <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: LOCATION_COLORS[i] }} />
+                    <span className="text-slate-500">{loc.name}</span>
+                    <span className="ml-auto font-bold text-slate-700">{loc.value}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-          <Stack spacing={1.5}>
-            <Card sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}>
-              <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <AssignmentIcon sx={{ fontSize: 16 }} />
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>Total Forms</Typography>
-                </Box>
-                <Typography variant="h5" sx={{ mt: 1, fontWeight: 800 }}>{forms.length}</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ bgcolor: "secondary.main", color: "#ffffff" }}>
-              <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <ChatBubbleIcon sx={{ fontSize: 16 }} />
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>Total Responses</Typography>
-                </Box>
-                <Typography variant="h5" sx={{ mt: 1, fontWeight: 800 }}>{totalResponses.toLocaleString()}</Typography>
-              </CardContent>
-            </Card>
-            <Card sx={{ bgcolor: "grey.800", color: "#ffffff" }}>
-              <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <TrendingUpIcon sx={{ fontSize: 16 }} />
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>Active Beneficiaries</Typography>
-                </Box>
-                <Typography variant="h5" sx={{ mt: 1, fontWeight: 800 }}>112</Typography>
-              </CardContent>
-            </Card>
-          </Stack>
-        </Box>
-      </Box>
+          {/* Growth Area Chart */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-wider text-slate-400">Response Growth (Last 30 Days)</p>
+            <div className="h-[110px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={dailyBuckets} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: "#94a3b8" }} interval={4} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: "#94a3b8" }} />
+                  <RechartsTooltip
+                    contentStyle={{
+                      borderRadius: 10, border: "1px solid #e2e8f0",
+                      backgroundColor: "#fff", fontSize: 11, color: "#334155",
+                    }}
+                  />
+                  <Area type="monotone" dataKey="responses" stroke="#10b981" strokeWidth={2} fill="url(#growthGrad)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Stat Cards */}
+          <div className="space-y-3">
+            <div className="rounded-2xl bg-slate-900 p-4 text-white">
+              <div className="flex items-center gap-1.5 text-xs text-white/60">
+                <ClipboardList size={14} />
+                Total Forms
+              </div>
+              <p className="mt-1.5 text-2xl font-extrabold">{forms.length}</p>
+            </div>
+            <div className="rounded-2xl bg-emerald-600 p-4 text-white">
+              <div className="flex items-center gap-1.5 text-xs text-white/70">
+                <MessageSquare size={14} />
+                Total Responses
+              </div>
+              <p className="mt-1.5 text-2xl font-extrabold">{totalResponses.toLocaleString()}</p>
+            </div>
+            <div className="rounded-2xl bg-slate-800 p-4 text-white">
+              <div className="flex items-center gap-1.5 text-xs text-white/60">
+                <TrendingUp size={14} />
+                Active Beneficiaries
+              </div>
+              <p className="mt-1.5 text-2xl font-extrabold">112</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Share Dialog */}
-      <Dialog
-        open={Boolean(shareFormId)}
-        onClose={() => setShareFormId(null)}
-        maxWidth="sm"
-        fullWidth
-        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
-      >
-        <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontWeight: 700 }}>
-          Share Form
-          <IconButton size="small" onClick={() => setShareFormId(null)}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          {shareFormId && (() => {
-            const url = `${window.location.origin}/form/${shareFormId}`;
-            const text = "Check out this form";
-            return (
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-                {/* Link with copy */}
-                <Box>
-                  <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary", mb: 0.5, display: "block" }}>
-                    Form link
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <TextField
-                      value={url}
-                      slotProps={{ input: { readOnly: true, sx: { fontSize: "0.8125rem", borderRadius: 2 } } }}
-                      size="small"
-                      fullWidth
-                    />
-                    <Button
-                      variant="contained"
-                      onClick={async () => {
-                        await navigator.clipboard.writeText(url);
-                        setShareLinkCopied(true);
-                        setTimeout(() => setShareLinkCopied(false), 2000);
-                      }}
-                      sx={{ borderRadius: 2, minWidth: 100, fontWeight: 600, fontSize: "0.75rem" }}
-                    >
-                      {shareLinkCopied ? "Copied!" : "Copy"}
-                    </Button>
-                  </Box>
-                </Box>
+      <AnimatePresence>
+        {shareFormId && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-slate-900/20 backdrop-blur-sm"
+              onClick={() => setShareFormId(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+                  <h3 className="text-base font-bold text-slate-900">Share Form</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShareFormId(null)}
+                    className="flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+                <div className="px-6 py-5">
+                  {(() => {
+                    const url = `${window.location.origin}/form/${shareFormId}`;
+                    const text = "Check out this form";
+                    return (
+                      <div className="space-y-5">
+                        {/* Link with copy */}
+                        <div>
+                          <label className="mb-1.5 block text-xs font-semibold text-slate-500">Form link</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={url}
+                              readOnly
+                              className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                await navigator.clipboard.writeText(url);
+                                setShareLinkCopied(true);
+                                setTimeout(() => setShareLinkCopied(false), 2000);
+                              }}
+                              className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition-all hover:bg-slate-800 active:scale-[0.97]"
+                            >
+                              {shareLinkCopied ? "Copied!" : "Copy"}
+                            </button>
+                          </div>
+                        </div>
 
-                <Divider />
+                        <div className="h-px bg-slate-100" />
 
-                {/* Social share */}
-                <Box>
-                  <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary", mb: 1.5, display: "block" }}>
-                    Share via
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                    {[
-                      { name: "Twitter", color: "#1da1f2", url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}` },
-                      { name: "Facebook", color: "#1877f2", url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}` },
-                      { name: "LinkedIn", color: "#0a66c2", url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
-                      { name: "WhatsApp", color: "#25d366", url: `https://wa.me/?text=${encodeURIComponent(text + " " + url)}` },
-                      { name: "Email", color: "#64748b", url: `mailto:?subject=${encodeURIComponent(text)}&body=${encodeURIComponent(url)}` },
-                    ].map((s) => (
-                      <Button
-                        key={s.name}
-                        variant="outlined"
-                        size="small"
-                        onClick={() => window.open(s.url, "_blank", "noopener")}
-                        startIcon={<OpenInNewIcon fontSize="small" />}
-                        sx={{
-                          borderRadius: 2,
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          color: s.color,
-                          borderColor: s.color,
-                          "&:hover": { borderColor: s.color, bgcolor: `${s.color}0d` },
-                        }}
-                      >
-                        {s.name}
-                      </Button>
-                    ))}
-                  </Box>
-                </Box>
-              </Box>
-            );
-          })()}
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setShareFormId(null)} sx={{ borderRadius: 2, fontWeight: 600, fontSize: "0.75rem" }}>
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+                        {/* Social share */}
+                        <div>
+                          <label className="mb-2 block text-xs font-semibold text-slate-500">Share via</label>
+                          <div className="flex flex-wrap gap-2">
+                            {[
+                              { name: "Twitter", color: "#1da1f2", url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}` },
+                              { name: "Facebook", color: "#1877f2", url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}` },
+                              { name: "LinkedIn", color: "#0a66c2", url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
+                              { name: "WhatsApp", color: "#25d366", url: `https://wa.me/?text=${encodeURIComponent(text + " " + url)}` },
+                              { name: "Email", color: "#64748b", url: `mailto:?subject=${encodeURIComponent(text)}&body=${encodeURIComponent(url)}` },
+                            ].map((s) => (
+                              <button
+                                key={s.name}
+                                type="button"
+                                onClick={() => window.open(s.url, "_blank", "noopener")}
+                                className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all hover:shadow-sm"
+                                style={{ color: s.color, borderColor: s.color + "40" }}
+                              >
+                                <ExternalLink size={12} />
+                                {s.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+                <div className="border-t border-slate-100 px-6 py-3">
+                  <button
+                    type="button"
+                    onClick={() => setShareFormId(null)}
+                    className="w-full rounded-lg py-2 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </AppLayout>
   );
 }

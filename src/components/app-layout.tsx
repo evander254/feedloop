@@ -1,46 +1,37 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useRealtimeSubscription } from "@/lib/realtime";
 import { useThemeMode } from "@/lib/ThemeContext";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Typography from "@mui/material/Typography";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  LayoutDashboard,
+  Building2,
+  Folder,
+  ClipboardList,
+  FileText,
+  Vote,
+  Users,
+  BarChart3,
+  Download,
+  CreditCard,
+  Sun,
+  Moon,
+  Bell,
+  Search,
+  Menu,
+  LogOut,
+  User,
+  ChevronLeft,
+  Settings,
+  BellOff,
+  X,
+  Check,
+  Plus,
+} from "lucide-react";
 import logoSrc from "@/assets/loop.png";
-import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
-import Tooltip from "@mui/material/Tooltip";
-import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
-import Avatar from "@mui/material/Avatar";
-import Grow from "@mui/material/Grow";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import BusinessIcon from "@mui/icons-material/Business";
-import FolderIcon from "@mui/icons-material/Folder";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import DescriptionIcon from "@mui/icons-material/Description";
-import PollIcon from "@mui/icons-material/Poll";
-import PeopleIcon from "@mui/icons-material/People";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import SearchIcon from "@mui/icons-material/Search";
-import MenuIcon from "@mui/icons-material/Menu";
-import LogoutIcon from "@mui/icons-material/Logout";
-import PersonIcon from "@mui/icons-material/Person";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import SettingsIcon from "@mui/icons-material/Settings";
-import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import { cn } from "@/lib/utils";
+
 interface Notification {
   id: string;
   title: string;
@@ -65,36 +56,47 @@ function timeAgo(dateStr: string): string {
 
 function notifIcon(entity_type: string | null) {
   switch (entity_type) {
-    case "form": return <AssignmentIcon sx={{ fontSize: 18 }} />;
-    case "survey": return <DescriptionIcon sx={{ fontSize: 18 }} />;
-    case "poll": return <PollIcon sx={{ fontSize: 18 }} />;
-    default: return <NotificationsIcon sx={{ fontSize: 18 }} />;
+    case "form": return <ClipboardList size={16} />;
+    case "survey": return <FileText size={16} />;
+    case "poll": return <Vote size={16} />;
+    default: return <Bell size={16} />;
   }
 }
 
 function notifColor(entity_type: string | null): string {
   switch (entity_type) {
-    case "form": return "#10b981";
-    case "survey": return "#3b82f6";
-    case "poll": return "#a855f7";
-    default: return "#64748b";
+    case "form": return "bg-emerald-500";
+    case "survey": return "bg-blue-500";
+    case "poll": return "bg-purple-500";
+    default: return "bg-slate-400";
+  }
+}
+
+function notifTextColor(entity_type: string | null): string {
+  switch (entity_type) {
+    case "form": return "text-emerald-600";
+    case "survey": return "text-blue-600";
+    case "poll": return "text-purple-600";
+    default: return "text-slate-600";
   }
 }
 
 const navItems = [
-  { label: "Dashboard", icon: DashboardIcon, path: "/dashboard" },
-  { label: "Organizations", icon: BusinessIcon, path: "/organizations" },
-  { label: "Projects", icon: FolderIcon, path: "#" },
-  { label: "Forms", icon: AssignmentIcon, path: "/forms" },
-  { label: "Surveys", icon: DescriptionIcon, path: "/surveys" },
-  { label: "Polls", icon: PollIcon, path: "/polls" },
-  { label: "Beneficiaries", icon: PeopleIcon, path: "#" },
-  { label: "Analytics", icon: BarChartIcon, path: "#" },
-  { label: "Exports", icon: FileDownloadIcon, path: "#" },
-  { label: "Subscriptions", icon: AccountBalanceWalletIcon, path: "#" },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+  { label: "Organizations", icon: Building2, path: "/organizations" },
+  { label: "Projects", icon: Folder, path: "#" },
+  { label: "Forms", icon: ClipboardList, path: "/forms" },
+  { label: "Surveys", icon: FileText, path: "/surveys" },
+  { label: "Polls", icon: Vote, path: "/polls" },
+  { label: "Beneficiaries", icon: Users, path: "#" },
+  { label: "Analytics", icon: BarChart3, path: "#" },
+  { label: "Exports", icon: Download, path: "#" },
+  { label: "Subscriptions", icon: CreditCard, path: "#" },
 ];
+
 const COLLAPSED_WIDTH = 72;
 const EXPANDED_WIDTH = 240;
+
 export default function AppLayout({ children, noSidebar }: { children: React.ReactNode; noSidebar?: boolean }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -102,9 +104,11 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
   const drawerWidth = collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
-  const [notifAnchor, setNotifAnchor] = useState<HTMLElement | null>(null);
-  const [profileAnchor, setProfileAnchor] = useState<HTMLElement | null>(null);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
   const [userEmail, setUserEmail] = useState("");
   const [userFullName, setUserFullName] = useState("");
   const [userInitials, setUserInitials] = useState("U");
@@ -112,6 +116,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifTab, setNotifTab] = useState<"all" | "unread" | "archived">("all");
+
   const fetchNotifications = useCallback(async (uid: string) => {
     const { data } = await supabase
       .from("notifications")
@@ -124,6 +129,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
       setUnreadCount(data.filter((n) => !n.is_read).length);
     }
   }, []);
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -160,442 +166,397 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
       }
     });
   }, [fetchNotifications]);
+
   useRealtimeSubscription("notifications", () => {
     if (userId) fetchNotifications(userId);
   }, [userId, fetchNotifications], `user_id=eq.${userId}`);
-  const handleNotifClick = (n: Notification) => {
-    setNotifAnchor(null);
-    if (!n.is_read) markAsRead(n.id);
-    if (n.entity_type === "form" && n.entity_id) {
-      navigate(`/forms/${n.entity_id}/responses`);
-    } else if (n.entity_type === "survey" && n.entity_id) {
-      navigate(`/surveys/${n.entity_id}/responses`);
-    } else if (n.entity_type === "poll" && n.entity_id) {
-      navigate(`/polls/${n.entity_id}/results`);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
     }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleNotifClick = (n: Notification) => {
+    setNotifOpen(false);
+    if (!n.is_read) markAsRead(n.id);
+    if (n.entity_type === "form" && n.entity_id) navigate(`/forms/${n.entity_id}/responses`);
+    else if (n.entity_type === "survey" && n.entity_id) navigate(`/surveys/${n.entity_id}/responses`);
+    else if (n.entity_type === "poll" && n.entity_id) navigate(`/polls/${n.entity_id}/results`);
   };
+
   const markAsRead = async (notifId: string) => {
     await supabase.from("notifications").update({ is_read: true }).eq("id", notifId);
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notifId ? { ...n, is_read: true } : n))
-    );
+    setNotifications((prev) => prev.map((n) => (n.id === notifId ? { ...n, is_read: true } : n)));
     setUnreadCount((prev) => Math.max(0, prev - 1));
   };
+
   const markAllRead = async () => {
     if (!userId) return;
     await supabase.from("notifications").update({ is_read: true }).eq("user_id", userId).eq("is_read", false);
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     setUnreadCount(0);
   };
+
   const handleLogout = async () => {
-    setProfileAnchor(null);
+    setProfileOpen(false);
     await supabase.auth.signOut();
     navigate("/login");
   };
-  function NavContent({ dense }: { dense: boolean }) {
-    const w = dense ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
+
+  const filteredNotifs = notifTab === "all"
+    ? notifications
+    : notifTab === "unread"
+      ? notifications.filter((n) => !n.is_read)
+      : notifications.filter((n) => n.is_read);
+
+  /* ── Sidebar Nav Content ──────────────────────── */
+  function NavContent({ dense, isMobile = false }: { dense: boolean; isMobile?: boolean }) {
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%", width: w }}>
+      <div className="flex h-full flex-col" style={{ width: isMobile ? EXPANDED_WIDTH : (dense ? COLLAPSED_WIDTH : EXPANDED_WIDTH) }}>
         {/* Logo */}
-        <Box
-          sx={{
-            px: dense ? 0 : 2.5,
-            pt: 3,
-            pb: 3,
-            display: "flex",
-            justifyContent: dense ? "center" : "flex-start",
-          }}
-        >
-          {dense ? (
-            <Box
-              sx={{
-                width: 32,
-                height: 32,
-                borderRadius: "8px",
-                background: "linear-gradient(135deg, #14b8a6, #059669)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontWeight: 800,
-                fontSize: 15,
-                lineHeight: 1,
-              }}
-            >
+        <div className={cn("flex pt-6 pb-4", dense && !isMobile ? "justify-center px-2" : "justify-start px-5")}>
+          {dense && !isMobile ? (
+            <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 text-sm font-extrabold text-white">
               F
-            </Box>
+            </div>
           ) : (
-            <Box
-              component="img"
-              src={logoSrc}
-              alt="FeedLoop"
-              sx={{ height: 32, width: "auto", display: "block" }}
-            />
+            <img src={logoSrc} alt="FeedLoop" className="h-7 w-auto object-contain" />
           )}
-        </Box>
+        </div>
+
         {/* Nav Items */}
-        <List sx={{ flex: 1, px: dense ? 0.5 : 1, py: 0 }}>
+        <nav className="flex-1 space-y-1 px-2 py-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
-            const btn = (
-              <ListItem key={item.label} disablePadding sx={{ mb: 0.5 }}>
-                <ListItemButton
-                  selected={isActive}
-                  onClick={() => {
-                    if (item.path !== "#") {
-                      navigate(item.path);
-                      setMobileOpen(false);
-                    }
-                  }}
-                  sx={{
-                    borderRadius: 2,
-                    py: 1.25,
-                    justifyContent: dense ? "center" : "flex-start",
-                    "& .MuiListItemIcon-root": { minWidth: dense ? 0 : 36 },
-                    "& .MuiListItemText-primary": { fontSize: "0.875rem", fontWeight: 500 },
-                  }}
-                >
-                  <ListItemIcon sx={dense ? { justifyContent: "center" } : undefined}>
-                    <Icon fontSize="small" />
-                  </ListItemIcon>
-                  {!dense && <ListItemText primary={item.label} />}
-                </ListItemButton>
-              </ListItem>
-            );
-            return dense ? (
-              <Tooltip key={item.label} title={item.label} placement="right" arrow>
-                {btn}
-              </Tooltip>
-            ) : (
-              btn
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => {
+                  if (item.path !== "#") {
+                    navigate(item.path);
+                    setMobileOpen(false);
+                  }
+                }}
+                title={dense && !isMobile ? item.label : undefined}
+                className={cn(
+                  "group flex w-full items-center gap-3 rounded-lg text-sm font-medium transition-all duration-150",
+                  dense && !isMobile ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
+                  isActive
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                )}
+              >
+                <Icon size={18} className={cn(isActive ? "text-white" : "text-slate-400 group-hover:text-slate-600")} />
+                {!dense || isMobile ? <span>{item.label}</span> : null}
+              </button>
             );
           })}
-        </List>
-        {/* Upgrade */}
-        {!dense && (
-          <Box sx={{ mx: 1.5, mb: 1, p: 2, borderRadius: 3, bgcolor: "action.hover" }}>
-            <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
-              Upgrade
-            </Typography>
-            <Typography variant="caption" sx={{ display: "block", mt: 0.25, color: "text.secondary", lineHeight: 1.4 }}>
+        </nav>
+
+        {/* Upgrade Banner */}
+        {!dense || isMobile ? (
+          <div className="mx-3 mb-3 rounded-xl bg-slate-50 p-3">
+            <p className="text-xs font-bold text-slate-900">Upgrade</p>
+            <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
               Stripe &amp; M-Pesa billing for growing teams.
-            </Typography>
-          </Box>
-        )}
+            </p>
+          </div>
+        ) : null}
+
         {/* Collapse Toggle */}
-        <Box sx={{ display: "flex", justifyContent: "center", py: 1 }}>
-          <IconButton size="small" onClick={() => setCollapsed((c) => !c)}>
-            <ChevronLeftIcon
-              sx={{
-                transition: "transform 0.3s ease",
-                transform: dense ? "rotate(180deg)" : "rotate(0deg)",
-              }}
-            />
-          </IconButton>
-        </Box>
-      </Box>
+        {!isMobile && (
+          <div className="flex justify-center py-2">
+            <button
+              type="button"
+              onClick={() => setCollapsed((c) => !c)}
+              className="flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            >
+              <ChevronLeft size={16} className={cn("transition-transform duration-300", collapsed && "rotate-180")} />
+            </button>
+          </div>
+        )}
+      </div>
     );
   }
+
+  /* ── Header ────────────────────────────────────── */
   function Header() {
     return (
-      <Box
-        component="header"
-        sx={{
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          px: 3,
-          py: 1.5,
-          borderBottom: 1,
-          borderColor: "divider",
-          bgcolor: mode === "dark" ? "rgba(13,17,31,0.85)" : "rgba(255,255,255,0.85)",
-          backdropFilter: "blur(12px)",
-        }}
-      >
-        <IconButton
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-100 bg-white/80 px-4 py-2.5 backdrop-blur-xl lg:px-5">
+        {/* Mobile menu button */}
+        <button
+          type="button"
           onClick={() => setMobileOpen(true)}
-          sx={{ display: { lg: "none" } }}
+          className="flex size-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 lg:hidden"
         >
-          <MenuIcon />
-        </IconButton>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, ml: "auto" }}>
-            <Box
-              component="label"
-              sx={{
-                display: { xs: "none", md: "flex" },
-                alignItems: "center",
-                gap: 1,
-                px: 1.5,
-                py: 0.5,
-                borderRadius: 2,
-                border: 1,
-                borderColor: "divider",
-                bgcolor: mode === "dark" ? "rgba(255,255,255,0.04)" : "action.hover",
-                "&:focus-within": { borderColor: "primary.main" },
-              }}
-            >
-              <SearchIcon sx={{ fontSize: 16, color: "text.disabled" }} />
-              <input
-                ref={searchRef}
-                type="text"
-                placeholder="Search..."
-                style={{
-                  border: "none",
-                  outline: "none",
-                  background: "transparent",
-                  fontSize: "0.8125rem",
-                  width: 160,
-                  color: "inherit",
-                  fontFamily: "inherit",
-                }}
-              />
-            </Box>
-            <Tooltip title={mode === "dark" ? "Light mode" : "Dark mode"}>
-              <IconButton onClick={toggleMode} size="small">
-                {mode === "dark" ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Notifications">
-              <IconButton size="small" onClick={(e) => { setNotifAnchor(e.currentTarget); setNotifTab("all"); }}>
-                <Badge badgeContent={unreadCount > 9 ? "9+" : unreadCount} color="primary">
-                  <NotificationsIcon fontSize="small" />
-                </Badge>
-              </IconButton>
-            </Tooltip>
+          <Menu size={18} />
+        </button>
 
-            {/* ── Notification dropdown ─────────────────────── */}
-            <Box
-              sx={{
-                position: "fixed",
-                top: notifAnchor ? notifAnchor.getBoundingClientRect().bottom + 8 : -9999,
-                right: notifAnchor ? Math.min(Math.max(window.innerWidth - notifAnchor.getBoundingClientRect().right + 8, 8), 16) : -9999,
-                zIndex: 1300,
-                visibility: notifAnchor ? "visible" : "hidden",
-              }}
+        <div className="flex items-center gap-2 ml-auto">
+          {/* Search */}
+          <label className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 transition-colors focus-within:border-emerald-400 focus-within:bg-white md:flex">
+            <Search size={14} className="text-slate-400" />
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Search..."
+              className="w-40 bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400"
+            />
+          </label>
+
+          {/* Dark mode toggle */}
+          <button
+            type="button"
+            onClick={toggleMode}
+            title={mode === "dark" ? "Light mode" : "Dark mode"}
+            className="flex size-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+          >
+            {mode === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+
+          {/* Notifications */}
+          <div ref={notifRef} className="relative">
+            <button
+              type="button"
+              onClick={() => { setNotifOpen(!notifOpen); setNotifTab("all"); setProfileOpen(false); }}
+              className="relative flex size-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
             >
-              <Grow in={Boolean(notifAnchor)} timeout={200} style={{ transformOrigin: "top right" }}>
-                <Box
-                  sx={{
-                    width: 400,
-                    maxWidth: "calc(100vw - 32px)",
-                    maxHeight: 520,
-                    display: "flex",
-                    flexDirection: "column",
-                    borderRadius: 3,
-                    bgcolor: mode === "dark" ? "#1e293b" : "#ffffff",
-                    border: "1px solid",
-                    borderColor: mode === "dark" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
-                    boxShadow: mode === "dark"
-                      ? "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2)"
-                      : "0 10px 40px rgba(0,0,0,0.10), 0 2px 10px rgba(0,0,0,0.06)",
-                    overflow: "hidden",
-                    backdropFilter: "blur(20px)",
-                  }}
+              <Bell size={16} />
+              {unreadCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </button>
+
+            <AnimatePresence>
+              {notifOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full z-50 mt-2 w-[380px] max-w-[calc(100vw-32px)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/10"
                 >
                   {/* Header */}
-                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 2.5, py: 2, borderBottom: 1, borderColor: "divider" }}>
-                    <Typography sx={{ fontWeight: 700, fontSize: "0.9375rem", color: "text.primary" }}>Notifications</Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
+                    <span className="text-sm font-bold text-slate-900">Notifications</span>
+                    <div className="flex items-center gap-2">
                       {unreadCount > 0 && (
-                        <Typography
-                          onClick={markAllRead}
-                          sx={{ fontSize: "0.75rem", fontWeight: 600, color: "primary.main", cursor: "pointer", "&:hover": { textDecoration: "underline" }, mr: 0.5 }}
-                        >
+                        <button type="button" onClick={markAllRead} className="text-xs font-semibold text-emerald-600 hover:underline">
                           Mark all read
-                        </Typography>
+                        </button>
                       )}
-                      <IconButton size="small" sx={{ color: "text.disabled", "&:hover": { color: "text.primary" } }}>
-                        <SettingsIcon sx={{ fontSize: 18 }} />
-                      </IconButton>
-                    </Box>
-                  </Box>
+                      <button type="button" className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600">
+                        <Settings size={14} />
+                      </button>
+                    </div>
+                  </div>
 
                   {/* Tabs */}
-                  <Box sx={{ display: "flex", gap: 0.5, px: 2.5, py: 1.5, borderBottom: 1, borderColor: "divider" }}>
+                  <div className="flex gap-1 border-b border-slate-100 px-5 py-2">
                     {(["all", "unread", "archived"] as const).map((tab) => (
-                      <Box
+                      <button
                         key={tab}
+                        type="button"
                         onClick={() => setNotifTab(tab)}
-                        sx={{
-                          px: 2,
-                          py: 0.75,
-                          borderRadius: 1.5,
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          textTransform: "capitalize",
-                          letterSpacing: "0.01em",
-                          bgcolor: notifTab === tab ? "primary.main" : "transparent",
-                          color: notifTab === tab ? "#fff" : "text.secondary",
-                          transition: "all 0.2s ease",
-                          "&:hover": notifTab !== tab ? { bgcolor: "action.hover" } : {},
-                        }}
+                        className={cn(
+                          "rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition-all",
+                          notifTab === tab
+                            ? "bg-slate-900 text-white"
+                            : "text-slate-500 hover:bg-slate-100"
+                        )}
                       >
                         {tab}
                         {tab === "unread" && unreadCount > 0 && (
-                          <Box component="span" sx={{ ml: 1, px: 0.75, py: 0.25, borderRadius: 1, fontSize: "0.625rem", fontWeight: 700, bgcolor: notifTab === tab ? "rgba(255,255,255,0.2)" : "primary.main", color: notifTab === tab ? "#fff" : "#fff" }}>
+                          <span className={cn(
+                            "ml-1.5 inline-flex size-4 items-center justify-center rounded-full text-[9px] font-bold",
+                            notifTab === tab ? "bg-white/20 text-white" : "bg-emerald-500 text-white"
+                          )}>
                             {unreadCount}
-                          </Box>
+                          </span>
                         )}
-                      </Box>
+                      </button>
                     ))}
-                  </Box>
+                  </div>
 
                   {/* List */}
-                  <Box sx={{ flex: 1, overflow: "auto", "&::-webkit-scrollbar": { width: 4 }, "&::-webkit-scrollbar-thumb": { bgcolor: "divider", borderRadius: 2 } }}>
-                    {notifications.length === 0 ? (
-                      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 6, px: 3 }}>
-                        <NotificationsOffIcon sx={{ fontSize: 40, color: "text.disabled", mb: 1.5 }} />
-                        <Typography sx={{ fontWeight: 600, fontSize: "0.875rem", color: "text.secondary" }}>All caught up!</Typography>
-                        <Typography sx={{ fontSize: "0.75rem", color: "text.disabled", mt: 0.25 }}>No new notifications</Typography>
-                      </Box>
+                  <div className="max-h-[400px] overflow-y-auto">
+                    {filteredNotifs.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12">
+                        <BellOff size={32} className="text-slate-300" />
+                        <p className="mt-3 text-sm font-semibold text-slate-500">All caught up!</p>
+                        <p className="mt-0.5 text-xs text-slate-400">No new notifications</p>
+                      </div>
                     ) : (
-                      (notifTab === "all" ? notifications : notifications.filter((n) => notifTab === "unread" ? !n.is_read : n.is_read)).map((n) => {
+                      filteredNotifs.map((n) => {
                         const isUnread = !n.is_read;
                         return (
-                          <Box
+                          <button
                             key={n.id}
+                            type="button"
                             onClick={() => handleNotifClick(n)}
-                            sx={{
-                              display: "flex",
-                              gap: 2,
-                              px: 2.5,
-                              py: 1.75,
-                              cursor: "pointer",
-                              bgcolor: isUnread ? "action.selected" : "transparent",
-                              transition: "background-color 0.15s ease",
-                              "&:hover": { bgcolor: "action.hover" },
-                              borderBottom: "1px solid",
-                              borderColor: "divider",
-                            }}
+                            className={cn(
+                              "flex w-full gap-3 border-b border-slate-50 px-5 py-3.5 text-left transition-colors hover:bg-slate-50",
+                              isUnread && "bg-emerald-50/30"
+                            )}
                           >
-                            {/* Avatar / Icon */}
-                            <Box sx={{ position: "relative", mt: 0.25, flexShrink: 0 }}>
-                              <Avatar sx={{ width: 36, height: 36, bgcolor: notifColor(n.entity_type), fontSize: 16 }}>
+                            <div className="relative shrink-0">
+                              <div className={cn("flex size-9 items-center justify-center rounded-full text-white", notifColor(n.entity_type))}>
                                 {notifIcon(n.entity_type)}
-                              </Avatar>
+                              </div>
                               {isUnread && (
-                                <Box sx={{ position: "absolute", top: -2, right: -2, width: 10, height: 10, borderRadius: "50%", bgcolor: "#3b82f6", border: "2px solid", borderColor: "background.paper" }} />
+                                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-white bg-blue-500" />
                               )}
-                            </Box>
-
-                            {/* Content */}
-                            <Box sx={{ flex: 1, minWidth: 0 }}>
-                              <Typography sx={{ fontSize: "0.8125rem", lineHeight: 1.4, color: "text.primary", fontWeight: isUnread ? 600 : 400 }}>
-                                <Box component="span" sx={{ fontWeight: 700 }}>{n.title}</Box>
-                                {n.message ? <Box component="span" sx={{ color: "text.secondary" }}> — {n.message}</Box> : null}
-                              </Typography>
-                              <Typography sx={{ fontSize: "0.6875rem", color: "text.disabled", mt: 0.5, display: "block" }}>
-                                {timeAgo(n.created_at)}
-                              </Typography>
-                            </Box>
-                          </Box>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className={cn("text-xs leading-relaxed", isUnread ? "font-semibold text-slate-900" : "text-slate-700")}>
+                                <span className="font-bold">{n.title}</span>
+                                {n.message && <span className="text-slate-500"> — {n.message}</span>}
+                              </p>
+                              <p className="mt-0.5 text-[10px] text-slate-400">{timeAgo(n.created_at)}</p>
+                            </div>
+                          </button>
                         );
                       })
                     )}
-                  </Box>
+                  </div>
 
                   {/* Footer */}
-                  <Box sx={{ borderTop: 1, borderColor: "divider", px: 2.5, py: 1.5 }}>
-                    <Button
-                      fullWidth
-                      size="small"
-                      onClick={() => { setNotifAnchor(null); }}
-                      sx={{ borderRadius: 2, fontWeight: 600, fontSize: "0.75rem", textTransform: "none" }}
+                  <div className="border-t border-slate-100 px-5 py-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setNotifOpen(false)}
+                      className="w-full rounded-lg py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100"
                     >
                       View all notifications
-                    </Button>
-                  </Box>
-                </Box>
-              </Grow>
-            </Box>
-            <Tooltip title="Profile">
-              <IconButton size="small" onClick={(e) => setProfileAnchor(e.currentTarget)}>
-                <Avatar sx={{ width: 28, height: 28, fontSize: 11, fontWeight: 700, bgcolor: "primary.main" }}>
-                  {userInitials}
-                </Avatar>
-              </IconButton>
-            </Tooltip>
-            <Menu
-              anchorEl={profileAnchor}
-              open={Boolean(profileAnchor)}
-              onClose={() => setProfileAnchor(null)}
-              slotProps={{
-                paper: { sx: { width: 220, mt: 1, borderRadius: 3 } },
-              }}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Profile */}
+          <div ref={profileRef} className="relative">
+            <button
+              type="button"
+              onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
+              className="flex size-9 items-center justify-center rounded-lg transition-all hover:ring-2 hover:ring-slate-200"
             >
-              <Box sx={{ px: 2, py: 1.5, borderBottom: 1, borderColor: "divider", mb: 0.5 }}>
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                  {userFullName}
-                </Typography>
-                <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                  {userEmail}
-                </Typography>
-              </Box>
-              <MenuItem onClick={() => { setProfileAnchor(null); navigate("/profile"); }} sx={{ borderRadius: 2, mx: 0.5 }}>
-                <PersonIcon fontSize="small" sx={{ mr: 1.5 }} />
-                View Profile
-              </MenuItem>
-              <MenuItem onClick={handleLogout} sx={{ borderRadius: 2, mx: 0.5, color: "error.main" }}>
-                <LogoutIcon fontSize="small" sx={{ mr: 1.5 }} />
-                Sign out
-              </MenuItem>
-            </Menu>
-          </Box>
-        </Box>
-      );
-  }
-  if (noSidebar) {
-    return (
-      <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100dvh" }}>
-        <Header />
-        <Box component="main" sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", px: 2, py: 1.5 }}>
-          {children}
-        </Box>
-      </Box>
+              <div className="flex size-7 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white">
+                {userInitials}
+              </div>
+            </button>
+
+            <AnimatePresence>
+              {profileOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/10"
+                >
+                  <div className="border-b border-slate-100 px-4 py-3">
+                    <p className="text-sm font-semibold text-slate-900">{userFullName}</p>
+                    <p className="text-xs text-slate-500">{userEmail}</p>
+                  </div>
+                  <div className="p-1.5">
+                    <button
+                      type="button"
+                      onClick={() => { setProfileOpen(false); navigate("/profile"); }}
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
+                    >
+                      <User size={16} className="text-slate-400" />
+                      View Profile
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                    >
+                      <LogOut size={16} />
+                      Sign out
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </header>
     );
   }
+
+  /* ── noSidebar mode ────────────────────────────── */
+  if (noSidebar) {
+    return (
+      <div className="flex min-h-dvh flex-col bg-slate-50/50">
+        <Header />
+        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5">
+          {children}
+        </main>
+      </div>
+    );
+  }
+
+  /* ── Full sidebar layout ──────────────────────── */
   return (
-    <Box sx={{ display: "flex", minHeight: "100dvh" }}>
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: "none", lg: "block" },
-          width: drawerWidth,
-          flexShrink: 0,
-          transition: "width 0.3s ease",
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box",
-            transition: "width 0.3s ease",
-            overflowX: "hidden",
-          },
-        }}
+    <div className="flex min-h-dvh bg-slate-50/50">
+      {/* Desktop Sidebar */}
+      <aside
+        className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col lg:border-r lg:border-slate-200 lg:bg-white lg:transition-all lg:duration-300"
+        style={{ width: drawerWidth }}
       >
         <NavContent dense={collapsed} />
-      </Drawer>
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: "block", lg: "none" },
-          "& .MuiDrawer-paper": { width: EXPANDED_WIDTH, boxSizing: "border-box" },
-        }}
-      >
-        <NavContent dense={false} />
-      </Drawer>
-      <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
+      </aside>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-50 bg-slate-900/20 backdrop-blur-sm lg:hidden"
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.aside
+              initial={{ x: -EXPANDED_WIDTH }}
+              animate={{ x: 0 }}
+              exit={{ x: -EXPANDED_WIDTH }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed inset-y-0 left-0 z-50 w-[240px] border-r border-slate-200 bg-white lg:hidden"
+            >
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                className="absolute right-3 top-4 flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+              >
+                <X size={16} />
+              </button>
+              <NavContent dense={false} isMobile />
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content */}
+      <div className="flex min-w-0 flex-1 flex-col lg:pl-[var(--sidebar-w)]" style={{ "--sidebar-w": `${drawerWidth}px` } as React.CSSProperties}>
         <Header />
-        <Box component="main" sx={{ flex: 1, minWidth: 0, overflowY: "auto", overflowX: "hidden", px: 2, py: 1.5 }}>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5">
           {children}
-        </Box>
-      </Box>
-    </Box>
+        </main>
+      </div>
+    </div>
   );
 }

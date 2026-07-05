@@ -1,10 +1,11 @@
-import { Card } from "@/components/ui/card";
 import { AuthForm } from "@/components/auth-form";
 import logoSrc from "@/assets/loop.png";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   return (
     <main className="relative flex min-h-dvh overflow-hidden">
+      {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -12,28 +13,42 @@ export default function Login() {
             "url(https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80)",
         }}
       />
-      <div className="absolute inset-0 bg-white/55 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-white/60 backdrop-blur-sm" />
 
-      <div className="relative mx-auto flex w-full items-center gap-6 px-3 py-2 max-lg:flex-col max-lg:justify-center max-lg:py-2">
+      <div className="relative mx-auto flex w-full max-w-6xl items-center gap-12 px-6 py-8 max-lg:flex-col max-lg:justify-center max-lg:gap-8">
+        {/* Left: Copy */}
         <div className="hidden max-w-xl flex-1 lg:block">
-          <div className="flex items-center gap-3">
-            <img src={logoSrc} alt="FeedLoop" className="h-10 w-auto object-contain" />
-          </div>
+          <Link to="/" className="flex items-center gap-2.5">
+            <img src={logoSrc} alt="FeedLoop" className="h-9 w-auto object-contain" />
+            <span className="text-xl font-extrabold tracking-tight text-slate-900">FeedLoop</span>
+          </Link>
 
-          <h1 className="mt-8 text-[clamp(2rem,4vw,3.25rem)] font-black leading-[1.1] tracking-tight text-slate-900">
+          <h1 className="mt-10 text-[clamp(2rem,4vw,3.25rem)] font-extrabold leading-[1.1] tracking-tight text-slate-900">
             Your data, one dashboard away.
           </h1>
 
-          <p className="mt-4 max-w-lg text-lg leading-relaxed text-slate-600">
+          <p className="mt-5 max-w-lg text-lg leading-relaxed text-slate-500">
             Build surveys, publish polls, and track responses — all from a
             single secure workspace.
           </p>
+
+          <div className="mt-8 space-y-3">
+            {["No-code form builder", "Real-time analytics", "Enterprise security"].map((item) => (
+              <div key={item} className="flex items-center gap-2.5 text-sm text-slate-600">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="#059669" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </span>
+                {item}
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* Right: Auth Card */}
         <div className="w-full max-w-[420px] max-lg:max-w-sm">
-          <Card className="p-4 shadow-2xl shadow-black/5">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-900/5">
             <AuthForm />
-          </Card>
+          </div>
         </div>
       </div>
     </main>

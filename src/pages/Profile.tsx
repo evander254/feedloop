@@ -101,128 +101,128 @@ export default function Profile() {
   return (
     <AppLayout>
       <div className="mx-auto max-w-2xl">
-        <Card>
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="text-center">
-            <span className="mx-auto flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 text-xl font-bold text-white shadow-lg shadow-emerald-500/20">
+            <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-xl font-bold text-white shadow-lg shadow-emerald-500/20">
               {(fullName || email).slice(0, 2).toUpperCase()}
             </span>
-            <h1 className="mt-4 text-xl font-black text-slate-900 dark:text-slate-100">
+            <h1 className="mt-5 text-xl font-extrabold tracking-tight text-slate-900">
               {fullName || "Your Profile"}
             </h1>
-            <p className="mt-1 text-sm text-[var(--text-secondary)]">{email}</p>
+            <p className="mt-1 text-sm text-slate-500">{email}</p>
           </div>
 
           <form
             onSubmit={(e) => { e.preventDefault(); handleSave(); }}
-            className="mt-6 space-y-4"
+            className="mt-8 space-y-4"
           >
             <label className="block">
-              <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Full Name</span>
-              <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                <User size={18} className="shrink-0 text-[var(--text-tertiary)]" />
+              <span className="mb-1.5 block text-sm font-semibold text-slate-700">Full Name</span>
+              <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                <User size={16} className="shrink-0 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Your full name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                  className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                 />
               </span>
             </label>
 
             <label className="block">
-              <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Email</span>
-              <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-muted)] px-4 py-3 shadow-sm">
-                <Mail size={18} className="shrink-0 text-[var(--text-tertiary)]" />
-                <input type="email" value={email} disabled className="w-full bg-transparent text-[var(--text-tertiary)] outline-none" />
+              <span className="mb-1.5 block text-sm font-semibold text-slate-700">Email</span>
+              <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <Mail size={16} className="shrink-0 text-slate-400" />
+                <input type="email" value={email} disabled className="w-full bg-transparent text-sm text-slate-400 outline-none" />
               </span>
             </label>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">
-                <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Phone</span>
-                <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                  <Phone size={18} className="shrink-0 text-[var(--text-tertiary)]" />
+                <span className="mb-1.5 block text-sm font-semibold text-slate-700">Phone</span>
+                <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                  <Phone size={16} className="shrink-0 text-slate-400" />
                   <input
                     type="tel"
                     placeholder="+254 7XX XXX XXX"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                    className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                   />
                 </span>
               </label>
 
               <label className="block">
-                <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Organization</span>
-                <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                  <Building2 size={18} className="shrink-0 text-[var(--text-tertiary)]" />
+                <span className="mb-1.5 block text-sm font-semibold text-slate-700">Organization</span>
+                <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                  <Building2 size={16} className="shrink-0 text-slate-400" />
                   <input
                     type="text"
                     placeholder="Your organization"
                     value={organization}
                     onChange={(e) => setOrganization(e.target.value)}
-                    className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                    className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                   />
                 </span>
               </label>
             </div>
 
             <label className="block">
-              <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Job Title</span>
-              <span className="flex items-center gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                <Briefcase size={18} className="shrink-0 text-[var(--text-tertiary)]" />
+              <span className="mb-1.5 block text-sm font-semibold text-slate-700">Job Title</span>
+              <span className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                <Briefcase size={16} className="shrink-0 text-slate-400" />
                 <input
                   type="text"
                   placeholder="e.g. Program Manager, Field Officer"
                   value={jobTitle}
                   onChange={(e) => setJobTitle(e.target.value)}
-                  className="w-full bg-transparent outline-none text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                  className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                 />
               </span>
             </label>
 
             <label className="block">
-              <span className="mb-1.5 block text-sm font-semibold text-[var(--text-primary)]">Bio</span>
-              <span className="flex items-start gap-3 rounded-xl border border-[var(--border-light)] bg-[var(--surface-card)] px-4 py-3 shadow-sm transition focus-within:border-emerald-400">
-                <FileText size={18} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" />
+              <span className="mb-1.5 block text-sm font-semibold text-slate-700">Bio</span>
+              <span className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/10">
+                <FileText size={16} className="mt-0.5 shrink-0 text-slate-400" />
                 <textarea
                   placeholder="Tell us a bit about yourself and your work..."
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   rows={3}
-                  className="w-full resize-none bg-transparent outline-none text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+                  className="w-full resize-none bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                 />
               </span>
             </label>
 
             {error && (
-              <p className="rounded-xl bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-700 dark:text-red-400">{error}</p>
+              <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">{error}</p>
             )}
 
             {success && (
-              <p className="flex items-center gap-2 rounded-xl bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+              <p className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
                 <CheckCircle2 size={16} /> {success}
               </p>
             )}
 
-            <Button type="submit" loading={saving} icon={!saving && <Save size={18} />} className="w-full">
+            <Button type="submit" loading={saving} icon={!saving && <Save size={16} />} className="w-full">
               Save Changes
             </Button>
           </form>
 
-          <div className="mt-6 border-t border-[var(--border-light)] pt-4">
+          <div className="mt-6 border-t border-slate-100 pt-5">
             <Button
               type="button"
               variant="ghost"
               onClick={handleLogout}
-              className="w-full text-red-500 hover:text-red-600 hover:bg-red-500/5"
+              className="w-full text-red-500 hover:text-red-600 hover:bg-red-50"
             >
               <LogOut size={16} />
               Sign out
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
     </AppLayout>
   );

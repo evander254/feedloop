@@ -173,22 +173,22 @@ const chartComponents: Record<string, React.ComponentType> = {
 
 function SkeletonCard() {
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
-      <div className="h-[6px] skeleton-shimmer" />
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <div className="h-[6px] bg-slate-200 animate-pulse" />
       <div className="p-6">
         <div className="flex items-center justify-between">
-          <div className="size-11 rounded-xl skeleton-shimmer" />
-          <div className="h-7 w-8 rounded skeleton-shimmer" />
+          <div className="size-11 rounded-xl bg-slate-100 animate-pulse" />
+          <div className="h-7 w-8 rounded bg-slate-100 animate-pulse" />
         </div>
-        <div className="mt-4 h-5 w-24 rounded skeleton-shimmer" />
+        <div className="mt-4 h-5 w-24 rounded bg-slate-100 animate-pulse" />
         <div className="mt-2 space-y-1.5">
-          <div className="h-3 w-full rounded skeleton-shimmer" />
-          <div className="h-3 w-3/4 rounded skeleton-shimmer" />
+          <div className="h-3 w-full rounded bg-slate-100 animate-pulse" />
+          <div className="h-3 w-3/4 rounded bg-slate-100 animate-pulse" />
         </div>
-        <div className="mt-4 h-[72px] rounded-lg skeleton-shimmer" />
+        <div className="mt-4 h-[72px] rounded-lg bg-slate-100 animate-pulse" />
         <div className="mt-5 flex gap-2">
-          <div className="h-10 flex-1 rounded-lg skeleton-shimmer" />
-          <div className="h-10 flex-[1.2] rounded-lg skeleton-shimmer" />
+          <div className="h-10 flex-1 rounded-lg bg-slate-100 animate-pulse" />
+          <div className="h-10 flex-[1.2] rounded-lg bg-slate-100 animate-pulse" />
         </div>
       </div>
     </div>
@@ -199,10 +199,10 @@ function SkeletonCard() {
 
 function EmptyState({ label, color }: { label: string; color: string }) {
   return (
-    <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/60 dark:bg-slate-800/40 px-3 text-center">
+    <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-3 text-center">
       <div>
         <Sparkles size={18} className="mx-auto" style={{ color }} />
-        <p className="mt-1 text-[11px] font-medium leading-tight text-slate-400 dark:text-slate-500">
+        <p className="mt-1 text-[11px] font-medium leading-tight text-slate-400">
           No {label.toLowerCase()} yet.<br />Create your first one!
         </p>
       </div>
@@ -249,7 +249,7 @@ function DashboardCard({
 
   return (
     <div
-      className="card-enter tilt-card group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-shadow duration-300 hover:shadow-2xl hover:shadow-slate-200/60 dark:border-slate-700/60 dark:bg-slate-900 dark:hover:shadow-black/30"
+      className="card-enter tilt-card group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/60"
       style={{ animationDelay: `${index * 0.1}s` }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -265,23 +265,23 @@ function DashboardCard({
           >
             <Icon size={22} />
           </span>
-          <span className="text-2xl font-black text-slate-900 transition-all duration-300 group-hover:scale-110 dark:text-white">
+          <span className="text-2xl font-extrabold text-slate-900 transition-all duration-300 group-hover:scale-110">
             {count}
           </span>
         </div>
 
         {/* Title */}
-        <h3 className="mt-4 text-lg font-bold transition-colors duration-300" style={{ color: card.color }}>
+        <h3 className="mt-4 text-lg font-bold" style={{ color: card.color }}>
           {card.label}
         </h3>
 
         {/* Description */}
-        <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm leading-relaxed text-slate-500">
           {card.description}
         </p>
 
         {/* Visual preview */}
-        <div className="mt-4 flex h-[72px] items-center justify-center overflow-hidden rounded-lg border border-dashed border-slate-200 bg-slate-50/60 dark:border-slate-700 dark:bg-slate-800/40">
+        <div className="mt-4 flex h-[72px] items-center justify-center overflow-hidden rounded-xl border border-dashed border-slate-200 bg-slate-50/60">
           {count === 0 ? (
             <EmptyState label={card.label} color={card.color} />
           ) : (
@@ -294,14 +294,14 @@ function DashboardCard({
           <button
             type="button"
             onClick={() => onNavigate(card.path)}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:border-slate-400 group-hover:shadow-md dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 group-hover:shadow-md"
           >
             Open <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-0.5" />
           </button>
           <button
             type="button"
             onClick={() => onNavigate(card.newPath)}
-            className="inline-flex flex-[1.2] items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-md"
+            className="inline-flex flex-[1.2] items-center justify-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-px hover:shadow-md active:scale-[0.97]"
             style={{ background: card.color }}
           >
             <Plus size={14} />
@@ -416,10 +416,10 @@ export default function Dashboard() {
     <AppLayout noSidebar>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-800 dark:text-slate-200">
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
             Welcome back, {userName}
           </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-slate-500">
             What would you like to work on today?
           </p>
         </div>
@@ -433,12 +433,12 @@ export default function Dashboard() {
             {/* Quick Actions Slider */}
             <div className="relative">
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">Quick Actions</h2>
+                <h2 className="text-sm font-bold text-slate-900">Quick Actions</h2>
                 <div className="flex gap-1">
-                  <button type="button" className="quick-scroll-left flex size-7 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-100 transition dark:border-slate-700 dark:hover:bg-slate-800">
+                  <button type="button" className="quick-scroll-left flex size-7 items-center justify-center rounded-lg border border-slate-200 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                   </button>
-                  <button type="button" className="quick-scroll-right flex size-7 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-100 transition dark:border-slate-700 dark:hover:bg-slate-800">
+                  <button type="button" className="quick-scroll-right flex size-7 items-center justify-center rounded-lg border border-slate-200 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                   </button>
                 </div>
@@ -459,14 +459,14 @@ export default function Dashboard() {
                       key={item.label}
                       type="button"
                       onClick={item.onClick}
-                      className="snap-start flex shrink-0 flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-lg hover:border-slate-300 hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-900 w-[170px]"
+                      className="group snap-start flex shrink-0 flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-slate-300 w-[170px]"
                     >
                       <span className="flex size-12 items-center justify-center rounded-xl text-white shadow-sm transition-transform duration-200 group-hover:scale-110" style={{ background: item.color }}>
                         <Icon size={22} />
                       </span>
                       <div className="text-center">
-                        <div className="text-sm font-bold text-slate-900 dark:text-white">{item.label}</div>
-                        <div className="mt-0.5 text-[11px] text-slate-400 dark:text-slate-500 leading-tight">{item.desc}</div>
+                        <div className="text-sm font-bold text-slate-900">{item.label}</div>
+                        <div className="mt-0.5 text-[11px] leading-tight text-slate-400">{item.desc}</div>
                       </div>
                     </button>
                   );
@@ -489,11 +489,11 @@ export default function Dashboard() {
             {drafts.length > 0 && (
               <div className="mt-8">
                 <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-base font-bold text-[var(--text-primary)]">Resume Drafts</h2>
+                  <h2 className="text-sm font-bold text-slate-900">Resume Drafts</h2>
                   <button
                     type="button"
                     onClick={() => navigate("/forms")}
-                    className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition"
+                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition"
                   >
                     View all forms →
                   </button>
@@ -502,13 +502,13 @@ export default function Dashboard() {
                   {drafts.map((draft) => (
                     <div
                       key={draft.id}
-                      className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-teal-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                      className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-emerald-200 hover:shadow-md"
                     >
-                      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
                         <Pencil size={18} />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                        <p className="truncate text-sm font-semibold text-slate-900">
                           {draft.title || "Untitled Form"}
                         </p>
                         <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-400">
@@ -523,7 +523,7 @@ export default function Dashboard() {
                       <button
                         type="button"
                         onClick={() => navigate(`/builder?id=${draft.id}`)}
-                        className="shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                        className="shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300"
                       >
                         Edit
                       </button>
