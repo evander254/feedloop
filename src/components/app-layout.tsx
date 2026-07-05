@@ -449,25 +449,25 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -4, scale: 0.98 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-50 mt-2 w-[380px] max-w-[calc(100vw-32px)] overflow-hidden rounded-2xl border border-white/30 bg-white/50 backdrop-blur-xl shadow-2xl shadow-emerald-900/10"
+                  className="absolute right-0 top-full z-50 mt-2 w-[380px] max-w-[calc(100vw-32px)] overflow-hidden rounded-2xl border border-emerald-200/40 bg-white/80 backdrop-blur-2xl shadow-2xl shadow-emerald-900/15"
                 >
                   {/* Header */}
-                  <div className="flex items-center justify-between border-b border-white/20 px-5 py-3">
-                    <span className="text-sm font-bold text-emerald-900">Notifications</span>
+                  <div className="flex items-center justify-between border-b border-emerald-100/60 px-5 py-3 bg-emerald-50/30">
+                    <span className="text-sm font-bold text-emerald-950">Notifications</span>
                     <div className="flex items-center gap-2">
                       {unreadCount > 0 && (
-                        <button type="button" onClick={markAllRead} className="text-xs font-semibold text-emerald-600 hover:underline">
+                        <button type="button" onClick={markAllRead} className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline">
                           Mark all read
                         </button>
                       )}
-                      <button type="button" className="rounded-lg p-1 text-emerald-600/40 transition-colors hover:bg-white/40 hover:text-emerald-700">
+                      <button type="button" className="rounded-lg p-1 text-emerald-600/60 transition-colors hover:bg-emerald-100/50 hover:text-emerald-700">
                         <Settings size={14} />
                       </button>
                     </div>
                   </div>
 
                   {/* Tabs */}
-                  <div className="flex gap-1 border-b border-white/20 px-5 py-2">
+                  <div className="flex gap-1 border-b border-emerald-100/60 px-5 py-2 bg-emerald-50/20">
                     {(["all", "unread", "archived"] as const).map((tab) => (
                       <button
                         key={tab}
@@ -476,15 +476,15 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                         className={cn(
                           "rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition-all",
                           notifTab === tab
-                            ? "bg-emerald-500/90 text-white shadow-sm shadow-emerald-500/20"
-                            : "text-emerald-700/50 hover:bg-white/40"
+                            ? "bg-emerald-600 text-white shadow-sm shadow-emerald-600/20"
+                            : "text-emerald-700/60 hover:bg-emerald-100/50 hover:text-emerald-800"
                         )}
                       >
                         {tab}
                         {tab === "unread" && unreadCount > 0 && (
                           <span className={cn(
                             "ml-1.5 inline-flex size-4 items-center justify-center rounded-full text-[9px] font-bold",
-                            notifTab === tab ? "bg-white/20 text-white" : "bg-emerald-500 text-white"
+                            notifTab === tab ? "bg-white/25 text-white" : "bg-emerald-500 text-white"
                           )}>
                             {unreadCount}
                           </span>
@@ -497,9 +497,9 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   <div className="max-h-[400px] overflow-y-auto">
                     {filteredNotifs.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12">
-                        <BellOff size={32} className="text-emerald-300/50" />
-                        <p className="mt-3 text-sm font-semibold text-emerald-700/50">All caught up!</p>
-                        <p className="mt-0.5 text-xs text-emerald-600/30">No new notifications</p>
+                        <BellOff size={32} className="text-emerald-300" />
+                        <p className="mt-3 text-sm font-semibold text-emerald-700">All caught up!</p>
+                        <p className="mt-0.5 text-xs text-emerald-500/60">No new notifications</p>
                       </div>
                     ) : (
                       filteredNotifs.map((n) => {
@@ -510,24 +510,24 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                             type="button"
                             onClick={() => handleNotifClick(n)}
                             className={cn(
-                              "flex w-full gap-3 border-b border-white/10 px-5 py-3.5 text-left transition-colors hover:bg-white/30",
-                              isUnread && "bg-emerald-50/40"
+                              "flex w-full gap-3 border-b border-emerald-100/40 px-5 py-3.5 text-left transition-all hover:bg-emerald-50/60",
+                              isUnread && "bg-emerald-50/50"
                             )}
                           >
                             <div className="relative shrink-0">
-                              <div className={cn("flex size-9 items-center justify-center rounded-full text-white", notifColor(n.entity_type))}>
+                              <div className={cn("flex size-9 items-center justify-center rounded-full text-white shadow-sm", notifColor(n.entity_type))}>
                                 {notifIcon(n.entity_type)}
                               </div>
                               {isUnread && (
-                                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-white/50 bg-emerald-500" />
+                                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-white bg-emerald-500" />
                               )}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className={cn("text-xs leading-relaxed", isUnread ? "font-semibold text-emerald-900" : "text-emerald-800/70")}>
+                              <p className={cn("text-xs leading-relaxed", isUnread ? "font-bold text-emerald-950" : "font-medium text-emerald-800")}>
                                 <span className="font-bold">{n.title}</span>
-                                {n.message && <span className="text-emerald-600/50"> — {n.message}</span>}
+                                {n.message && <span className="text-emerald-600/60"> — {n.message}</span>}
                               </p>
-                              <p className="mt-0.5 text-[10px] text-emerald-600/30">{timeAgo(n.created_at)}</p>
+                              <p className="mt-0.5 text-[10px] text-emerald-500/50">{timeAgo(n.created_at)}</p>
                             </div>
                           </button>
                         );
@@ -536,11 +536,11 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   </div>
 
                   {/* Footer */}
-                  <div className="border-t border-white/20 px-5 py-2.5">
+                  <div className="border-t border-emerald-100/60 px-5 py-2.5 bg-emerald-50/20">
                     <button
                       type="button"
                       onClick={() => setNotifOpen(false)}
-                      className="w-full rounded-lg py-1.5 text-xs font-semibold text-emerald-700/60 transition-colors hover:bg-white/30"
+                      className="w-full rounded-lg py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100/50 hover:text-emerald-800"
                     >
                       View all notifications
                     </button>
@@ -569,25 +569,25 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -4, scale: 0.98 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-white/30 bg-white/50 backdrop-blur-xl shadow-2xl shadow-emerald-900/10"
+                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-emerald-200/40 bg-white/80 backdrop-blur-2xl shadow-2xl shadow-emerald-900/15"
                 >
-                  <div className="border-b border-white/20 px-4 py-3">
-                    <p className="text-sm font-semibold text-emerald-900">{userFullName}</p>
-                    <p className="text-xs text-emerald-700/50">{userEmail}</p>
+                  <div className="border-b border-emerald-100/60 px-4 py-3 bg-emerald-50/30">
+                    <p className="text-sm font-bold text-emerald-950">{userFullName}</p>
+                    <p className="text-xs text-emerald-600/60">{userEmail}</p>
                   </div>
                   <div className="p-1.5">
                     <button
                       type="button"
                       onClick={() => { setProfileOpen(false); navigate("/profile"); }}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-emerald-800/70 transition-colors hover:bg-white/40"
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-emerald-800 transition-all hover:bg-emerald-50/60 hover:text-emerald-950"
                     >
-                      <User size={16} className="text-emerald-500/50" />
+                      <User size={16} className="text-emerald-500" />
                       View Profile
                     </button>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50/40"
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-red-600 transition-all hover:bg-red-50/60 hover:text-red-700"
                     >
                       <LogOut size={16} />
                       Sign out
