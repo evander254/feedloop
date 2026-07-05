@@ -466,11 +466,11 @@ export default function FormBuilder() {
   const handleCopyLink = async () => { await navigator.clipboard.writeText(shareUrl); setShareCopied(true); setTimeout(() => setShareCopied(false), 2000); };
 
   /* loading */
-  if (loading) return <AppLayout noSidebar><div className="flex min-h-[60vh] items-center justify-center"><Loader2 size={28} className="animate-spin text-teal-600" /></div></AppLayout>;
+  if (loading) return <AppLayout ><div className="flex min-h-[60vh] items-center justify-center"><Loader2 size={28} className="animate-spin text-teal-600" /></div></AppLayout>;
 
   /* success screen */
   if (savedFormId) return (
-    <AppLayout noSidebar>
+    <AppLayout >
       <div className="flex items-center justify-center py-6"><div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl ring-1 ring-slate-200/60">
         <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-teal-100 text-teal-600"><Share2 size={28} /></span>
         <h1 className="mt-4 text-xl font-black text-slate-900">{isEditing ? "Form updated!" : "Form created!"}</h1>
@@ -491,7 +491,7 @@ export default function FormBuilder() {
   const fieldCount = fields.filter((f) => f.field_label.trim()).length;
 
   return (
-    <AppLayout noSidebar>
+    <AppLayout >
       <div className="flex h-screen flex-col bg-slate-50">
         {/* ── Top bar ─────────────────────────────────── */}
         <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 py-2">

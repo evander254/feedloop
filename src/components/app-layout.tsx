@@ -19,15 +19,11 @@ import {
   Moon,
   Bell,
   Search,
-  Menu,
   LogOut,
   User,
-  ChevronLeft,
   Settings,
   BellOff,
   X,
-  Check,
-  Plus,
 } from "lucide-react";
 import logoSrc from "@/assets/loop.png";
 import { cn } from "@/lib/utils";
@@ -72,15 +68,6 @@ function notifColor(entity_type: string | null): string {
   }
 }
 
-function notifTextColor(entity_type: string | null): string {
-  switch (entity_type) {
-    case "form": return "text-emerald-600";
-    case "survey": return "text-teal-600";
-    case "poll": return "text-green-600";
-    default: return "text-emerald-500";
-  }
-}
-
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { label: "Organizations", icon: Building2, path: "/organizations" },
@@ -94,16 +81,10 @@ const navItems = [
   { label: "Subscriptions", icon: CreditCard, path: "#" },
 ];
 
-const COLLAPSED_WIDTH = 72;
-const EXPANDED_WIDTH = 240;
-
-export default function AppLayout({ children, noSidebar }: { children: React.ReactNode; noSidebar?: boolean }) {
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { mode, toggleMode } = useThemeMode();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(true);
-  const drawerWidth = collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH;
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -213,78 +194,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
       ? notifications.filter((n) => !n.is_read)
       : notifications.filter((n) => n.is_read);
 
-  /* ── Sidebar Nav Content ──────────────────────── */
-  function NavContent({ dense, isMobile = false }: { dense: boolean; isMobile?: boolean }) {
-    return (
-      <div className="flex h-full flex-col" style={{ width: isMobile ? EXPANDED_WIDTH : (dense ? COLLAPSED_WIDTH : EXPANDED_WIDTH) }}>
-        {/* Logo */}
-        <div className={cn("flex pt-6 pb-4", dense && !isMobile ? "justify-center px-2" : "justify-start px-5")}>
-          {dense && !isMobile ? (
-            <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-sm font-extrabold text-white shadow-lg shadow-emerald-500/20">
-              F
-            </div>
-          ) : (
-            <img src={logoSrc} alt="FeedLoop" className="h-7 w-auto object-contain" />
-          )}
-        </div>
-
-        {/* Nav Items */}
-        <nav className="flex-1 space-y-1 px-2 py-2">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-            return (
-              <button
-                key={item.label}
-                type="button"
-                onClick={() => {
-                  if (item.path !== "#") {
-                    navigate(item.path);
-                    setMobileOpen(false);
-                  }
-                }}
-                title={dense && !isMobile ? item.label : undefined}
-                className={cn(
-                  "group flex w-full items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200",
-                  dense && !isMobile ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
-                  isActive
-                    ? "bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white shadow-md shadow-emerald-500/15 backdrop-blur-sm"
-                    : "text-slate-600 hover:bg-white/40 hover:text-slate-900 hover:backdrop-blur-sm"
-                )}
-              >
-                <Icon size={18} className={cn(isActive ? "text-white" : "text-emerald-500/60 group-hover:text-emerald-600")} />
-                {!dense || isMobile ? <span>{item.label}</span> : null}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Upgrade Banner */}
-        {!dense || isMobile ? (
-          <div className="mx-3 mb-3 rounded-2xl bg-white/30 backdrop-blur-md border border-white/30 p-3">
-            <p className="text-xs font-bold text-emerald-800">Upgrade</p>
-            <p className="mt-0.5 text-[11px] leading-snug text-emerald-700/60">
-              Stripe &amp; M-Pesa billing for growing teams.
-            </p>
-          </div>
-        ) : null}
-
-        {/* Collapse Toggle */}
-        {!isMobile && (
-          <div className="flex justify-center py-2">
-            <button
-              type="button"
-              onClick={() => setCollapsed((c) => !c)}
-              className="flex size-8 items-center justify-center rounded-xl text-emerald-600/50 transition-colors hover:bg-white/40 hover:text-emerald-700"
-            >
-              <ChevronLeft size={16} className={cn("transition-transform duration-300", collapsed && "rotate-180")} />
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  }
-
   /* ── Global Theme Background ────────────────────── */
   function ThemeBackground() {
     return (
@@ -315,7 +224,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
           .animate-pulse-glow { animation: pulse-glow 4s ease-in-out infinite; }
         `}</style>
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none">
-          {/* Large emerald blob — top left */}
           <div className="absolute -top-[10%] -left-[5%] w-[340px] h-[340px] opacity-30 blur-[60px] animate-organic-1">
             <svg viewBox="0 0 200 200" className="w-full h-full">
               <defs>
@@ -329,7 +237,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             </svg>
           </div>
 
-          {/* Teal ring — top right */}
           <div className="absolute top-[8%] right-[5%] w-48 h-48 sm:w-64 sm:h-64 opacity-20 animate-organic-2">
             <svg viewBox="0 0 200 200" className="w-full h-full">
               <defs>
@@ -343,7 +250,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             </svg>
           </div>
 
-          {/* Green leaf — bottom left */}
           <div className="absolute bottom-[15%] left-[3%] w-40 h-40 sm:w-56 sm:h-56 opacity-20 blur-[2px] animate-organic-3">
             <svg viewBox="0 0 200 200" className="w-full h-full">
               <defs>
@@ -360,7 +266,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             </svg>
           </div>
 
-          {/* Emerald water drop — center right */}
           <div className="absolute top-[45%] right-[2%] w-28 h-28 sm:w-36 sm:h-36 opacity-15 animate-organic-1" style={{ animationDelay: "2s" }}>
             <svg viewBox="0 0 100 130" className="w-full h-full">
               <defs>
@@ -374,7 +279,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             </svg>
           </div>
 
-          {/* Small floating dots — scattered */}
           <div className="absolute top-[60%] left-[20%] w-3 h-3 rounded-full bg-emerald-400 opacity-40 animate-pulse-glow" />
           <div className="absolute top-[30%] left-[45%] w-2 h-2 rounded-full bg-teal-400 opacity-30 animate-pulse-glow" style={{ animationDelay: "1s" }} />
           <div className="absolute top-[75%] right-[25%] w-4 h-4 rounded-full bg-green-300 opacity-25 animate-pulse-glow" style={{ animationDelay: "2s" }} />
@@ -388,32 +292,22 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
   /* ── Header ────────────────────────────────────── */
   function Header() {
     return (
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/20 bg-white/30 backdrop-blur-xl px-4 py-2.5 lg:px-5">
-        {noSidebar ? (
-          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate("/dashboard")}>
-            <img src={logoSrc} alt="FeedLoop Logo" className="h-7 w-auto object-contain" />
-            <span className="text-sm font-black tracking-tight text-emerald-900">FeedLoop</span>
-          </div>
-        ) : (
-          /* Mobile menu button */
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            className="flex size-9 items-center justify-center rounded-xl text-emerald-700/60 transition-colors hover:bg-white/40 lg:hidden"
-          >
-            <Menu size={18} />
-          </button>
-        )}
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-emerald-200/30 bg-white/40 backdrop-blur-xl px-4 py-2.5 lg:px-6">
+        {/* Logo — always visible */}
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate("/dashboard")}>
+          <img src={logoSrc} alt="FeedLoop Logo" className="h-7 w-auto object-contain" />
+          <span className="text-sm font-black tracking-tight text-emerald-900">FeedLoop</span>
+        </div>
 
         <div className="flex items-center gap-2 ml-auto">
           {/* Search */}
-          <label className="hidden items-center gap-2 rounded-xl border border-white/30 bg-white/30 backdrop-blur-sm px-3 py-1.5 transition-colors focus-within:border-emerald-400 focus-within:bg-white/50 md:flex">
-            <Search size={14} className="text-emerald-600/40" />
+          <label className="hidden items-center gap-2 rounded-xl border border-emerald-200/30 bg-white/30 backdrop-blur-sm px-3 py-1.5 transition-colors focus-within:border-emerald-400 focus-within:bg-white/50 md:flex">
+            <Search size={14} className="text-emerald-600/50" />
             <input
               ref={searchRef}
               type="text"
               placeholder="Search..."
-              className="w-40 bg-transparent text-xs text-slate-700 outline-none placeholder:text-emerald-700/30"
+              className="w-40 bg-transparent text-xs text-emerald-900 outline-none placeholder:text-emerald-600/30"
             />
           </label>
 
@@ -422,7 +316,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             type="button"
             onClick={toggleMode}
             title={mode === "dark" ? "Light mode" : "Dark mode"}
-            className="flex size-9 items-center justify-center rounded-xl text-emerald-700/50 transition-colors hover:bg-white/40 hover:text-emerald-700"
+            className="flex size-9 items-center justify-center rounded-xl text-emerald-700/50 transition-colors hover:bg-white/50 hover:text-emerald-700"
           >
             {mode === "dark" ? <Sun size={16} /> : <Moon size={16} />}
           </button>
@@ -432,7 +326,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             <button
               type="button"
               onClick={() => { setNotifOpen(!notifOpen); setNotifTab("all"); setProfileOpen(false); }}
-              className="relative flex size-9 items-center justify-center rounded-xl text-emerald-700/50 transition-colors hover:bg-white/40 hover:text-emerald-700"
+              className="relative flex size-9 items-center justify-center rounded-xl text-emerald-700/50 transition-colors hover:bg-white/50 hover:text-emerald-700"
             >
               <Bell size={16} />
               {unreadCount > 0 && (
@@ -451,7 +345,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   transition={{ duration: 0.15 }}
                   className="absolute right-0 top-full z-50 mt-2 w-[380px] max-w-[calc(100vw-32px)] overflow-hidden rounded-2xl border border-emerald-200/40 bg-white/80 backdrop-blur-2xl shadow-2xl shadow-emerald-900/15"
                 >
-                  {/* Header */}
                   <div className="flex items-center justify-between border-b border-emerald-100/60 px-5 py-3 bg-emerald-50/30">
                     <span className="text-sm font-bold text-emerald-950">Notifications</span>
                     <div className="flex items-center gap-2">
@@ -466,7 +359,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                     </div>
                   </div>
 
-                  {/* Tabs */}
                   <div className="flex gap-1 border-b border-emerald-100/60 px-5 py-2 bg-emerald-50/20">
                     {(["all", "unread", "archived"] as const).map((tab) => (
                       <button
@@ -493,7 +385,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                     ))}
                   </div>
 
-                  {/* List */}
                   <div className="max-h-[400px] overflow-y-auto">
                     {filteredNotifs.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12">
@@ -535,7 +426,6 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                     )}
                   </div>
 
-                  {/* Footer */}
                   <div className="border-t border-emerald-100/60 px-5 py-2.5 bg-emerald-50/20">
                     <button
                       type="button"
@@ -550,7 +440,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             </AnimatePresence>
           </div>
 
-          {/* Profile */}
+          {/* Profile + Nav Dropdown */}
           <div ref={profileRef} className="relative">
             <button
               type="button"
@@ -569,12 +459,44 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -4, scale: 0.98 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-emerald-200/40 bg-white/80 backdrop-blur-2xl shadow-2xl shadow-emerald-900/15"
+                  className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-emerald-200/40 bg-white/80 backdrop-blur-2xl shadow-2xl shadow-emerald-900/15"
                 >
+                  {/* User Info */}
                   <div className="border-b border-emerald-100/60 px-4 py-3 bg-emerald-50/30">
                     <p className="text-sm font-bold text-emerald-950">{userFullName}</p>
                     <p className="text-xs text-emerald-600/60">{userEmail}</p>
                   </div>
+
+                  {/* Navigation Links */}
+                  <div className="p-1.5 border-b border-emerald-100/40">
+                    {navItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = location.pathname === item.path;
+                      return (
+                        <button
+                          key={item.label}
+                          type="button"
+                          onClick={() => {
+                            if (item.path !== "#") {
+                              navigate(item.path);
+                              setProfileOpen(false);
+                            }
+                          }}
+                          className={cn(
+                            "flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm font-medium transition-all",
+                            isActive
+                              ? "bg-emerald-100/60 text-emerald-950 font-semibold"
+                              : "text-emerald-700/70 hover:bg-emerald-50/60 hover:text-emerald-950"
+                          )}
+                        >
+                          <Icon size={15} className={cn(isActive ? "text-emerald-600" : "text-emerald-500/50")} />
+                          {item.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Account Actions */}
                   <div className="p-1.5">
                     <button
                       type="button"
@@ -602,70 +524,13 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
     );
   }
 
-  /* ── noSidebar mode ────────────────────────────── */
-  if (noSidebar) {
-    return (
-      <div className="flex min-h-dvh flex-col bg-gradient-to-br from-[#ecfdf5] via-[#d1fae5] to-[#f0fdf4] relative overflow-hidden">
-        <ThemeBackground />
-        <Header />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5 relative z-10">
-          {children}
-        </main>
-      </div>
-    );
-  }
-
-  /* ── Full sidebar layout ──────────────────────── */
   return (
-    <div className="flex min-h-dvh bg-gradient-to-br from-[#ecfdf5] via-[#d1fae5] to-[#f0fdf4] relative overflow-hidden">
+    <div className="flex min-h-dvh flex-col bg-gradient-to-br from-[#ecfdf5] via-[#d1fae5] to-[#f0fdf4] relative overflow-hidden">
       <ThemeBackground />
-      {/* Desktop Sidebar */}
-      <aside
-        className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col lg:border-r lg:border-white/20 lg:bg-white/30 lg:backdrop-blur-xl lg:transition-all lg:duration-300"
-        style={{ width: drawerWidth }}
-      >
-        <NavContent dense={collapsed} />
-      </aside>
-
-      {/* Mobile Sidebar Overlay */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 bg-emerald-900/10 backdrop-blur-sm lg:hidden"
-              onClick={() => setMobileOpen(false)}
-            />
-            <motion.aside
-              initial={{ x: -EXPANDED_WIDTH }}
-              animate={{ x: 0 }}
-              exit={{ x: -EXPANDED_WIDTH }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed inset-y-0 left-0 z-50 w-[240px] border-r border-white/20 bg-white/30 backdrop-blur-xl lg:hidden"
-            >
-              <button
-                type="button"
-                onClick={() => setMobileOpen(false)}
-                className="absolute right-3 top-4 flex size-8 items-center justify-center rounded-xl text-emerald-600/40 transition-colors hover:bg-white/40 hover:text-emerald-700"
-              >
-                <X size={16} />
-              </button>
-              <NavContent dense={false} isMobile />
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Main Content */}
-      <div className="flex min-w-0 flex-1 flex-col lg:pl-[var(--sidebar-w)] relative z-10" style={{ "--sidebar-w": `${drawerWidth}px` } as React.CSSProperties}>
-        <Header />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5 relative z-10">
-          {children}
-        </main>
-      </div>
+      <Header />
+      <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5 relative z-10">
+        {children}
+      </main>
     </div>
   );
 }
