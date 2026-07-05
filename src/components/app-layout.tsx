@@ -66,18 +66,18 @@ function notifIcon(entity_type: string | null) {
 function notifColor(entity_type: string | null): string {
   switch (entity_type) {
     case "form": return "bg-emerald-500";
-    case "survey": return "bg-blue-500";
-    case "poll": return "bg-purple-500";
-    default: return "bg-slate-400";
+    case "survey": return "bg-teal-500";
+    case "poll": return "bg-green-500";
+    default: return "bg-emerald-400";
   }
 }
 
 function notifTextColor(entity_type: string | null): string {
   switch (entity_type) {
     case "form": return "text-emerald-600";
-    case "survey": return "text-blue-600";
-    case "poll": return "text-purple-600";
-    default: return "text-slate-600";
+    case "survey": return "text-teal-600";
+    case "poll": return "text-green-600";
+    default: return "text-emerald-500";
   }
 }
 
@@ -220,7 +220,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
         {/* Logo */}
         <div className={cn("flex pt-6 pb-4", dense && !isMobile ? "justify-center px-2" : "justify-start px-5")}>
           {dense && !isMobile ? (
-            <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 text-sm font-extrabold text-white">
+            <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-sm font-extrabold text-white shadow-lg shadow-emerald-500/20">
               F
             </div>
           ) : (
@@ -245,14 +245,14 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                 }}
                 title={dense && !isMobile ? item.label : undefined}
                 className={cn(
-                  "group flex w-full items-center gap-3 rounded-lg text-sm font-medium transition-all duration-150",
+                  "group flex w-full items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200",
                   dense && !isMobile ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
                   isActive
-                    ? "bg-slate-900 text-white shadow-sm"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    ? "bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white shadow-md shadow-emerald-500/15 backdrop-blur-sm"
+                    : "text-slate-600 hover:bg-white/40 hover:text-slate-900 hover:backdrop-blur-sm"
                 )}
               >
-                <Icon size={18} className={cn(isActive ? "text-white" : "text-slate-400 group-hover:text-slate-600")} />
+                <Icon size={18} className={cn(isActive ? "text-white" : "text-emerald-500/60 group-hover:text-emerald-600")} />
                 {!dense || isMobile ? <span>{item.label}</span> : null}
               </button>
             );
@@ -261,9 +261,9 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
 
         {/* Upgrade Banner */}
         {!dense || isMobile ? (
-          <div className="mx-3 mb-3 rounded-xl bg-slate-50 p-3">
-            <p className="text-xs font-bold text-slate-900">Upgrade</p>
-            <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
+          <div className="mx-3 mb-3 rounded-2xl bg-white/30 backdrop-blur-md border border-white/30 p-3">
+            <p className="text-xs font-bold text-emerald-800">Upgrade</p>
+            <p className="mt-0.5 text-[11px] leading-snug text-emerald-700/60">
               Stripe &amp; M-Pesa billing for growing teams.
             </p>
           </div>
@@ -275,7 +275,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             <button
               type="button"
               onClick={() => setCollapsed((c) => !c)}
-              className="flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+              className="flex size-8 items-center justify-center rounded-xl text-emerald-600/50 transition-colors hover:bg-white/40 hover:text-emerald-700"
             >
               <ChevronLeft size={16} className={cn("transition-transform duration-300", collapsed && "rotate-180")} />
             </button>
@@ -290,72 +290,96 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
     return (
       <>
         <style>{`
-          @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(6deg); }
+          @keyframes organicFloat1 {
+            0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg) scale(1); }
+            25% { transform: translateY(-20px) translateX(8px) rotate(12deg) scale(1.05); }
+            50% { transform: translateY(-8px) translateX(-5px) rotate(-6deg) scale(0.97); }
+            75% { transform: translateY(-25px) translateX(3px) rotate(8deg) scale(1.02); }
           }
-          @keyframes floatReverse {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(15px) rotate(-6deg); }
+          @keyframes organicFloat2 {
+            0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+            33% { transform: translateY(18px) translateX(-10px) rotate(-10deg); }
+            66% { transform: translateY(-12px) translateX(6px) rotate(7deg); }
           }
-          .animate-float-slow {
-            animation: floatSlow 8s ease-in-out infinite;
+          @keyframes organicFloat3 {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-18px) scale(1.08); }
           }
-          .animate-float-reverse {
-            animation: floatReverse 9s ease-in-out infinite;
+          @keyframes pulse-glow {
+            0%, 100% { opacity: 0.15; }
+            50% { opacity: 0.3; }
           }
+          .animate-organic-1 { animation: organicFloat1 10s ease-in-out infinite; }
+          .animate-organic-2 { animation: organicFloat2 12s ease-in-out infinite; }
+          .animate-organic-3 { animation: organicFloat3 8s ease-in-out infinite; }
+          .animate-pulse-glow { animation: pulse-glow 4s ease-in-out infinite; }
         `}</style>
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none">
-          {/* Cyan Cone */}
-          <div className="absolute top-[25%] left-[8%] w-24 h-24 sm:w-32 sm:h-32 opacity-20 blur-[3px] animate-float-slow">
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <polygon points="50,10 15,80 85,80" fill="url(#layoutCyanGrad)" />
-              <ellipse cx="50" cy="80" rx="35" ry="10" fill="#0e7490" opacity="0.6" />
+          {/* Large emerald blob — top left */}
+          <div className="absolute -top-[10%] -left-[5%] w-[340px] h-[340px] opacity-30 blur-[60px] animate-organic-1">
+            <svg viewBox="0 0 200 200" className="w-full h-full">
               <defs>
-                <linearGradient id="layoutCyanGrad" x1="0%" y1="0%" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#22d3ee" />
-                  <stop offset="100%" stopColor="#0891b2" />
-                </linearGradient>
+                <radialGradient id="blob1" cx="40%" cy="40%">
+                  <stop offset="0%" stopColor="#34d399" />
+                  <stop offset="60%" stopColor="#10b981" />
+                  <stop offset="100%" stopColor="#059669" stopOpacity="0" />
+                </radialGradient>
               </defs>
+              <path d="M45,-55C58,-45,70,-30,75,-12C80,6,78,27,68,43C58,59,40,70,22,76C4,82,-14,83,-30,76C-46,69,-60,54,-70,37C-80,20,-86,0,-82,-18C-78,-36,-64,-52,-48,-60C-32,-68,-14,-68,2,-70C18,-72,32,-65,45,-55Z" fill="url(#blob1)" transform="translate(100,100)" />
             </svg>
           </div>
-          {/* Blue Ring */}
-          <div className="absolute top-[18%] right-[10%] w-28 h-28 sm:w-36 sm:h-36 opacity-25 blur-[1px] animate-float-reverse">
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <circle cx="50" cy="50" r="30" stroke="url(#layoutBlueGrad)" strokeWidth="12" fill="none" />
+
+          {/* Teal ring — top right */}
+          <div className="absolute top-[8%] right-[5%] w-48 h-48 sm:w-64 sm:h-64 opacity-20 animate-organic-2">
+            <svg viewBox="0 0 200 200" className="w-full h-full">
               <defs>
-                <linearGradient id="layoutBlueGrad" x1="0%" y1="0%" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#60a5fa" />
-                  <stop offset="100%" stopColor="#1d4ed8" />
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#5eead4" />
+                  <stop offset="100%" stopColor="#14b8a6" />
                 </linearGradient>
               </defs>
+              <circle cx="100" cy="100" r="60" stroke="url(#ringGrad)" strokeWidth="14" fill="none" opacity="0.7" />
+              <circle cx="100" cy="100" r="40" stroke="url(#ringGrad)" strokeWidth="4" fill="none" opacity="0.3" />
             </svg>
           </div>
-          {/* Blue Sphere */}
-          <div className="absolute bottom-[35%] left-[5%] w-20 h-20 sm:w-28 sm:h-28 opacity-15 blur-[5px] animate-float-reverse">
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <circle cx="50" cy="50" r="40" fill="url(#layoutSphereGrad)" />
+
+          {/* Green leaf — bottom left */}
+          <div className="absolute bottom-[15%] left-[3%] w-40 h-40 sm:w-56 sm:h-56 opacity-20 blur-[2px] animate-organic-3">
+            <svg viewBox="0 0 200 200" className="w-full h-full">
               <defs>
-                <linearGradient id="layoutSphereGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#38bdf8" />
-                  <stop offset="100%" stopColor="#0369a1" />
+                <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#86efac" />
+                  <stop offset="50%" stopColor="#4ade80" />
+                  <stop offset="100%" stopColor="#16a34a" />
                 </linearGradient>
               </defs>
+              <path d="M100,20 C140,20 180,60 180,100 C180,150 140,180 100,180 C60,180 20,150 20,100 C20,60 60,20 100,20 Z" fill="url(#leafGrad)" opacity="0.6" />
+              <path d="M100,40 Q120,80 100,160" stroke="white" strokeWidth="2" fill="none" opacity="0.4" />
+              <path d="M100,70 Q130,80 150,60" stroke="white" strokeWidth="1.5" fill="none" opacity="0.3" />
+              <path d="M100,100 Q70,110 50,90" stroke="white" strokeWidth="1.5" fill="none" opacity="0.3" />
             </svg>
           </div>
-          {/* Purple Triangle */}
-          <div className="absolute bottom-[10%] right-[6%] w-32 h-32 sm:w-44 sm:h-44 opacity-20 blur-[2px] animate-float-slow">
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              <polygon points="50,15 20,85 80,85" fill="url(#layoutPurpleGrad)" />
-              <ellipse cx="50" cy="85" rx="30" ry="8" fill="#581c87" opacity="0.6" />
+
+          {/* Emerald water drop — center right */}
+          <div className="absolute top-[45%] right-[2%] w-28 h-28 sm:w-36 sm:h-36 opacity-15 animate-organic-1" style={{ animationDelay: "2s" }}>
+            <svg viewBox="0 0 100 130" className="w-full h-full">
               <defs>
-                <linearGradient id="layoutPurpleGrad" x1="0%" y1="0%" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#c084fc" />
-                  <stop offset="100%" stopColor="#6b21a8" />
+                <linearGradient id="dropGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#6ee7b7" />
+                  <stop offset="100%" stopColor="#059669" />
                 </linearGradient>
               </defs>
+              <path d="M50,10 C50,10 85,55 85,80 C85,100 69,115 50,115 C31,115 15,100 15,80 C15,55 50,10 50,10 Z" fill="url(#dropGrad)" />
+              <ellipse cx="38" cy="70" rx="8" ry="12" fill="white" opacity="0.25" transform="rotate(-15 38 70)" />
             </svg>
           </div>
+
+          {/* Small floating dots — scattered */}
+          <div className="absolute top-[60%] left-[20%] w-3 h-3 rounded-full bg-emerald-400 opacity-40 animate-pulse-glow" />
+          <div className="absolute top-[30%] left-[45%] w-2 h-2 rounded-full bg-teal-400 opacity-30 animate-pulse-glow" style={{ animationDelay: "1s" }} />
+          <div className="absolute top-[75%] right-[25%] w-4 h-4 rounded-full bg-green-300 opacity-25 animate-pulse-glow" style={{ animationDelay: "2s" }} />
+          <div className="absolute top-[15%] left-[35%] w-2.5 h-2.5 rounded-full bg-emerald-300 opacity-35 animate-pulse-glow" style={{ animationDelay: "3s" }} />
+          <div className="absolute bottom-[25%] right-[40%] w-2 h-2 rounded-full bg-teal-300 opacity-30 animate-pulse-glow" style={{ animationDelay: "1.5s" }} />
         </div>
       </>
     );
@@ -364,18 +388,18 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
   /* ── Header ────────────────────────────────────── */
   function Header() {
     return (
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/20 bg-white/40 px-4 py-2.5 backdrop-blur-xl lg:px-5">
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/20 bg-white/30 backdrop-blur-xl px-4 py-2.5 lg:px-5">
         {noSidebar ? (
           <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate("/dashboard")}>
             <img src={logoSrc} alt="FeedLoop Logo" className="h-7 w-auto object-contain" />
-            <span className="text-sm font-black tracking-tight text-slate-800">FeedLoop</span>
+            <span className="text-sm font-black tracking-tight text-emerald-900">FeedLoop</span>
           </div>
         ) : (
           /* Mobile menu button */
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="flex size-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 lg:hidden"
+            className="flex size-9 items-center justify-center rounded-xl text-emerald-700/60 transition-colors hover:bg-white/40 lg:hidden"
           >
             <Menu size={18} />
           </button>
@@ -383,13 +407,13 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
 
         <div className="flex items-center gap-2 ml-auto">
           {/* Search */}
-          <label className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 transition-colors focus-within:border-emerald-400 focus-within:bg-white md:flex">
-            <Search size={14} className="text-slate-400" />
+          <label className="hidden items-center gap-2 rounded-xl border border-white/30 bg-white/30 backdrop-blur-sm px-3 py-1.5 transition-colors focus-within:border-emerald-400 focus-within:bg-white/50 md:flex">
+            <Search size={14} className="text-emerald-600/40" />
             <input
               ref={searchRef}
               type="text"
               placeholder="Search..."
-              className="w-40 bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400"
+              className="w-40 bg-transparent text-xs text-slate-700 outline-none placeholder:text-emerald-700/30"
             />
           </label>
 
@@ -398,7 +422,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             type="button"
             onClick={toggleMode}
             title={mode === "dark" ? "Light mode" : "Dark mode"}
-            className="flex size-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+            className="flex size-9 items-center justify-center rounded-xl text-emerald-700/50 transition-colors hover:bg-white/40 hover:text-emerald-700"
           >
             {mode === "dark" ? <Sun size={16} /> : <Moon size={16} />}
           </button>
@@ -408,11 +432,11 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             <button
               type="button"
               onClick={() => { setNotifOpen(!notifOpen); setNotifTab("all"); setProfileOpen(false); }}
-              className="relative flex size-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+              className="relative flex size-9 items-center justify-center rounded-xl text-emerald-700/50 transition-colors hover:bg-white/40 hover:text-emerald-700"
             >
               <Bell size={16} />
               {unreadCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
+                <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white shadow-sm shadow-emerald-500/30">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -425,25 +449,25 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -4, scale: 0.98 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-50 mt-2 w-[380px] max-w-[calc(100vw-32px)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/10"
+                  className="absolute right-0 top-full z-50 mt-2 w-[380px] max-w-[calc(100vw-32px)] overflow-hidden rounded-2xl border border-white/30 bg-white/50 backdrop-blur-xl shadow-2xl shadow-emerald-900/10"
                 >
                   {/* Header */}
-                  <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
-                    <span className="text-sm font-bold text-slate-900">Notifications</span>
+                  <div className="flex items-center justify-between border-b border-white/20 px-5 py-3">
+                    <span className="text-sm font-bold text-emerald-900">Notifications</span>
                     <div className="flex items-center gap-2">
                       {unreadCount > 0 && (
                         <button type="button" onClick={markAllRead} className="text-xs font-semibold text-emerald-600 hover:underline">
                           Mark all read
                         </button>
                       )}
-                      <button type="button" className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600">
+                      <button type="button" className="rounded-lg p-1 text-emerald-600/40 transition-colors hover:bg-white/40 hover:text-emerald-700">
                         <Settings size={14} />
                       </button>
                     </div>
                   </div>
 
                   {/* Tabs */}
-                  <div className="flex gap-1 border-b border-slate-100 px-5 py-2">
+                  <div className="flex gap-1 border-b border-white/20 px-5 py-2">
                     {(["all", "unread", "archived"] as const).map((tab) => (
                       <button
                         key={tab}
@@ -452,8 +476,8 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                         className={cn(
                           "rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition-all",
                           notifTab === tab
-                            ? "bg-slate-900 text-white"
-                            : "text-slate-500 hover:bg-slate-100"
+                            ? "bg-emerald-500/90 text-white shadow-sm shadow-emerald-500/20"
+                            : "text-emerald-700/50 hover:bg-white/40"
                         )}
                       >
                         {tab}
@@ -473,9 +497,9 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   <div className="max-h-[400px] overflow-y-auto">
                     {filteredNotifs.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12">
-                        <BellOff size={32} className="text-slate-300" />
-                        <p className="mt-3 text-sm font-semibold text-slate-500">All caught up!</p>
-                        <p className="mt-0.5 text-xs text-slate-400">No new notifications</p>
+                        <BellOff size={32} className="text-emerald-300/50" />
+                        <p className="mt-3 text-sm font-semibold text-emerald-700/50">All caught up!</p>
+                        <p className="mt-0.5 text-xs text-emerald-600/30">No new notifications</p>
                       </div>
                     ) : (
                       filteredNotifs.map((n) => {
@@ -486,8 +510,8 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                             type="button"
                             onClick={() => handleNotifClick(n)}
                             className={cn(
-                              "flex w-full gap-3 border-b border-slate-50 px-5 py-3.5 text-left transition-colors hover:bg-slate-50",
-                              isUnread && "bg-emerald-50/30"
+                              "flex w-full gap-3 border-b border-white/10 px-5 py-3.5 text-left transition-colors hover:bg-white/30",
+                              isUnread && "bg-emerald-50/40"
                             )}
                           >
                             <div className="relative shrink-0">
@@ -495,15 +519,15 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                                 {notifIcon(n.entity_type)}
                               </div>
                               {isUnread && (
-                                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-white bg-blue-500" />
+                                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-white/50 bg-emerald-500" />
                               )}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className={cn("text-xs leading-relaxed", isUnread ? "font-semibold text-slate-900" : "text-slate-700")}>
+                              <p className={cn("text-xs leading-relaxed", isUnread ? "font-semibold text-emerald-900" : "text-emerald-800/70")}>
                                 <span className="font-bold">{n.title}</span>
-                                {n.message && <span className="text-slate-500"> — {n.message}</span>}
+                                {n.message && <span className="text-emerald-600/50"> — {n.message}</span>}
                               </p>
-                              <p className="mt-0.5 text-[10px] text-slate-400">{timeAgo(n.created_at)}</p>
+                              <p className="mt-0.5 text-[10px] text-emerald-600/30">{timeAgo(n.created_at)}</p>
                             </div>
                           </button>
                         );
@@ -512,11 +536,11 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   </div>
 
                   {/* Footer */}
-                  <div className="border-t border-slate-100 px-5 py-2.5">
+                  <div className="border-t border-white/20 px-5 py-2.5">
                     <button
                       type="button"
                       onClick={() => setNotifOpen(false)}
-                      className="w-full rounded-lg py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100"
+                      className="w-full rounded-lg py-1.5 text-xs font-semibold text-emerald-700/60 transition-colors hover:bg-white/30"
                     >
                       View all notifications
                     </button>
@@ -531,9 +555,9 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
             <button
               type="button"
               onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
-              className="flex size-9 items-center justify-center rounded-lg transition-all hover:ring-2 hover:ring-slate-200"
+              className="flex size-9 items-center justify-center rounded-xl transition-all hover:ring-2 hover:ring-emerald-300/40"
             >
-              <div className="flex size-7 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white">
+              <div className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-[10px] font-bold text-white shadow-md shadow-emerald-500/20">
                 {userInitials}
               </div>
             </button>
@@ -545,25 +569,25 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -4, scale: 0.98 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/10"
+                  className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-white/30 bg-white/50 backdrop-blur-xl shadow-2xl shadow-emerald-900/10"
                 >
-                  <div className="border-b border-slate-100 px-4 py-3">
-                    <p className="text-sm font-semibold text-slate-900">{userFullName}</p>
-                    <p className="text-xs text-slate-500">{userEmail}</p>
+                  <div className="border-b border-white/20 px-4 py-3">
+                    <p className="text-sm font-semibold text-emerald-900">{userFullName}</p>
+                    <p className="text-xs text-emerald-700/50">{userEmail}</p>
                   </div>
                   <div className="p-1.5">
                     <button
                       type="button"
                       onClick={() => { setProfileOpen(false); navigate("/profile"); }}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-emerald-800/70 transition-colors hover:bg-white/40"
                     >
-                      <User size={16} className="text-slate-400" />
+                      <User size={16} className="text-emerald-500/50" />
                       View Profile
                     </button>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50/40"
                     >
                       <LogOut size={16} />
                       Sign out
@@ -581,7 +605,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
   /* ── noSidebar mode ────────────────────────────── */
   if (noSidebar) {
     return (
-      <div className="flex min-h-dvh flex-col bg-gradient-to-br from-[#e0f2fe] via-[#ecfdf5] to-[#faf5ff] relative overflow-hidden">
+      <div className="flex min-h-dvh flex-col bg-gradient-to-br from-[#ecfdf5] via-[#d1fae5] to-[#f0fdf4] relative overflow-hidden">
         <ThemeBackground />
         <Header />
         <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 lg:px-6 lg:py-5 relative z-10">
@@ -593,11 +617,11 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
 
   /* ── Full sidebar layout ──────────────────────── */
   return (
-    <div className="flex min-h-dvh bg-gradient-to-br from-[#e0f2fe] via-[#ecfdf5] to-[#faf5ff] relative overflow-hidden">
+    <div className="flex min-h-dvh bg-gradient-to-br from-[#ecfdf5] via-[#d1fae5] to-[#f0fdf4] relative overflow-hidden">
       <ThemeBackground />
       {/* Desktop Sidebar */}
       <aside
-        className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col lg:border-r lg:border-white/20 lg:bg-white/40 lg:backdrop-blur-md lg:transition-all lg:duration-300"
+        className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:flex-col lg:border-r lg:border-white/20 lg:bg-white/30 lg:backdrop-blur-xl lg:transition-all lg:duration-300"
         style={{ width: drawerWidth }}
       >
         <NavContent dense={collapsed} />
@@ -612,7 +636,7 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 bg-slate-900/20 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-50 bg-emerald-900/10 backdrop-blur-sm lg:hidden"
               onClick={() => setMobileOpen(false)}
             />
             <motion.aside
@@ -620,12 +644,12 @@ export default function AppLayout({ children, noSidebar }: { children: React.Rea
               animate={{ x: 0 }}
               exit={{ x: -EXPANDED_WIDTH }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed inset-y-0 left-0 z-50 w-[240px] border-r border-white/20 bg-white/40 backdrop-blur-md lg:hidden"
+              className="fixed inset-y-0 left-0 z-50 w-[240px] border-r border-white/20 bg-white/30 backdrop-blur-xl lg:hidden"
             >
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="absolute right-3 top-4 flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                className="absolute right-3 top-4 flex size-8 items-center justify-center rounded-xl text-emerald-600/40 transition-colors hover:bg-white/40 hover:text-emerald-700"
               >
                 <X size={16} />
               </button>

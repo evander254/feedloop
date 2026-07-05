@@ -116,11 +116,11 @@ export default function Home() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-white text-slate-950">
       {/* ─── Sticky Header ─── */}
-      <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-emerald-200/30 bg-white/60 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-2" aria-label="FeedLoop home">
             <img src={logoSrc} alt="FeedLoop" className="h-8 w-auto object-contain" />
-            <span className="text-lg font-bold tracking-tight text-slate-900">FeedLoop</span>
+            <span className="text-lg font-bold tracking-tight text-emerald-900">FeedLoop</span>
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
@@ -128,7 +128,7 @@ export default function Home() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-slate-500 transition-colors duration-200 hover:text-slate-900"
+                className="text-sm font-medium text-emerald-700/50 transition-colors duration-200 hover:text-emerald-900"
               >
                 {link.label}
               </a>
@@ -138,20 +138,20 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <Link
               to="/login"
-              className="hidden text-sm font-medium text-slate-600 transition-colors duration-200 hover:text-slate-900 sm:inline-flex"
+              className="hidden text-sm font-medium text-emerald-700/60 transition-colors duration-200 hover:text-emerald-900 sm:inline-flex"
             >
               Log in
             </Link>
             <Link
               to="/login"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-slate-900 px-5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-px hover:bg-slate-800 hover:shadow-lg active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/40"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition-all duration-200 hover:-translate-y-px hover:from-emerald-500 hover:to-teal-500 hover:shadow-xl active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
             >
               Get Started
             </Link>
 
             {/* Mobile menu button */}
             <button
-              className="inline-flex size-11 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 md:hidden"
+              className="inline-flex size-11 items-center justify-center rounded-lg text-emerald-700/60 transition-colors hover:bg-emerald-50/50 md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
               aria-expanded={mobileMenuOpen}
@@ -175,7 +175,7 @@ export default function Home() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="overflow-hidden border-t border-slate-100 md:hidden"
+              className="overflow-hidden border-t border-emerald-200/30 md:hidden"
             >
               <nav className="flex flex-col gap-1 px-6 py-4" aria-label="Mobile navigation">
                 {navLinks.map((link) => (
@@ -183,7 +183,7 @@ export default function Home() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
+                    className="rounded-lg px-4 py-3 text-sm font-medium text-emerald-700/60 transition-colors hover:bg-emerald-50/50 hover:text-emerald-900"
                   >
                     {link.label}
                   </a>
@@ -191,7 +191,7 @@ export default function Home() {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 sm:hidden"
+                  className="rounded-lg px-4 py-3 text-sm font-medium text-emerald-700/60 transition-colors hover:bg-emerald-50/50 hover:text-emerald-900 sm:hidden"
                 >
                   Log in
                 </Link>
@@ -202,42 +202,42 @@ export default function Home() {
       </header>
 
       {/* ─── Hero Section ─── */}
-      <section className="landing-section">
+      <section className="landing-section bg-gradient-to-b from-transparent to-emerald-50/30">
         <div className="mx-auto max-w-6xl px-6">
           <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
             {/* Left: Copy */}
             <div className="stagger-children max-w-xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/40 bg-emerald-50/60 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold text-emerald-700">
                 <Sparkles size={14} />
                 Enterprise data collection platform
               </div>
 
-              <h1 className="mt-8 text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 text-balance sm:text-5xl lg:text-[3.5rem]">
+              <h1 className="mt-8 text-4xl font-extrabold leading-[1.1] tracking-tight text-emerald-950 text-balance sm:text-5xl lg:text-[3.5rem]">
                 Collect Better Data.
                 <br />
                 Make Better Decisions.
               </h1>
 
-              <p className="mt-6 text-lg leading-relaxed text-slate-500">
+              <p className="mt-6 text-lg leading-relaxed text-emerald-700/50">
                 Create surveys, forms, polls, and field data collection projects that people actually complete. FeedLoop helps organizations gather reliable information, understand communities, and turn responses into meaningful insights.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   to="/login"
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-emerald-600 px-7 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition-all duration-200 hover:-translate-y-px hover:bg-emerald-700 hover:shadow-xl hover:shadow-emerald-600/25 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-7 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition-all duration-200 hover:-translate-y-px hover:from-emerald-500 hover:to-teal-500 hover:shadow-xl active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
                 >
                   Start Free <ArrowRight size={16} />
                 </Link>
                 <a
                   href="#features"
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-7 text-sm font-semibold text-slate-700 transition-all duration-200 hover:-translate-y-px hover:border-slate-300 hover:shadow-md active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg border border-emerald-200/50 bg-white/50 backdrop-blur-sm px-7 text-sm font-semibold text-emerald-800 transition-all duration-200 hover:-translate-y-px hover:border-emerald-300/50 hover:bg-white/70 hover:shadow-md active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/20"
                 >
                   See How It Works
                 </a>
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-400">
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-emerald-600/40">
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 size={14} className="text-emerald-500" />
                   No credit card required
@@ -255,32 +255,32 @@ export default function Home() {
 
             {/* Right: Product Mockup */}
             <div className="relative">
-              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-emerald-50 to-slate-50 opacity-60" />
-              <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/5">
+              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-emerald-100/40 to-teal-50/40 opacity-60 blur-xl" />
+              <div className="relative overflow-hidden rounded-2xl border border-white/40 bg-white/40 backdrop-blur-xl shadow-2xl shadow-emerald-900/5">
                 {/* Browser chrome */}
-                <div className="flex items-center gap-2 border-b border-slate-100 px-4 py-3">
+                <div className="flex items-center gap-2 border-b border-white/20 px-4 py-3 bg-white/30">
                   <div className="flex gap-1.5">
-                    <span className="size-2.5 rounded-full bg-slate-200" />
-                    <span className="size-2.5 rounded-full bg-slate-200" />
-                    <span className="size-2.5 rounded-full bg-slate-200" />
+                    <span className="size-2.5 rounded-full bg-emerald-300/40" />
+                    <span className="size-2.5 rounded-full bg-emerald-300/40" />
+                    <span className="size-2.5 rounded-full bg-emerald-300/40" />
                   </div>
-                  <div className="ml-3 flex-1 rounded-md bg-slate-100 px-3 py-1 text-xs text-slate-400">
+                  <div className="ml-3 flex-1 rounded-md bg-white/30 backdrop-blur-sm px-3 py-1 text-xs text-emerald-600/40">
                     app.feedloop.io/dashboard
                   </div>
                 </div>
 
                 {/* Dashboard content */}
-                <div className="p-5">
+                <div className="p-5 bg-white/20">
                   <div className="mb-4 flex items-center justify-between">
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-600/30">
                         Dashboard
                       </p>
-                      <p className="mt-0.5 text-base font-bold text-slate-900">
+                      <p className="mt-0.5 text-base font-bold text-emerald-950">
                         Community Needs Assessment
                       </p>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 border border-emerald-500/10">
                       <span className="size-1.5 rounded-full bg-emerald-500" />
                       Live
                     </span>
@@ -295,12 +295,12 @@ export default function Home() {
                     ].map((stat) => (
                       <div
                         key={stat.label}
-                        className="rounded-xl border border-slate-100 p-3"
+                        className="rounded-xl border border-white/30 bg-white/30 backdrop-blur-sm p-3"
                       >
-                        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600/30">
                           {stat.label}
                         </p>
-                        <p className="mt-1 text-lg font-bold text-slate-900">
+                        <p className="mt-1 text-lg font-bold text-emerald-950">
                           {stat.value}
                         </p>
                         <p className="text-[10px] font-semibold text-emerald-600">
@@ -311,8 +311,8 @@ export default function Home() {
                   </div>
 
                   {/* Chart placeholder */}
-                  <div className="rounded-xl border border-slate-100 p-4">
-                    <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                  <div className="rounded-xl border border-white/30 bg-white/30 backdrop-blur-sm p-4">
+                    <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-emerald-600/30">
                       Responses Over Time
                     </p>
                     <div className="flex items-end gap-1.5" style={{ height: 80 }}>
@@ -320,7 +320,7 @@ export default function Home() {
                         (h, i) => (
                           <div
                             key={i}
-                            className="flex-1 rounded-t bg-emerald-500/20 transition-all duration-300 hover:bg-emerald-500/40"
+                            className="flex-1 rounded-t bg-gradient-to-t from-emerald-500/30 to-teal-400/20 transition-all duration-300 hover:from-emerald-500/50 hover:to-teal-400/40"
                             style={{ height: `${h}%` }}
                           />
                         )
@@ -335,16 +335,16 @@ export default function Home() {
       </section>
 
       {/* ─── Social Proof ─── */}
-      <section className="border-y border-slate-100 bg-slate-50/50">
+      <section className="border-y border-emerald-200/20 bg-white/20 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-6 py-10">
-          <p className="mb-8 text-center text-xs font-semibold uppercase tracking-widest text-slate-400">
+          <p className="mb-8 text-center text-xs font-semibold uppercase tracking-widest text-emerald-600/30">
             Trusted by organizations worldwide
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
             {trustedLogos.map((logo) => (
               <div
                 key={logo.name}
-                className="flex items-center gap-2 opacity-40 grayscale transition-all duration-200 hover:opacity-70 hover:grayscale-0"
+                className="flex items-center gap-2 opacity-30 grayscale transition-all duration-200 hover:opacity-60 hover:grayscale-0"
               >
                 <svg
                   width={logo.width}
@@ -359,12 +359,12 @@ export default function Home() {
                     height="20"
                     rx="4"
                     fill="currentColor"
-                    className="text-slate-900"
+                    className="text-emerald-800"
                   />
                   <text
                     x="26"
                     y="19"
-                    className="fill-current text-slate-900"
+                    className="fill-current text-emerald-800"
                     fontSize="12"
                     fontWeight="700"
                     fontFamily="Plus Jakarta Sans, sans-serif"
@@ -382,14 +382,14 @@ export default function Home() {
       <section id="features" className="landing-section">
         <div className="mx-auto max-w-6xl px-6">
           <div className="mb-16 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/40 bg-emerald-50/60 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold text-emerald-700">
               <Layers size={14} />
               Everything You Need
             </div>
-            <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-slate-900 text-balance sm:text-4xl">
+            <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-emerald-950 text-balance sm:text-4xl">
               Built for teams that depend on reliable data
             </h2>
-            <p className="mt-4 text-lg leading-relaxed text-slate-500">
+            <p className="mt-4 text-lg leading-relaxed text-emerald-700/50">
               From field data collection to stakeholder reporting, FeedLoop gives your organization the tools to gather, analyze, and act on information that matters.
             </p>
           </div>
@@ -407,12 +407,12 @@ export default function Home() {
                   ease: [0.16, 1, 0.3, 1],
                 }}
               >
-                <div className="group relative h-full rounded-2xl border border-slate-200 bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-900/5 focus-within:ring-2 focus-within:ring-emerald-500/20">
-                  <div className="mb-5 inline-flex rounded-xl bg-slate-900 p-3 text-white transition-colors duration-300 group-hover:bg-emerald-600">
+                <div className="group relative h-full rounded-2xl border border-white/30 bg-white/40 backdrop-blur-xl p-7 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-300/30 hover:bg-white/50 hover:shadow-xl hover:shadow-emerald-500/5 focus-within:ring-2 focus-within:ring-emerald-500/20">
+                  <div className="mb-5 inline-flex rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 p-3 text-white shadow-lg shadow-emerald-500/20 transition-colors duration-300 group-hover:shadow-xl group-hover:shadow-emerald-500/30">
                     <Icon size={20} strokeWidth={2} />
                   </div>
-                  <h3 className="text-base font-bold text-slate-900">{title}</h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-slate-500">
+                  <h3 className="text-base font-bold text-emerald-950">{title}</h3>
+                  <p className="mt-2.5 text-sm leading-relaxed text-emerald-700/50">
                     {description}
                   </p>
                 </div>
@@ -423,14 +423,14 @@ export default function Home() {
       </section>
 
       {/* ─── How It Works ─── */}
-      <section id="workflow" className="border-y border-slate-100 bg-slate-50/50">
+      <section id="workflow" className="border-y border-emerald-200/20 bg-white/20 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-6 py-20">
           <div className="mb-16 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/40 bg-emerald-50/60 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold text-emerald-700">
               <Zap size={14} />
               Simple Workflow
             </div>
-            <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-slate-900 text-balance sm:text-4xl">
+            <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-emerald-950 text-balance sm:text-4xl">
               From sign-up to live data collection in minutes
             </h2>
           </div>
@@ -469,18 +469,18 @@ export default function Home() {
                 className="relative"
               >
                 <div className="mb-5 flex items-center gap-4">
-                  <span className="flex size-12 items-center justify-center rounded-xl bg-slate-900 text-sm font-bold text-white">
+                  <span className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-sm font-bold text-white shadow-lg shadow-emerald-500/20">
                     {step}
                   </span>
                   {index < 2 && (
-                    <div className="hidden h-px flex-1 bg-slate-200 md:block" />
+                    <div className="hidden h-px flex-1 bg-gradient-to-r from-emerald-300/30 to-transparent md:block" />
                   )}
                 </div>
-                <div className="inline-flex rounded-lg bg-emerald-50 p-2.5 text-emerald-600">
+                <div className="inline-flex rounded-xl bg-emerald-500/10 p-2.5 text-emerald-600">
                   <Icon size={18} />
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-slate-900">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">{text}</p>
+                <h3 className="mt-4 text-lg font-bold text-emerald-950">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-emerald-700/50">{text}</p>
               </motion.div>
             ))}
           </div>
@@ -491,11 +491,11 @@ export default function Home() {
       <section id="faq" className="landing-section">
         <div className="mx-auto max-w-3xl px-6">
           <div className="mb-12 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/40 bg-emerald-50/60 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold text-emerald-700">
               <MessageSquare size={14} />
               Frequently Asked Questions
             </div>
-            <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-slate-900 text-balance sm:text-4xl">
+            <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-emerald-950 text-balance sm:text-4xl">
               Everything you need to know
             </h2>
           </div>
@@ -508,8 +508,8 @@ export default function Home() {
                   key={index}
                   className={`rounded-xl border transition-all duration-200 ${
                     isOpen
-                      ? "border-emerald-200 bg-emerald-50/30 shadow-sm"
-                      : "border-slate-200 bg-white hover:border-slate-300"
+                      ? "border-emerald-300/40 bg-white/40 backdrop-blur-xl shadow-sm shadow-emerald-500/5"
+                      : "border-white/30 bg-white/30 backdrop-blur-md hover:border-emerald-300/30"
                   }`}
                 >
                   <button
@@ -517,13 +517,13 @@ export default function Home() {
                     className="flex min-h-[56px] w-full items-center justify-between gap-4 px-6 py-4 text-left"
                     aria-expanded={isOpen}
                   >
-                    <span className="text-sm font-semibold text-slate-900">
+                    <span className="text-sm font-semibold text-emerald-950">
                       {faq.question}
                     </span>
                     <motion.span
                       animate={{ rotate: isOpen ? 180 : 0 }}
                       transition={{ duration: 0.2, ease: "easeInOut" }}
-                      className="shrink-0 text-slate-400"
+                      className="shrink-0 text-emerald-500/40"
                     >
                       <ChevronDown size={18} />
                     </motion.span>
@@ -537,7 +537,7 @@ export default function Home() {
                         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="px-6 pb-5 text-sm leading-relaxed text-slate-500">
+                        <div className="px-6 pb-5 text-sm leading-relaxed text-emerald-700/50">
                           {faq.answer}
                         </div>
                       </motion.div>
@@ -551,49 +551,49 @@ export default function Home() {
       </section>
 
       {/* ─── CTA Section ─── */}
-      <section className="border-t border-slate-100 bg-slate-950">
+      <section className="border-t border-emerald-200/20 bg-gradient-to-b from-emerald-900 to-teal-950">
         <div className="mx-auto max-w-3xl px-6 py-20 text-center">
           <ShieldCheck size={32} className="mx-auto mb-6 text-emerald-400" />
           <h2 className="text-3xl font-extrabold tracking-tight text-white text-balance sm:text-4xl">
             Ready to start collecting better data?
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-slate-400">
+          <p className="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-emerald-300/50">
             Join hundreds of organizations using FeedLoop to gather reliable information, engage communities, and drive smarter decisions.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/login"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-white px-7 text-sm font-semibold text-slate-900 shadow-xl transition-all duration-200 hover:-translate-y-px hover:bg-emerald-50 hover:shadow-2xl active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-white px-7 text-sm font-semibold text-emerald-900 shadow-xl transition-all duration-200 hover:-translate-y-px hover:bg-emerald-50 hover:shadow-2xl active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
               Get Started Free <ArrowRight size={16} />
             </Link>
           </div>
-          <p className="mt-4 text-xs text-slate-500">
+          <p className="mt-4 text-xs text-emerald-400/30">
             No credit card required. Free forever for small teams.
           </p>
         </div>
       </section>
 
       {/* ─── Footer ─── */}
-      <footer className="border-t border-slate-200 bg-white">
+      <footer className="border-t border-emerald-200/20 bg-white/30 backdrop-blur-md">
         <div className="mx-auto max-w-6xl px-6 py-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2">
               <img src={logoSrc} alt="FeedLoop" className="h-6 w-auto object-contain" />
-              <span className="text-sm font-semibold text-slate-700">FeedLoop</span>
+              <span className="text-sm font-semibold text-emerald-800">FeedLoop</span>
             </div>
             <nav className="flex items-center gap-6" aria-label="Footer navigation">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-sm text-slate-400 transition-colors hover:text-slate-600"
+                  className="text-sm text-emerald-600/30 transition-colors hover:text-emerald-700"
                 >
                   {link.label}
                 </a>
               ))}
             </nav>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-emerald-600/30">
               &copy; {new Date().getFullYear()} FeedLoop. All rights reserved.
             </p>
           </div>
